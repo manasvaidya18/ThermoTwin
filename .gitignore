@@ -6,8 +6,8 @@ __pycache__/
 venv/
 
 # Large or regenerable outputs (models.pkl is kept so the live demo runs after cloning)
-thermotwin/outputs/models_seed*.pkl
-thermotwin/outputs/*.npz
+ml/artifacts/models_seed*.pkl
+ml/results/*.npz
 
 # Hackathon brief PDFs from the organisers and packaged zips
 /*-*-*-*-*.pdf
@@ -15,3 +15,9 @@ thermotwin/outputs/*.npz
 
 # Local tooling
 .claude/
+
+# Local-only files (organiser PDFs, old zips, old code kept for reference)
+_local/
+
+# Database is created on first start from db/schema.sql + db/seed
+db/*.db

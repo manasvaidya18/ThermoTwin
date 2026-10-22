@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Maintenance</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="maintenance" data-title="Maintenance" data-sub="Slow faults found by the digital twin · open work orders">
+<main>
+  <div class="card">
+    <h2>Slow faults · fix before they fail</h2>
+    <p class="hint">Each fridge's twin is compared with its own history over 14–30 days</p>
+    <table>
+      <thead><tr><th>Facility · fridge</th><th>What changed</th><th>Likely fault</th><th>Suggested action</th><th></th></tr></thead>
+      <tbody>
+        <tr><td><b>Shirur RH · ILR-02</b></td><td>Compressor working 22% harder over 14 days</td><td>Dusty condenser or small refrigerant leak</td><td>Service before peak summer</td><td><button class="btn sm primary" onclick="this.outerHTML='<span class=&quot;pill ok&quot;>Ticket created</span>'">Create ticket</button></td></tr>
+        <tr><td><b>Bhor PHC · ILR-01</b></td><td>Holdover time down 18%</td><td>Door seal or ice lining degrading</td><td>Inspect door gasket</td><td><button class="btn sm primary" onclick="this.outerHTML='<span class=&quot;pill ok&quot;>Ticket created</span>'">Create ticket</button></td></tr>
+        <tr><td><b>Daund SDH · DF-02</b></td><td>Defrost recovery 14 min slower</td><td>Frost build-up on the evaporator</td><td>Schedule a defrost</td><td><span class="pill grey">Scheduled 20 Oct</span></td></tr>
+        <tr><td><b>Khed PHC · ILR-03</b></td><td>Probe reading unchanged for 3 h</td><td>Loose or failed probe cable</td><td>Reseat probe; replace if still stuck</td><td><span class="pill grey">Technician asked</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid g2 section">
+    <div class="card">
+      <h2>Recent repairs</h2>
+      <p class="hint">A person confirms each repair after the twin checks recovery</p>
+      <div class="list">
+        <div class="row between"><span><b>PHC Wagholi · ILR-1</b> · door gasket replaced, 12 Sep</span><span class="pill warn">Awaiting confirmation</span></div>
+        <div class="row between"><span><b>Maval RH · ILR-2</b> · thermostat replaced, 4 Sep</span><span class="pill ok">Recovery confirmed</span></div>
+        <div class="row between"><span><b>Junnar PHC-2 · ILR-01</b> · inverter battery, 28 Aug</span><span class="pill ok">Recovery confirmed</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Technician load this week</h2>
+      <p class="hint">Open tickets per technician</p>
+      <div class="list">
+        <div class="row between"><span>Ravi K. · North (Junnar, Khed, Shirur)</span><b>3</b></div>
+        <div class="row between"><span>Meena P. · Central (Haveli, Maval, Mulshi)</span><b>1</b></div>
+        <div class="row between"><span>Arif S. · South (Baramati, Daund, Bhor)</span><b>2</b></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="web.js"></script>
+</body>
+</html>

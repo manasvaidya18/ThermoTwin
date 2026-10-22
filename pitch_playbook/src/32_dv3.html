@@ -1,0 +1,258 @@
+<article class="view" id="v-dv3" data-track="dv" data-title="Eagle Eye">
+<header class="phead">
+  <div class="kicker"><span class="chip dv">DeltaV pack</span><span class="chip">#03 Eagle Eye</span></div>
+  <h2>Eagle Eye</h2>
+  <p class="sub">Look at a photo of a control cabinet, compare it with the drawing, and produce a QC sheet where every failure is boxed, zoomed, explained and re-checked after the fix, without ever crying wolf.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●○○○</b></div><div>No data wait<b>●○○○○</b></div><div>Stands out<b>●●●●○</b></div><div>Demo impact<b>●●●●●</b></div><div>Provable<b>●●●○○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>A control cabinet is a steel box packed with hundreds of parts (power supplies, breakers, terminals, controllers) joined by hundreds of wires. Technicians build it by hand from a drawing: every part in its place with a label, every wire on the right terminal with a printed sleeve (a ferrule) on each end. Before shipping, a QC inspector holds the drawing and checks every part, label, wire and ferrule by eye, at assembly, at power-on and at each QC stage, then fills a check sheet by hand. It is slow, tiring and easy to miss things. The task: AI that looks at a photo, compares it with the drawing and tells exactly what is wrong.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>GA drawing</td><td>General arrangement: a to-scale or schematic layout showing where each part goes. Provided as PDF.</td></tr>
+<tr><td>Device label</td><td>Name tag of each part (for example <code>PS11</code>). Must match the drawing.</td></tr>
+<tr><td>Terminal</td><td>Screw point where a wire lands.</td></tr>
+<tr><td>Ferrule</td><td>Printed sleeve on a wire end. <code>CB11-2/PS11-L</code> means from breaker CB11 pin 2 to power supply PS11 pin L.</td></tr>
+<tr><td>Wire colours</td><td>Brown phase, blue neutral, green and yellow earth, red +24 V, black 0 V.</td></tr>
+<tr><td>DIN rail</td><td>Metal rail on which breakers and terminals clip in a row. Parts are ordered along it.</td></tr>
+</tbody></table></div>
+<h4>What the PDF requires</h4>
+<ul>
+<li>Inputs: HD photos (JPG or PNG), GA drawings (PDF), wire and label lists (Excel), the QC checklist to fill.</li>
+<li><b>Inspect:</b> find every part, read device labels and ferrules, see wire colours and terminals. <b>Compare:</b> present, right place, right label, right ferrule and colour. <b>Report:</b> checklist PASS or FAIL, each FAIL boxed on the photo with a zoomed snippet, expected versus found. <b>Re-check:</b> new photo after the fix, re-run failed items, close fixed ones, keep history.</li>
+<li>Must-have checks: GA (part present, right place and order), label (readable and matching), ferrule (read the sleeve, match to the wire list). Stretch: wiring (right colour, terminal, module in every slot). Plug-in checks: new checks (earthing, shrouds, cable dressing) must be addable without rewriting the tool.</li>
+<li>Expected solution: working tool with a simple UI (Python preferred); filled QC checklist (Excel or PDF); marked-up photos and snippets for every FAIL; before and after re-check report; plug-in checks; live demo, source code, 5-minute pitch.</li>
+<li><b>Definition of done:</b> finds missing or misplaced parts, wrong labels, wrong ferrules; <b>no false alarms</b> (a correct item is never FAIL); every FAIL has proof; re-check works; generalises to a cabinet it has not seen. Hidden test: fresh cabinet photos with planted faults. No hand-editing of the report.</li>
+</ul>
+
+<h3>Our concept: Eagle Eye</h3>
+<div class="g3">
+<div class="card"><h4>1. The drawing is the query</h4><p>With little labelled data, we do not train a detector for "cabinet parts". The drawing and the Excel lists tell us exactly which labels, parts and ferrule texts to look for, and where. Reading text is then a closed-vocabulary matching problem, which is far more accurate than open OCR.</p></div>
+<div class="card"><h4>2. Three-lane verdicts</h4><p>PASS, FAIL and VERIFY. A FAIL needs strong evidence. When glare, blur or occlusion leave us unsure, the item appears with a "needs a human glance" flag instead of a risky FAIL. This is how "never a false alarm" is honoured without pretending to see what cannot be seen.</p></div>
+<div class="card"><h4>3. Checks are plug-ins; fixes are tracked</h4><p>Each check is a small module registered by a YAML line. An issue ledger tracks each FAIL through fix, re-photo and closure with before and after images.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>Eagle Eye</th></tr></thead>
+<tbody>
+<tr><td>Ask a vision-language model to list differences</td><td>Hallucinated faults, unreliable boxes, no repeatability.</td><td>VLM only proposes; geometry and matching decide; verify lane for uncertainty.</td></tr>
+<tr><td>Train a YOLO detector on a few photos</td><td>Overfits to one cabinet; fails on unseen.</td><td>Open-vocabulary detection prompted by the drawing; fine-tune only when data exists.</td></tr>
+<tr><td>Free OCR on labels</td><td>Misreads O and 0, 1 and I; lots of false mismatches.</td><td>Decode against the expected label set with confusion-aware distance.</td></tr>
+<tr><td>Hard-code the checks</td><td>Fails "add checks without a rewrite".</td><td>Check interface and registry.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>The most visual and human-meaningful output of the three DeltaV problems: a marked-up photo with red boxes and an expected-versus-found table. The re-check loop and plug-in design show engineering maturity. The verify lane is a clear, honest answer to the no-false-alarm rule.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>Highest data dependency. We have no sample photos or drawings in the folder, and small label and ferrule text is hard. Do not choose this unless the team has computer-vision experience and sample files arrive early.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Compile expectations</b><span>Parse drawing, Excel lists and checklist into an expected cabinet model and a list of checks.</span></div>
+<div class="st"><b>Prepare the photo</b><span>Find the backplate, rectify perspective, normalise exposure, tile for small text.</span></div>
+<div class="st"><b>Find</b><span>Open-vocabulary detection and segmentation of devices, labels, ferrules, terminals.</span></div>
+<div class="st"><b>Read</b><span>OCR on crops decoded against the expected vocabulary; wire colour classification.</span></div>
+<div class="st"><b>Align and compare</b><span>Match found items to expected ones by rail and order; run each check.</span></div>
+<div class="st"><b>Decide</b><span>PASS, FAIL or VERIFY with calibrated confidence and evidence.</span></div>
+<div class="st"><b>Report</b><span>Filled checklist, annotated photo, snippets, expected versus found.</span></div>
+<div class="st"><b>Re-check</b><span>Register new photo, re-run failed items, close or keep open, store history.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>expect/</td><td>Drawing parser, Excel list parser, checklist compiler</td><td>PyMuPDF, pandas, openpyxl, LLM for mapping checklist rows (confirmed by user)</td></tr>
+<tr><td>prep/</td><td>Backplate detection, rectification, exposure and glare handling, tiling</td><td>OpenCV</td></tr>
+<tr><td>detect/</td><td>Part, label, ferrule, terminal detection and segmentation</td><td>Grounding DINO or OWLv2 plus SAM; optional YOLO fine-tuned on samples; optional vision-language model for proposals</td></tr>
+<tr><td>read/</td><td>OCR with constrained decoding; wire colour classification</td><td>PaddleOCR or EasyOCR; LAB colour space</td></tr>
+<tr><td>match/</td><td>Rail clustering, order analysis, presence logic</td><td>NumPy, SciPy</td></tr>
+<tr><td>checks/</td><td>Plug-in checks, registry, YAML mapping</td><td>Python</td></tr>
+<tr><td>decide/</td><td>Confidence calibration, three-lane policy</td><td>scikit-learn</td></tr>
+<tr><td>report/</td><td>Excel and PDF report, annotated images, snippets</td><td>openpyxl, reportlab, Pillow</td></tr>
+<tr><td>ledger/</td><td>Issue history, photo registration, re-check</td><td>SQLite, OpenCV (SIFT or LoFTR)</td></tr>
+<tr><td>ui/</td><td>Upload, inspect view, report, history</td><td>Streamlit or React with FastAPI</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Compile expectations from the drawing and lists</h4>
+<ul>
+<li><b>Drawing parser.</b> From the GA PDF, extract text with coordinates and shapes. Cluster shapes into device rectangles, attach the nearest label text, group devices into rails by clustering y coordinates, order each rail by x. Result: an <b>Expected Layout Graph</b> with nodes (device id, label, type, rail, position in rail) and relations (left of, above, adjacent to).</li>
+<li><b>Excel lists.</b> Wire list rows give from and to and colour; label list gives expected labels. Build an expected ferrule table, one entry per wire end, keyed by the ferrule grammar <code>FROM-pin/TO-pin</code>.</li>
+<li><b>Checklist compiler.</b> Parse the QC checklist rows and map each to one or more registered checks (keyword rules, optionally an LLM suggestion that the user confirms once and saves). Rows with no matching check are marked manual and shown as such.</li>
+<li>If the drawing is a raster image, fall back to OCR and a vision-language model for layout.</li>
+</ul>
+<h4>2. Photo preparation</h4>
+<ul>
+<li>Detect the backplate (largest light or orange panel) from edges and contours; estimate four corners; rectify to a front-on view. If detection fails, let the user click four corners once.</li>
+<li>Normalise exposure (CLAHE), detect glare (saturated blobs) and mark those regions as low-visibility so checks that depend on them go to VERIFY rather than FAIL.</li>
+<li>Tile the HD image with overlap so labels and ferrules are read at sufficient pixel size (target at least 30 to 40 pixels of text height).</li>
+</ul>
+<h4>3. Detection</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Option</th><th>Strength</th><th>Weakness</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td>Open-vocabulary detector with prompts ("circuit breaker", "terminal block", "power supply", "label plate", "ferrule")</td><td>No labelled data needed; generalises across cabinets.</td><td>Lower precision on dense, repetitive parts; needs threshold tuning.</td><td>Primary baseline</td></tr>
+<tr><td>Segment Anything on detector boxes</td><td>Clean masks for snippets and colour sampling.</td><td>Compute cost.</td><td>Refinement</td></tr>
+<tr><td>Fine-tuned detector (YOLO or RT-DETR) on the sample photos with augmentation</td><td>Best precision when data exists.</td><td>Risk of overfitting a single cabinet.</td><td>If at least a few dozen labelled photos exist</td></tr>
+<tr><td>Vision-language model proposals</td><td>Good at "what is this region".</td><td>Weak at precise boxes; non-repeatable.</td><td>Second opinion only</td></tr>
+</tbody></table></div>
+<p>Use the drawing to constrain detection: the number of expected devices on a rail is known, so thresholds adapt until the count matches, or the discrepancy itself becomes a finding.</p>
+<h4>4. Reading labels and ferrules</h4>
+<ul>
+<li><b>Labels.</b> Crop each label plate, upscale 2 to 3 times, deskew, run OCR. Decode against the set of expected labels with a confusion-aware edit distance (O and 0, I and 1, B and 8, S and 5, Z and 2, dash variants cost little). Accept a match if the normalised distance is small and the margin to the second-best candidate is large; otherwise label unreadable.</li>
+<li><b>Ferrules.</b> Small sleeves at wire ends beside terminals. Detect bright cylindrical objects at terminal entries; crop; try rotations (0, 90, 270 degrees); optional super-resolution; decode against the expected ferrule table with the grammar. Partial reads (only <code>PS11-L</code>) are matched to candidates and scored.</li>
+<li><b>Wire colour.</b> Segment the wire pixels near the ferrule, convert to LAB, correct white balance using neutral references (white labels, grey backplate), classify against colour prototypes; detect green and yellow stripes by two-hue clustering. Compare colour among wires of the same cabinet to reduce lighting effects.</li>
+</ul>
+<h4>5. Alignment and the checks</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Check</th><th>Logic</th><th>Evidence shown</th></tr></thead>
+<tbody>
+<tr><td>Part present</td><td>Expected device matched to a detection in its predicted rail position. If none: re-detect at higher resolution in the expected area; still none and the area is visible: missing.</td><td>Box at expected area, snippet, "expected PS12; found: empty slot".</td></tr>
+<tr><td>Right place and order</td><td>Per rail, compare the expected sequence with the observed sequence of read labels. Use permutation analysis (Kendall tau distance) to find minimal swaps, for example CB43 and CB44 swapped.</td><td>Both boxes, "expected CB41-42-43-44; found CB41-42-44-43".</td></tr>
+<tr><td>Label readable and correct</td><td>Plate present? OCR decoded? Matches expected? Distinguish "no label plate", "unreadable" and "wrong label (found X, expected Y)".</td><td>Zoomed plate.</td></tr>
+<tr><td>Ferrule fitted and correct</td><td>Sleeve present at the wire end? Text matches the wire list entry?</td><td>Zoomed wire end with expected and read text.</td></tr>
+<tr><td>Wire colour (stretch)</td><td>Colour class equals expected colour for that wire.</td><td>Colour swatch and class.</td></tr>
+<tr><td>Wire on right terminal (stretch)</td><td>Associate ferrule to terminal position by proximity; compare to the wire list.</td><td>Terminal highlighted.</td></tr>
+</tbody></table></div>
+<p>Use confidently read labels as anchors for the mapping between drawing and photo. Since the GA drawing is schematic, rely on topology (rail membership and order) rather than exact geometry; fit an affine or projective transform from anchors only to predict where missing items should be.</p>
+<h4>6. The decision engine and the verify lane</h4>
+<pre class="code">For each check result compute evidence features (detector score, OCR margin, visibility, glare overlap, resolution)
+p_fail = calibrated probability that the item is truly faulty (logistic or isotonic on planted-fault validation data)
+if p_fail &gt;= T_fail and visibility is adequate  -&gt; FAIL (with proof)
+elif p_fail &lt;= T_pass and evidence is positive    -&gt; PASS
+else                                               -&gt; VERIFY  ("needs a human glance"; shown with the snippet)
+Choose T_fail on validation data as the lowest threshold that gives zero false FAILs on clean photos; report recall at that point.</pre>
+<p>Every item still appears in the sheet; VERIFY items carry a distinct tag. If the organisers insist on strict PASS or FAIL, map VERIFY to "FAIL (low confidence)" in the Excel but keep the flag.</p>
+<h4>7. The re-check loop and ledger</h4>
+<ol>
+<li>Store each inspection: photos, detections, results, checklist state, timestamps in SQLite.</li>
+<li>For a new photo, register it to the previous one with SIFT or ORB features and RANSAC homography, or LoFTR, so issue locations transfer.</li>
+<li>Re-run only the failed checks (and a quick regression on previously passed ones to catch newly introduced faults).</li>
+<li>Close fixed issues; keep still-failing issues open; log new issues; keep history with before and after crops.</li>
+<li>Produce the re-check report: closed, open, new.</li>
+</ol>
+<h4>8. Plug-in checks</h4>
+<pre class="code">class Check(Protocol):
+    id: str
+    needs: set[str]                    # e.g. {"expected_layout", "detections", "labels", "ferrules"}
+    def run(self, ctx: Context) -&gt; list[Finding]: ...
+
+# checks.yaml
+- { id: ga_presence,   class: checks.ga.Presence,   rows: ["Breakers present", "Power supply installed"] }
+- { id: ga_order,      class: checks.ga.Order,      rows: ["Breaker order"] }
+- { id: label_match,   class: checks.label.Match,   rows: ["Baseplate label", "Device labels"] }
+- { id: ferrule_match, class: checks.ferrule.Match, rows: ["Ferrule on X3 wire"] }
+- { id: earthing,      class: checks.earth.PEBar,   rows: ["Earth bar PE"], enabled: false }   # added later, one file, one line</pre>
+<h4>9. Planted-fault self-test (our own benchmark)</h4>
+<ul>
+<li><b>Missing part:</b> inpaint a device region from a clean photo.</li>
+<li><b>Swap:</b> exchange two device crops.</li>
+<li><b>Missing or wrong label:</b> cover a plate or render different text on it.</li>
+<li><b>Missing ferrule:</b> inpaint the sleeve.</li>
+<li>Measure per-check precision and recall, and false FAILs on the unmodified photos. Also run on photos with different lighting and angles.</li>
+</ul>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Upload photos, drawings, lists, checklist</td><td><span class="tier core">Core</span></td><td>Parsers and checklist compiler.</td><td>The task.</td><td>M</td></tr>
+<tr><td>GA, label and ferrule checks</td><td><span class="tier core">Core</span></td><td>As above.</td><td>The must-haves.</td><td>L</td></tr>
+<tr><td>Filled checklist (Excel and PDF)</td><td><span class="tier core">Core</span></td><td>Templated report.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Boxed photo and snippet per FAIL</td><td><span class="tier core">Core</span></td><td>Annotated image and crops.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Re-check with history</td><td><span class="tier core">Core</span></td><td>Ledger and registration.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Drawing-as-query detection</td><td><span class="tier wow">Wow</span></td><td>Expected labels and counts steer detection and OCR.</td><td>Explains why it generalises.</td><td>M</td></tr>
+<tr><td>Verify lane</td><td><span class="tier wow">Wow</span></td><td>Evidence-based abstention.</td><td>Answers the "no false alarms" rule honestly.</td><td>M</td></tr>
+<tr><td>Plug-in checks</td><td><span class="tier wow">Wow</span></td><td>Registry plus YAML.</td><td>Add earthing live in the demo.</td><td>S</td></tr>
+<tr><td>Before and after slider</td><td><span class="tier wow">Wow</span></td><td>Issue ledger images.</td><td>Satisfying demo moment.</td><td>S</td></tr>
+<tr><td>Retake guidance</td><td><span class="tier wow">Wow</span></td><td>"Glare on rail 2; retake from the left."</td><td>Practical and memorable.</td><td>S</td></tr>
+<tr><td>Planted-fault benchmark</td><td><span class="tier wow">Wow</span></td><td>Inpainting and swapping on clean photos.</td><td>Numbers without hidden data.</td><td>M</td></tr>
+<tr><td>Wiring check (colour, terminal)</td><td><span class="tier stretch">Stretch</span></td><td>Colour classification, terminal association.</td><td>The PDF's stretch goal.</td><td>L</td></tr>
+<tr><td>Mobile capture helper</td><td><span class="tier stretch">Stretch</span></td><td>Phone page with alignment guides.</td><td>Shop-floor realism.</td><td>M</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Project setup.</b> Upload drawing, lists, checklist; compiled checks listed with mapped rows.</li>
+<li><b>Inspect.</b> Photo with toggle layers (devices, labels, ferrules, wires); right panel lists checks with PASS, FAIL, VERIFY; click a FAIL to zoom; expected versus found card.</li>
+<li><b>Report.</b> Checklist table, counts (for example 2 pass, 4 fail), download Excel or PDF, snippet gallery.</li>
+<li><b>Re-check.</b> Upload the new photo; progress per failed item; closed items turn green; history timeline.</li>
+<li><b>Checks admin.</b> Enable or disable checks; add a new check file; see the YAML.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>Definition</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>False FAIL rate</td><td>Correct items marked FAIL on clean photos.</td><td>0</td></tr>
+<tr><td>Fault recall</td><td>Planted faults found (missing, swapped, wrong label, wrong or missing ferrule).</td><td>85% or higher at zero false FAILs; the rest in VERIFY</td></tr>
+<tr><td>Verify rate</td><td>Share of items routed to VERIFY.</td><td>Under 15%</td></tr>
+<tr><td>OCR accuracy</td><td>Labels and ferrules read correctly after constrained decoding.</td><td>95% or higher on clean crops</td></tr>
+<tr><td>Re-check correctness</td><td>Closed items truly fixed; open items truly still faulty.</td><td>100% on test set</td></tr>
+<tr><td>Generalisation</td><td>Leave-one-cabinet-out if several cabinets exist; otherwise different photos of the same cabinet.</td><td>Within 10 points</td></tr>
+<tr><td>Runtime</td><td>Per photo.</td><td>Under 2 minutes with GPU or hosted model</td></tr>
+</tbody></table></div>
+<div class="co warn"><span class="lbl">Compute note</span><p>Open-vocabulary detectors and OCR run best on a GPU. A laptop may be slow; plan for a notebook GPU service or hosted APIs and budget the cost. Keep a cached-results mode so the live demo does not depend on a network.</p></div>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Only if photos and drawings are in hand: parse the drawing into an expected rail list; read one label by constrained OCR.</li><li>Otherwise: mock the report layout and write the check interface and YAML for slides.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Drawing and Excel parsing; photo prep; detection baseline.</li>
+<li><b>Day 2.</b> Label OCR with constrained decoding; GA checks.</li>
+<li><b>Day 3.</b> Ferrule reading; decision engine; report generation; ledger.</li>
+<li><b>Day 4.</b> Re-check; planted-fault benchmark; UI polish; recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 3 h: run the unseen photos; list per-check failures.</li>
+<li>3 to 10: tune detection thresholds and OCR vocabulary handling; fix the worst false FAIL causes.</li>
+<li>10 to 16: improve the verify policy; retake guidance.</li>
+<li>16 to 22: report polish; rehearse the re-check story.</li>
+<li>22 to 24: freeze.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>CV lead:</b> detection, rectification, ferrules.</li><li><b>OCR and data lead:</b> parsing, constrained decoding, benchmark.</li><li><b>Backend:</b> checks, ledger, reports.</li><li><b>Frontend and pitch:</b> inspect view, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>No sample data</td><td>Cannot tune thresholds.</td><td>Request samples; build the benchmark from any cabinet photos available; keep thresholds configurable.</td></tr>
+<tr><td>Tiny text, glare, angles</td><td>Misreads.</td><td>Tiling, rectification, constrained decoding, VERIFY lane, retake guidance.</td></tr>
+<tr><td>False FAIL</td><td>Violates the definition of done.</td><td>Conservative thresholds chosen for zero false FAILs on validation.</td></tr>
+<tr><td>GPU and model weight</td><td>Slow demo.</td><td>Cache results; hosted models; smaller variants.</td></tr>
+<tr><td>Over-ambitious wiring check</td><td>Time sink.</td><td>Keep as stretch; ship GA, label, ferrule first.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>QC inspectors spend hours comparing a cabinet with its drawing by eye and filling a sheet by hand. Eagle Eye takes the photo, the drawing and the wire lists, finds every part, label and ferrule, and returns the filled checklist with each failure boxed on the photo, zoomed and explained as expected versus found. It only calls something a failure when the evidence is strong, otherwise it asks for a human glance, and after the fix it re-checks and closes the issue.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> A cabinet photo next to the drawing; "spot the differences".</li>
+<li><b>0:40 Upload.</b> Photo, drawing, lists, checklist. The checks list appears.</li>
+<li><b>1:20 Inspect.</b> Layers: parts, labels, ferrules. Run.</li>
+<li><b>2:00 Result.</b> 2 pass, 4 fail, 1 verify. Click the swapped breakers: boxed, zoomed, "expected CB41-42-43-44, found CB41-42-44-43".</li>
+<li><b>2:50 Report.</b> Download Excel with the table.</li>
+<li><b>3:20 Fix and re-check.</b> Upload the corrected photo; 3 issues close, 1 stays open.</li>
+<li><b>4:00 Plug-in.</b> Enable the earthing check by adding one YAML line; run.</li>
+<li><b>4:30 Proof.</b> Planted-fault benchmark and false-FAIL count.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> QC inspectors and technicians; project managers waiting for shipment sign-off.</p><p><b>Gap:</b> manual visual QC against drawings is slow, tiring and error-prone, and faults found late cost rework.</p><p><b>Why now:</b> open-vocabulary vision models make drawing-guided inspection practical.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> drawing as the query; verify lane; plug-in checks; re-check ledger.</p><p><b>Mechanism:</b> compile, prepare, find, read, compare, decide, report.</p><p><b>Feasible:</b> prototype on sample cabinet with planted faults: recall X%, false FAILs 0 (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Python, PyMuPDF, OpenCV, open-vocabulary detector with SAM, PaddleOCR, SQLite, Streamlit or React, FastAPI. Declare each model.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Inspect view with boxes, expected versus found, report, re-check history, checks admin.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> drawing parser, label OCR. <b>In progress:</b> ferrules, ledger. <b>Next:</b> wiring and earthing checks, mobile capture.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Faster, more consistent QC, earlier fault detection, an auditable record per cabinet.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How do you avoid false alarms?</summary><p>Strong evidence is required for FAIL and thresholds are chosen for zero false FAILs on clean validation photos. Uncertain items go to VERIFY with the snippet.</p></details>
+<details class="qa"><summary>Will it work on a cabinet it has never seen?</summary><p>It does not learn a specific cabinet. The drawing and lists tell it what to look for, and detection is open-vocabulary.</p></details>
+<details class="qa"><summary>How do you read tiny ferrule text?</summary><p>Tiling, upscaling, rotation search, and decoding against the expected ferrule table, which makes the problem matching rather than free reading.</p></details>
+<details class="qa"><summary>How are new checks added?</summary><p>One Python class and one line in the checks YAML; the rest of the tool is unchanged.</p></details>
+<details class="qa"><summary>How does re-check know an issue is fixed?</summary><p>It registers the new photo to the old, re-runs that check at the same location, and closes the issue only if the check now passes.</p></details>
+<details class="qa"><summary>Which models did you use and why?</summary><p>State each, its purpose and what you changed around it; show that the final verdict comes from matching and thresholds, not a single model's opinion.</p></details>
+</article>

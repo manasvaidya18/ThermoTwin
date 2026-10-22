@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · District overview</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="overview" data-title="Pune District overview" data-sub="186 fridges · 64 facilities · live, last update 2 min ago">
+<main>
+  <div class="banner">ⓘ Advisory early-warning layer. WHO PQS alarms run independently; the certified logger stays the legal record.</div>
+
+  <div class="grid g4">
+    <div class="card kpi">
+      <div class="label">Needs action now</div>
+      <div class="val" id="kNeed">3 <small>of 186</small></div>
+      <div class="foot" id="kNeedFoot"><span class="pill crit">1 Critical</span> <span class="pill warn">2 Early warning</span></div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Status by tier</div>
+      <div class="val">177 <small>normal</small></div>
+      <div class="bar"><i style="width:.6%;background:var(--crit)"></i><i style="width:1.1%;background:var(--warn)"></i><i style="width:2.2%;background:var(--info)"></i><i style="width:1.1%;background:var(--sensor)"></i><i style="width:95%;background:#9fd8b4"></i></div>
+      <div class="foot" style="margin-top:6px">4 advisory · 2 sensor check</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Median warning lead time</div>
+      <div class="val">58 <small>min</small></div>
+      <div class="foot">Before a breach · simulated benchmark</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">False SMS per fridge-month</div>
+      <div class="val">0.6 <small>budget 1.0</small></div>
+      <div class="bar"><i style="width:60%;background:var(--teal)"></i></div>
+    </div>
+  </div>
+
+  <div class="grid g21 section">
+    <div class="card">
+      <div class="row between">
+        <div><h2>Fridges needing attention</h2><p class="hint" style="margin:0">Sorted by urgency. Click a row to open its digital twin.</p></div>
+        <select aria-label="Taluka"><option>All 14 talukas</option><option>Haveli</option><option>Junnar</option><option>Baramati</option><option>Khed</option></select>
+      </div>
+      <div class="chips" data-filter="att" style="margin:12px 0 4px">
+        <button class="on" data-f="all">All (6)</button><button data-f="crit">Critical</button><button data-f="warn">Early warning</button>
+        <button data-f="info">Advisory</button><button data-f="sensor">Sensor check</button>
+      </div>
+      <table data-group="att">
+        <thead><tr><th>Facility · fridge</th><th>Status</th><th>What's happening</th><th>Likely cause</th></tr></thead>
+        <tbody id="attRows">
+          <tr data-tags="crit"><td><b>Junnar PHC-2</b><br><span class="muted small">ILR-01</span></td><td><span class="pill crit">Critical</span></td><td>Air 8.6 °C for 40 min, still rising</td><td>Power cut, inverter battery low</td></tr>
+          <tr data-tags="warn" data-href="fridge-ilr1.html"><td><b>PHC Wagholi</b><br><span class="muted small">ILR-1</span></td><td><span class="pill warn">Early warning</span></td><td>May go below 0 °C in ~60 min</td><td>Thermostat set too cold</td></tr>
+          <tr data-tags="warn"><td><b>Baramati SDH</b><br><span class="muted small">DF-01</span></td><td><span class="pill warn">Early warning</span></td><td>Warming; above −15 °C in ~1 h 45 min</td><td>Grid cut, inverter low</td></tr>
+          <tr data-tags="sensor"><td><b>Khed PHC</b><br><span class="muted small">ILR-03</span></td><td><span class="pill sensor">Sensor check</span></td><td>Probe reading unchanged for 3 h</td><td>Loose probe cable</td></tr>
+          <tr data-tags="info"><td><b>Shirur RH</b><br><span class="muted small">ILR-01</span></td><td><span class="pill info">Advisory</span></td><td>Door opened 12 times in an hour</td><td>Busy vaccination session</td></tr>
+          <tr data-tags="info"><td><b>Daund SDH</b><br><span class="muted small">DF-02</span></td><td><span class="pill info">Advisory</span></td><td>Recovers 14 min slower after defrost</td><td>Frost build-up</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>District map</h2>
+      <p class="hint">Worst status per taluka</p>
+      <svg viewBox="0 0 300 260" style="width:100%;height:auto" role="img" aria-label="Pune district map with talukas coloured by status">
+        <path d="M60 30 L170 18 L250 50 L280 120 L250 200 L170 245 L80 230 L30 160 L25 90 Z" fill="#f4f7f6" stroke="#cfdcd7"/>
+        <g font-size="10" fill="#5d6f68">
+          <circle cx="120" cy="55" r="8" fill="#b91c1c"/><text x="132" y="59">Junnar</text>
+          <circle cx="175" cy="95" r="6" fill="#6d28d9"/><text x="185" y="99">Khed</text>
+          <circle cx="230" cy="80" r="6" fill="#1d4ed8"/><text x="200" y="70">Shirur</text>
+          <circle cx="150" cy="135" r="8" fill="#b45309"/><text x="162" y="139">Haveli</text>
+          <circle cx="90" cy="115" r="5" fill="#9fd8b4"/><text x="52" y="108">Maval</text>
+          <circle cx="75" cy="160" r="5" fill="#9fd8b4"/><text x="42" y="178">Mulshi</text>
+          <circle cx="225" cy="150" r="6" fill="#1d4ed8"/><text x="236" y="154">Daund</text>
+          <circle cx="195" cy="200" r="7" fill="#b45309"/><text x="150" y="215">Baramati</text>
+          <circle cx="115" cy="195" r="5" fill="#9fd8b4"/><text x="95" y="212">Bhor</text>
+          <circle cx="140" cy="175" r="5" fill="#9fd8b4"/><text x="148" y="179">Purandar</text>
+        </g>
+      </svg>
+      <div class="legend" style="margin-top:6px">
+        <span><i style="border-color:var(--crit)"></i>Critical</span><span><i style="border-color:var(--warn)"></i>Early</span>
+        <span><i style="border-color:var(--info)"></i>Advisory</span><span><i style="border-color:var(--sensor)"></i>Sensor</span><span><i style="border-color:#9fd8b4"></i>Normal</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card section">
+    <div class="row between"><div><h2>Slow faults · fix before they fail</h2><p class="hint" style="margin:0">Gradual decline the digital twin sees over 14–30 days</p></div><a class="btn sm" href="maintenance.html">All maintenance →</a></div>
+    <div class="grid g3" style="margin-top:12px">
+      <div><span class="pill grey">Shirur RH · ILR-02</span><p style="margin:8px 0 4px"><b>Compressor working 22% harder</b> over 14 days</p><p class="muted small" style="margin:0">Likely dusty condenser or small refrigerant leak. Service before peak summer.</p></div>
+      <div><span class="pill grey">Bhor PHC · ILR-01</span><p style="margin:8px 0 4px"><b>Holdover time down 18%</b></p><p class="muted small" style="margin:0">Door seal or ice lining degrading. Inspect gasket.</p></div>
+      <div><span class="pill grey">Daund SDH · DF-02</span><p style="margin:8px 0 4px"><b>Defrost recovery 14 min slower</b></p><p class="muted small" style="margin:0">Frost build-up on the evaporator. Schedule a defrost.</p></div>
+    </div>
+  </div>
+</main>
+<script src="web.js"></script>
+<script src="../shared/live.js"></script>
+<script>
+  var TAG = { 'Critical': 'crit', 'Early warning': 'warn', 'Advisory': 'info', 'Sensor check': 'sensor', 'Normal': 'ok' };
+  window.ttLiveUpdate = function (d) {
+    var f = d.fridges, act = f.filter(function (x) { return x.tier !== 'Normal'; });
+    document.getElementById('kNeed').innerHTML = act.length + ' <small>of ' + f.length + ' (live demo fleet)</small>';
+    var counts = {};
+    act.forEach(function (x) { counts[x.tier] = (counts[x.tier] || 0) + 1; });
+    document.getElementById('kNeedFoot').innerHTML = Object.keys(counts).map(function (k) {
+      return '<span class="pill ' + ttTierClass(k) + '">' + counts[k] + ' ' + k + '</span>';
+    }).join(' ') || '<span class="pill ok">All normal</span>';
+    var tb = document.getElementById('attRows');
+    tb.innerHTML = f.map(function (x) {
+      var link = x.id === 'wagholi-ilr1' ? ' data-live-href="fridge-ilr1.html" class="click"' : '';
+      return '<tr data-tags="' + TAG[x.tier] + '"' + link + '><td><b>' + x.facility + '</b><br><span class="muted small">' + x.fridge +
+        '</span></td><td><span class="pill ' + ttTierClass(x.tier) + '">' + x.tier + '</span></td><td>' + x.message + (x.stock_note ? '<br><span class="muted small">' + x.stock_note + '</span>' : '') +
+        '</td><td>' + (x.tier === 'Normal' ? '<span class="muted">—</span>' : x.cause.title) + '</td></tr>';
+    }).join('');
+    tb.querySelectorAll('[data-live-href]').forEach(function (r) { r.onclick = function () { location.href = r.dataset.liveHref; }; });
+    var on = document.querySelector('.chips[data-filter=att] button.on');
+    if (on && on.dataset.f !== 'all') on.click();
+  };
+</script>
+</body>
+</html>

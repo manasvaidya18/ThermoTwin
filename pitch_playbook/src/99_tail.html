@@ -1,0 +1,152 @@
+</main>
+</div>
+<script>
+(function () {
+  var doc = document;
+  var views = [].slice.call(doc.querySelectorAll('.view'));
+  var railLinks = [].slice.call(doc.querySelectorAll('.rail a[data-v]'));
+  var rail = doc.getElementById('rail');
+  var menubtn = doc.getElementById('menubtn');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ids = views.map(function (v) { return v.id.replace(/^v-/, ''); });
+
+  function show(id, skipHash) {
+    if (ids.indexOf(id) < 0) id = 'home';
+    views.forEach(function (v) { v.hidden = (v.id !== 'v-' + id); });
+    railLinks.forEach(function (a) {
+      if (a.getAttribute('data-v') === id) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+    if (rail) rail.classList.remove('open');
+    if (menubtn) menubtn.setAttribute('aria-expanded', 'false');
+    if (!skipHash) { try { if (location.hash.slice(1) !== id) location.hash = id; } catch (e) {} }
+    window.scrollTo(0, 0);
+  }
+
+  doc.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[data-v]') : null;
+    if (!a) return;
+    e.preventDefault();
+    show(a.getAttribute('data-v'));
+  });
+  window.addEventListener('hashchange', function () { show(location.hash.slice(1), true); });
+
+  /* section strip built from each view's h3 headings */
+  views.forEach(function (v) {
+    var heads = [].slice.call(v.querySelectorAll('h3'));
+    if (heads.length < 2) return;
+    var nav = doc.createElement('div');
+    nav.className = 'pnav';
+    nav.setAttribute('role', 'navigation');
+    nav.setAttribute('aria-label', 'Sections');
+    heads.forEach(function (h) {
+      var b = doc.createElement('button');
+      b.type = 'button';
+      b.textContent = h.textContent;
+      b.addEventListener('click', function () {
+        h.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      });
+      nav.appendChild(b);
+    });
+    var header = v.querySelector('.phead');
+    if (header && header.nextSibling) header.parentNode.insertBefore(nav, header.nextSibling);
+  });
+
+  /* mobile menu */
+  if (menubtn && rail) {
+    menubtn.addEventListener('click', function () {
+      var open = rail.classList.toggle('open');
+      menubtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  /* theme: auto, light, dark */
+  var themebtn = doc.getElementById('themebtn');
+  var modes = ['auto', 'light', 'dark'];
+  var mode = 'auto';
+  try { mode = localStorage.getItem('apex-theme') || 'auto'; } catch (e) {}
+  function applyTheme() {
+    var root = doc.documentElement;
+    if (mode === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', mode);
+    if (themebtn) themebtn.textContent = 'Theme: ' + mode;
+  }
+  if (themebtn) {
+    themebtn.addEventListener('click', function () {
+      mode = modes[(modes.indexOf(mode) + 1) % modes.length];
+      try { localStorage.setItem('apex-theme', mode); } catch (e) {}
+      applyTheme();
+    });
+  }
+  applyTheme();
+
+  /* copy buttons on pitch boxes */
+  [].slice.call(doc.querySelectorAll('.pitch')).forEach(function (box) {
+    var btn = box.querySelector('.copybtn');
+    var p = box.querySelector('p');
+    if (!btn || !p) return;
+    btn.addEventListener('click', function () {
+      var text = p.textContent;
+      function done(ok) {
+        btn.textContent = ok ? 'Copied' : 'Select and copy';
+        if (!ok) {
+          try { var r = doc.createRange(); r.selectNodeContents(p); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+        }
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        } else { done(false); }
+      } catch (e) { done(false); }
+    });
+  });
+
+  /* decision helper */
+  var P = [
+    { id: 't41', n: 'ThermoTwin',    s: 'T4-1 Cold-chain early warning',   tr: 't4', v: 86, w: [1,3,0,2,0,0,1] },
+    { id: 't42', n: 'LocusNet',      s: 'T4-2 Indoor positioning',         tr: 't4', v: 86, w: [1,3,0,3,0,0,3] },
+    { id: 't43', n: 'SensorCourt',   s: 'T4-3 Sensor trust and drift',     tr: 't4', v: 77, w: [0,3,0,2,0,0,2] },
+    { id: 'dv2', n: 'Sudoku Engine', s: '#02 IO Signal Sudoku',            tr: 'dv', v: 89, w: [3,0,0,3,1,0,0] },
+    { id: 'dv1', n: 'Untangle Graph',s: '#01 P&ID to simple sketch',       tr: 'dv', v: 71, w: [2,1,3,2,1,0,1] },
+    { id: 'dv3', n: 'Eagle Eye',     s: '#03 Cabinet photo QC',            tr: 'dv', v: 63, w: [1,2,3,2,1,0,0] },
+    { id: 'im1', n: 'VibeLens',      s: 'IM-01 Vibe Coding assessment',    tr: 'im', v: 66, w: [2,0,0,3,3,0,0] },
+    { id: 'im2', n: 'ScoutQA',       s: 'IM-02 Autonomous QA engineer',    tr: 'im', v: 74, w: [2,0,0,2,3,3,0] },
+    { id: 'im3', n: 'ProofPass',     s: 'IM-03 Skill Passport',            tr: 'im', v: 63, w: [2,0,0,2,3,0,0] },
+    { id: 'im4', n: 'DayOne',        s: 'IM-04 AI Job Simulator',          tr: 'im', v: 60, w: [1,0,0,3,3,0,0] },
+    { id: 'im5', n: 'CodeSherpa',    s: 'IM-05 Codebase Mentor',           tr: 'im', v: 63, w: [3,0,0,2,3,0,0] }
+  ];
+  var skillBox = doc.getElementById('skills');
+  var rankEl = doc.getElementById('rank');
+  var hint = doc.getElementById('rankhint');
+  function renderRank() {
+    if (!skillBox || !rankEl) return;
+    var sel = [].slice.call(skillBox.querySelectorAll('input:checked')).map(function (i) { return +i.value; });
+    var rows = P.map(function (p) {
+      var tot = p.w.reduce(function (a, b) { return a + b; }, 0);
+      var got = sel.reduce(function (a, i) { return a + p.w[i]; }, 0);
+      var cov = tot ? got / tot : 0;
+      var score = sel.length ? Math.round(0.6 * cov * 100 + 0.4 * p.v) : p.v;
+      return { p: p, score: score };
+    }).sort(function (a, b) { return b.score - a.score; });
+    hint.textContent = sel.length ? 'Ranked by 60% skill coverage plus 40% strategic value' : 'Nothing ticked yet: showing strategic value only';
+    rankEl.innerHTML = '';
+    rows.forEach(function (r) {
+      var a = doc.createElement('a');
+      a.href = '#' + r.p.id;
+      a.setAttribute('data-v', r.p.id);
+      var nm = doc.createElement('span'); nm.className = 'nm'; nm.textContent = r.p.n;
+      var sm = doc.createElement('small'); sm.textContent = r.p.s; nm.appendChild(sm);
+      var bar = doc.createElement('span'); bar.className = 'bar';
+      var fill = doc.createElement('i'); fill.style.width = r.score + '%'; fill.style.setProperty('--bc', 'var(--' + r.p.tr + ')');
+      bar.appendChild(fill);
+      var sc = doc.createElement('span'); sc.className = 'sc'; sc.textContent = r.score;
+      a.appendChild(nm); a.appendChild(bar); a.appendChild(sc);
+      rankEl.appendChild(a);
+    });
+  }
+  if (skillBox) skillBox.addEventListener('change', renderRank);
+  renderRank();
+
+  show((location.hash || '#home').slice(1), true);
+})();
+</script>

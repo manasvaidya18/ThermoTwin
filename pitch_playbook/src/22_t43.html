@@ -1,0 +1,247 @@
+<article class="view" id="v-t43" data-track="t4" data-title="SensorCourt">
+<header class="phead">
+  <div class="kicker"><span class="chip t4">Track 4 · UST</span><span class="chip">T4-3</span></div>
+  <h2>SensorCourt</h2>
+  <p class="sub">Put every alarm on trial. Decide whether the world changed or the sensor lied, give each sensor a trust score, and keep monitoring alive when one is quarantined.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●●○○</b></div><div>Demo impact<b>●●●○○</b></div><div>Provable<b>●●●●●</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Environmental and safety monitoring uses many cheap sensors: air quality, river levels, temperature, humidity, gas. A reading that jumps could be a real event (smoke, a flood pulse) or a sensor problem (a spike, a stuck value, drift, a failing part). If every jump is treated as real, the system raises false alarms and people stop listening. If a failing sensor is trusted, a real danger is missed. The system must judge both the measured condition and the trustworthiness of the sensor that reported it.</p>
+
+<h4>What the PDF requires</h4>
+<ul>
+<li>Detect sudden spikes, stuck-at values, excessive noise and gradual drift.</li>
+<li>Separate a real environmental change from a sensor-specific fault, using correlation across neighbouring or related sensors where available.</li>
+<li>Produce a sensor-health or trust score over time, and say when recalibration, inspection or replacement is needed.</li>
+<li>Reduce false alarms while preserving sensitivity to genuine events.</li>
+<li><b>Explain</b> which patterns caused an event to be called genuine or faulty.</li>
+<li>Dataset suggestion: realistic environmental trends, several sensor channels tracking the same or related quantity, labelled faults (offset drift, gain error, spikes, frozen values, increased noise, intermittent dropout, slow degradation), genuine events affecting several sensors, and a hidden test set with fault combinations not in training.</li>
+<li>Core challenge: from a stream with both real changes and injected faults, say which alarms to trust and the likely fault type.</li>
+</ul>
+
+<h4>Fault vocabulary</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Fault</th><th>What the reading does</th><th>Why it is easy or hard</th></tr></thead>
+<tbody>
+<tr><td>Spike</td><td>Single-sample jumps.</td><td>Easy alone; hard to tell from a short real pulse without neighbours.</td></tr>
+<tr><td>Stuck-at (frozen)</td><td>Same value repeated, variance zero.</td><td>Easy, unless the true signal is also very flat.</td></tr>
+<tr><td>Noise increase</td><td>Variance grows, mean the same.</td><td>Needs a baseline noise level per sensor.</td></tr>
+<tr><td>Offset drift</td><td>A constant or slowly growing bias.</td><td>Hard: looks like a slow real change unless peers disagree.</td></tr>
+<tr><td>Gain error</td><td>Reading scaled wrongly; error grows with the signal.</td><td>Only visible when the signal moves.</td></tr>
+<tr><td>Dropout</td><td>Gaps or zeros.</td><td>Easy to see; cause differs (power, link, sensor).</td></tr>
+<tr><td>Slow degradation</td><td>Gradual loss of response, lag, noise and drift together.</td><td>Hardest; multiple small symptoms.</td></tr>
+</tbody></table></div>
+<div class="co"><span class="lbl">The central idea</span><p>A real event moves related sensors together, with plausible delay. A fault is local. So the question for each deviation is not "is this weird?" but "do the other sensors agree?"</p></div>
+
+<h3>Our concept: SensorCourt</h3>
+<p>Treat each suspicious reading as a case. Four independent <b>witnesses</b> give evidence, a <b>judge</b> combines it into a verdict with a confidence, and a <b>court record</b> shows the reasoning to the operator.</p>
+<div class="g3">
+<div class="card"><h4>1. Events live in the pattern, faults break it</h4><p>A PCA model of healthy multi-sensor behaviour splits any deviation in two. The part that stays inside the usual correlation pattern (Hotelling's T²) is a genuine event. The part that breaks the pattern (the Q statistic or SPE) is a fault. Contribution plots name the guilty sensor.</p></div>
+<div class="card"><h4>2. Trust is a probability over time</h4><p>Each sensor has a hidden health state (healthy, drifting, stuck, noisy, spiky, dropout, failed) tracked by an HMM. The trust score is the probability it is healthy, with maintenance forecasts from the drift rate.</p></div>
+<div class="card"><h4>3. Keep the lights on</h4><p>A quarantined sensor is replaced by a virtual sensor reconstructed from its neighbours, so monitoring continues and the operator knows which values are measured and which are estimated.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>SensorCourt</th></tr></thead>
+<tbody>
+<tr><td>Per-sensor anomaly detector</td><td>Cannot tell real events from faults.</td><td>Peer witness and the T² versus Q split.</td></tr>
+<tr><td>Z-score threshold</td><td>Misses drift and gain errors; flags real events.</td><td>Drift tracked against peers; event consistency checks.</td></tr>
+<tr><td>One classifier on raw windows</td><td>Overfits injected faults; fails on combinations.</td><td>Features from four witnesses; train on single faults and test on combinations.</td></tr>
+<tr><td>Delete bad sensors</td><td>Blind spots.</td><td>Virtual-sensor failover with provenance.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>The PCA T²/Q story is simple to say and defend. Every verdict is explainable by construction. The Fault Fuzzer makes the robustness claim visible. The same layer plugs into T4-1 and T4-2, which is a strong scalability point.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>It looks like "anomaly detection with extra steps" unless the demo makes the verdict cards and virtual sensors vivid. Stand-alone it has less social storytelling than the cold chain, so frame it around community air-quality or flood monitoring where cheap sensors drift and false alarms cost trust.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Simulate field</b><span>Latent environmental field with spatial and temporal correlation; genuine events with propagation delay.</span></div>
+<div class="st"><b>Inject faults</b><span>Per-sensor faults with severity and timing; combinations held out for testing.</span></div>
+<div class="st"><b>Witnesses</b><span>Forensic, peer, physics and history evidence per sensor per window.</span></div>
+<div class="st"><b>Fault classifier</b><span>Gradient-boosted model over the evidence features.</span></div>
+<div class="st"><b>Judge</b><span>HMM per sensor; trust score; alarm verdict with confidence.</span></div>
+<div class="st"><b>Repair and plan</b><span>Virtual sensor, drift correction, days-to-recalibration.</span></div>
+<div class="st"><b>Explain and serve</b><span>Verdict cards, court timeline, fuzzer, API.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>sim/</td><td>Gaussian-process or AR spatial field, event plumes, fault injectors, hidden splits</td><td>NumPy, SciPy</td></tr>
+<tr><td>witness/forensic</td><td>Spike, stuck, noise, gap, drift statistics</td><td>NumPy, statsmodels</td></tr>
+<tr><td>witness/peer</td><td>Leave-one-out prediction, PCA monitor, contribution plots, lag analysis</td><td>scikit-learn</td></tr>
+<tr><td>witness/physics and history</td><td>Rate limits, range limits, calibration age priors</td><td>Python rules</td></tr>
+<tr><td>judge/</td><td>Fault classifier, HMM, alarm verdicts</td><td>LightGBM, hmmlearn or hand-written forward algorithm</td></tr>
+<tr><td>repair/</td><td>Virtual sensors, offset and gain estimate, time-to-tolerance</td><td>ridge, Theil-Sen</td></tr>
+<tr><td>ui/ and api/</td><td>Sensor network map, verdict cards, fuzzer, maintenance planner</td><td>FastAPI, React or Streamlit</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Simulator</h4>
+<ul>
+<li><b>Latent field.</b> N sensors (8 to 20) at positions p_i. True value x_i(t) = shared diurnal trend + spatially correlated component (a Gaussian process over positions or an AR(1) field with distance decay) + local variation.</li>
+<li><b>Genuine events.</b> A plume or pulse starting at a source, reaching sensor i after a delay proportional to distance divided by propagation speed, with amplitude decaying with distance. Also slow ramps (weather fronts).</li>
+<li><b>Measurement model.</b> y_i(t) = g_i × (x_i(t) + b_i(t)) + noise_i(t), then faults modify g_i, b_i, noise, or replace the reading.</li>
+<li><b>Fault injectors.</b> Offset step, linear drift, gain error, spike train (probability p per sample, random magnitude), stuck-at (hold the last value), noise burst (multiply sigma), dropout (NaN or zero), degradation (slow drift plus rising noise plus response lag).</li>
+<li><b>Labels.</b> Per sensor and time: fault type and severity; globally: genuine event active. Training uses single faults; the test set adds two or three simultaneous faults, new severities and event patterns.</li>
+</ul>
+<h4>2. The four witnesses</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Witness</th><th>Evidence it gives</th><th>Methods</th></tr></thead>
+<tbody>
+<tr><td>Forensic (single sensor)</td><td>Spike score, flatline length, variance ratio against its own baseline, drift statistic, gap fraction, lag-1 autocorrelation change.</td><td>Hampel filter (median and MAD), run-length of near-zero differences, rolling variance ratio, CUSUM or Page-Hinkley on residuals, Theil-Sen slope.</td></tr>
+<tr><td>Peer (across sensors)</td><td>How far this sensor is from what its neighbours predict, and whether the deviation fits the shared pattern.</td><td>Leave-one-out regression (ridge, GP kriging or gradient boosting with lags), PCA with T² and Q, contribution plots, event timing consistency (cross-correlation lag versus distance).</td></tr>
+<tr><td>Physics</td><td>Is the change physically possible?</td><td>Maximum plausible rate of change, valid range, conservation or ordering constraints when known.</td></tr>
+<tr><td>History</td><td>Prior suspicion from the sensor's own record.</td><td>Calibration age, past fault count, model of sensor type.</td></tr>
+</tbody></table></div>
+<h4>3. The T² and Q split in detail</h4>
+<pre class="code">Fit PCA on healthy windows of all sensors (rows = time, columns = sensors, standardised); keep k components covering ~95% variance
+For a new sample x:   t = P^T x            (scores)         x_hat = P t        (reconstruction)
+   T2 = sum_j  t_j^2 / lambda_j            large  =&gt; variation along normal correlated directions    =&gt; GENUINE EVENT
+   Q  = || x - x_hat ||^2                  large  =&gt; variation that breaks the correlation pattern   =&gt; SENSOR FAULT
+Locate: contribution of sensor i to Q = (x_i - x_hat_i)^2        (largest = guilty sensor)
+Iterate: remove (reconstruct) the guilty sensor and re-test; stop when Q is within its control limit
+Limits: from percentiles of training T2 and Q or the usual chi-square and weighted-chi-square approximations</pre>
+<p>Pitch line: <b>events live in the subspace, faults live in the residual.</b> Add the lag-aware check so that real events arriving at neighbours with delay are not mistaken for faults.</p>
+<h4>4. Fault classifier</h4>
+<p>A LightGBM multi-class model takes the concatenated witness features and predicts {healthy, spike, stuck, noise, offset, gain, drift, dropout, degradation}. Calibrate with isotonic regression. Show an ablation: forensic only, forensic plus peer, all four. The rules from the witnesses keep it interpretable; the model adds accuracy on mixtures.</p>
+<h4>5. The judge: HMM trust and alarm verdicts</h4>
+<ul>
+<li><b>States.</b> H (healthy), D (drifting), St (stuck), N (noisy), Sp (spiky), Dr (dropout), F (failed). Sticky transitions: P(H to H) about 0.999, faults persist.</li>
+<li><b>Emission.</b> Calibrated classifier probabilities divided by class priors, fed to the forward algorithm. Posterior at each time gives <b>trust = 1 minus P(any fault state)</b>.</li>
+<li><b>Health ladder.</b> Trusted (0.9 and up), Watch (0.6 to 0.9), Suspect (0.3 to 0.6), Quarantine (below 0.3), with hysteresis so it does not flicker.</li>
+<li><b>Alarm adjudication.</b> When a monitored value crosses its alarm limit, combine: peer corroboration (how many neighbours show the expected signature with the expected lag), sensor trust, and fault-type evidence. Output one of <b>Trusted event</b>, <b>Suspected sensor fault (type, confidence)</b>, or <b>Verify</b>. In log-odds form: posterior odds = prior odds × LR(peers) × LR(trust).</li>
+</ul>
+<h4>6. Repair and planning</h4>
+<ul>
+<li><b>Virtual sensor.</b> Estimate x̂_i from peers (ridge, PCA reconstruction or GP). Flag the output as "estimated" and keep running alarm logic on it.</li>
+<li><b>Drift estimation.</b> Robust regression of y_i on its peer reconstruction over healthy-peer windows gives offset b̂_i and gain ĝ_i. Suggest correction values for recalibration.</li>
+<li><b>Maintenance forecast.</b> Fit the trend of b̂_i(t); predict when it will cross the tolerance: "recalibrate within 9 days (6 to 14)". Replace versus recalibrate heuristic: if noise and lag have also degraded, replace.</li>
+</ul>
+<h4>7. Honest limits</h4>
+<ul>
+<li><b>Common-mode faults.</b> If every sensor drifts the same way (shared contamination, a bad batch) peer comparison cannot see it. Mitigate with physical bounds, a periodic reference reading, and mixed sensor types.</li>
+<li><b>Slow real change versus slow drift.</b> Ambiguous in isolation; peers and physical plausibility help, and the system should say "uncertain".</li>
+<li><b>Single sensor.</b> Only forensic and physics witnesses exist, so verdicts are weaker. The UI says so.</li>
+</ul>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Fault detection and typing</td><td><span class="tier core">Core</span></td><td>Witness features plus classifier.</td><td>The task.</td><td>M</td></tr>
+<tr><td>Event versus fault verdicts</td><td><span class="tier core">Core</span></td><td>Peer corroboration and T² versus Q.</td><td>Central requirement.</td><td>M</td></tr>
+<tr><td>Trust score over time</td><td><span class="tier core">Core</span></td><td>HMM posterior.</td><td>Direct requirement.</td><td>M</td></tr>
+<tr><td>Maintenance flag</td><td><span class="tier core">Core</span></td><td>Drift trend to tolerance.</td><td>Direct requirement.</td><td>S</td></tr>
+<tr><td>Explanations</td><td><span class="tier core">Core</span></td><td>Evidence list per verdict.</td><td>Judging criterion.</td><td>M</td></tr>
+<tr><td>Verdict cards</td><td><span class="tier wow">Wow</span></td><td>"S3 residual +6σ, 3 of 4 peers flat: gain error, 87%".</td><td>Readable in one glance.</td><td>M</td></tr>
+<tr><td>Virtual-sensor failover</td><td><span class="tier wow">Wow</span></td><td>Reconstruct from peers; label estimated values.</td><td>Monitoring never goes dark.</td><td>M</td></tr>
+<tr><td>Fault Fuzzer</td><td><span class="tier wow">Wow</span></td><td>Inject any fault live; automated campaign of 1,000 injections.</td><td>Robustness made visible; produces a detectability curve.</td><td>M</td></tr>
+<tr><td>Minimum detectable fault</td><td><span class="tier wow">Wow</span></td><td>Severity at which recall reaches 90%, per fault type.</td><td>A single memorable number per fault.</td><td>S</td></tr>
+<tr><td>Alarm triage curve</td><td><span class="tier wow">Wow</span></td><td>Alarms removed versus genuine-event recall.</td><td>The false-alarm claim in one chart.</td><td>S</td></tr>
+<tr><td>Court timeline</td><td><span class="tier wow">Wow</span></td><td>Time-ordered view of evidence, verdicts and trust.</td><td>Narrative demo.</td><td>M</td></tr>
+<tr><td>Sensor leaderboard and calendar</td><td><span class="tier stretch">Stretch</span></td><td>Ranked health and planned maintenance.</td><td>Operations feel.</td><td>S</td></tr>
+<tr><td>Auto-recalibration suggestions</td><td><span class="tier stretch">Stretch</span></td><td>Offset and gain estimates.</td><td>Closes the loop.</td><td>S</td></tr>
+<tr><td>Plug-in for T4-1</td><td><span class="tier stretch">Stretch</span></td><td>Trust gate in the cold-chain pipeline.</td><td>Platform story.</td><td>S</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Network map.</b> Sensor nodes at their positions, coloured by trust; lines show peer relationships; an alarm badge on affected nodes.</li>
+<li><b>Verdict inbox.</b> Alarms with verdict, fault type, confidence and evidence; filter by verdict.</li>
+<li><b>Case view.</b> Small multiples: the suspect sensor, its peers, its virtual replacement; markers for detected events; a one-paragraph reasoning.</li>
+<li><b>Sensor detail.</b> Trust history, drift estimate, calibration age, maintenance forecast.</li>
+<li><b>Fault Fuzzer.</b> Choose sensor, fault, severity and time; watch detection latency.</li>
+<li><b>Benchmark page.</b> Confusion matrix, alarm triage curve, detectability curves, ablation.</li>
+</ul>
+<pre class="code">GET /v1/alarms/1042
+{ "alarm": {"sensor":"S3","time":"2026-10-24T11:20:00","value":87.4,"limit":50},
+  "verdict": "suspected_sensor_fault",
+  "fault_type": "gain_error", "confidence": 0.87,
+  "evidence": [ "S3 residual vs peers +6.1 sigma",
+                "3 of 4 neighbouring sensors show no change",
+                "Q statistic 9.2x control limit, T2 within limit",
+                "Gain estimate 1.42 over the last 6 hours" ],
+  "trust": {"S3": 0.08},
+  "replacement": {"virtual_value": 52.1, "estimated": true},
+  "maintenance": {"action":"replace_or_recalibrate","within_days":2} }</pre>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric or test</th><th>Details</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Event versus fault AUC</td><td>Per alarm, genuine or fault.</td><td>0.95 or higher in distribution</td></tr>
+<tr><td>Fault typing macro-F1</td><td>Across the nine classes, per sensor window.</td><td>0.85 in distribution; report the drop on combinations</td></tr>
+<tr><td>Alarm reduction</td><td>False alarms removed at 95% genuine-event recall.</td><td>70% or more removed</td></tr>
+<tr><td>Time to detect</td><td>Delay from fault onset to flag, by fault type and severity.</td><td>Minutes for spikes and stuck; hours for drift</td></tr>
+<tr><td>Minimum detectable severity</td><td>Fuzzer campaign, 90% recall point.</td><td>Report per fault</td></tr>
+<tr><td>Trust calibration</td><td>Reliability of P(healthy).</td><td>ECE 0.05 or lower</td></tr>
+<tr><td>Generalisation</td><td>Train on single faults, test on combinations and new severities.</td><td>Within 10 points of in-distribution</td></tr>
+<tr><td>Ablation</td><td>Forensic only, plus peer, plus HMM, plus physics.</td><td>Each step improves</td></tr>
+</tbody></table></div>
+<p>Where public IoT or environmental datasets exist, use them only as supplementary training, mention licences and credit them. Keep injected-fault labels out of model inputs.</p>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Simulator with 8 sensors, one plume event, five fault types.</li><li>Forensic features and a PCA T²/Q monitor.</li><li>One figure: an event lights T² only, a gain fault lights Q only.</li><li>Confusion matrix on single faults.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Simulator v2 (lags, combos, hidden split), forensic and peer witnesses.</li>
+<li><b>Day 2.</b> Classifier, calibration, HMM trust, alarm verdicts.</li>
+<li><b>Day 3.</b> Virtual sensors, drift and maintenance, API, map and case view.</li>
+<li><b>Day 4.</b> Fuzzer, benchmark page, recorded demo, README.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 2 h: schema adapter; baseline run on the organisers' data.</li>
+<li>2 to 8: retrain and recalibrate; analyse errors by fault type.</li>
+<li>8 to 14: improve the weakest fault class; polish verdict cards.</li>
+<li>14 to 20: fuzzer campaign, limitations, edge packaging.</li>
+<li>20 to 24: rehearse and record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Statistics lead:</b> witnesses, PCA monitor, HMM.</li><li><b>ML lead:</b> classifier, calibration, virtual sensors.</li><li><b>Simulation and evaluation:</b> generator, splits, fuzzer.</li><li><b>Frontend and pitch:</b> network map, verdict cards, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Single-sensor hidden data</td><td>Peer witness unavailable.</td><td>Forensic and physics witnesses work alone; report verdict confidence accordingly.</td></tr>
+<tr><td>Real events with big lags</td><td>Mistaken for faults.</td><td>Lag-aware cross-correlation; event timing consistency.</td></tr>
+<tr><td>Fault-type confusion (drift versus slow event)</td><td>Wrong maintenance advice.</td><td>Report uncertainty; prefer "Verify" over a wrong label.</td></tr>
+<tr><td>Over-engineered HMM</td><td>Time sink.</td><td>Start with exponential smoothing of classifier probabilities; upgrade to HMM if time allows.</td></tr>
+<tr><td>Looks like generic anomaly detection</td><td>No differentiation.</td><td>Lead the demo with the T²/Q split, verdict cards and virtual sensor.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Monitoring networks fail in two ways: they cry wolf when a sensor glitches, and they stay silent when a drifting sensor hides a real hazard. SensorCourt puts every alarm on trial. It checks whether neighbouring sensors agree, splits events from faults, scores each sensor's trustworthiness over time, and fills in for a quarantined sensor with a virtual one. Every verdict comes with the evidence behind it.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> Sensor map with ten nodes. "Two things will happen; only one is a real event."</li>
+<li><b>0:40 Real event.</b> A plume crosses four sensors with delay. Verdict card: Trusted event, 94%. Show T² high, Q normal.</li>
+<li><b>1:30 Spike.</b> S7 spikes alone. Verdict: sensor fault, spike, 91%. Alarm suppressed with the reason.</li>
+<li><b>2:15 Drift.</b> A slow offset on S3 over days, replayed fast. Trust declines; maintenance says "recalibrate in 9 days".</li>
+<li><b>3:00 Virtual sensor.</b> S3 quarantined; the chart shows the estimate labelled as such; monitoring continues.</li>
+<li><b>3:30 Fuzzer.</b> Inject a gain error live; detection latency shown. Show the detectability curve.</li>
+<li><b>4:20 Proof.</b> Alarm triage curve and combination test.</li>
+<li><b>4:50 Close.</b> Limits: common-mode faults; next step: real sensor network data.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> operators of air-quality, water, flood and industrial safety networks, and the communities relying on them.</p><p><b>Gap:</b> alarms do not know whether the sensor is trustworthy, so false alarms erode trust and drift hides danger.</p><p><b>Why now:</b> low-cost sensor networks are growing quickly and need automated quality control.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> T² versus Q event-fault split; trust over time; virtual sensors; Fault Fuzzer.</p><p><b>Mechanism:</b> four witnesses, classifier, HMM judge, repair.</p><p><b>Feasible:</b> built tonight on simulated sensors: X% of false alarms removed at Y% event recall (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Stack</span><p>Python, NumPy, scikit-learn, LightGBM, statsmodels, FastAPI, React or Streamlit.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Network map, verdict cards, case view, trust history, fuzzer, maintenance planner.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> simulator, forensic and PCA witnesses. <b>In progress:</b> classifier, HMM. <b>Next:</b> real sensor data, integration with cold-chain monitoring.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Trustworthy alarms, lower maintenance cost through condition-based recalibration, safer communities.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How is this different from standard anomaly detection?</summary><p>Anomaly detection says something is unusual. We decide whether the world or the sensor changed, name the fault, track trust over time, and repair the data stream.</p></details>
+<details class="qa"><summary>What if all sensors fail the same way?</summary><p>That is a common-mode fault and peer comparison cannot see it. We mention it as a limit and mitigate with physical bounds, reference checks and mixed sensor types.</p></details>
+<details class="qa"><summary>Will it classify a real event as a fault?</summary><p>That is the sensitivity side of the triage curve. We tune for 95% genuine-event recall and report what fraction of false alarms are removed at that point.</p></details>
+<details class="qa"><summary>How does it generalise to unseen fault combinations?</summary><p>Witness features are fault-agnostic and we train on single faults but test on combinations and new severities, reporting the drop.</p></details>
+<details class="qa"><summary>Why PCA instead of a deep autoencoder?</summary><p>PCA gives interpretable T² and Q statistics and contribution plots. We can compare against an autoencoder baseline, but explanation matters here.</p></details>
+<details class="qa"><summary>Is the virtual sensor safe to use?</summary><p>It is always labelled estimated, carries an uncertainty, and is used only to keep monitoring alive while a human is notified.</p></details>
+<details class="qa"><summary>How would this be deployed?</summary><p>As an API or edge component that sits between the sensor gateway and the alarm system, with a dashboard for maintenance teams.</p></details>
+</article>

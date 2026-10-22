@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&amp;family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "tertiary-container": "#265d59", "background": "#faf8ff", "primary": "#004541", "on-tertiary": "#ffffff", "on-surface-variant": "#3f4947", "on-secondary-fixed": "#00201d", "secondary-fixed-dim": "#6bd8cb", "error-container": "#ffdad6", "on-tertiary-container": "#9cd4ce", "on-tertiary-fixed-variant": "#144f4b", "inverse-on-surface": "#eef0ff", "on-background": "#131b2e", "tertiary-fixed": "#b5ede7", "surface-bright": "#faf8ff", "secondary-fixed": "#89f5e7", "on-secondary-container": "#006f66", "on-secondary-fixed-variant": "#005049", "on-tertiary-fixed": "#00201e", "primary-fixed": "#abefe8", "surface-variant": "#dae2fd", "on-error": "#ffffff", "on-primary": "#ffffff", "surface-container-highest": "#dae2fd", "on-secondary": "#ffffff", "primary-container": "#115e59", "secondary": "#006a61", "surface-container-high": "#e2e7ff", "on-error-container": "#93000a", "surface": "#faf8ff", "on-primary-container": "#91d5ce", "outline-variant": "bec9c7", "secondary-container": "#86f2e4", "surface-container-low": "#f2f3ff", "tertiary": "#044541", "on-primary-fixed": "#00201e", "surface-container": "#eaedff", "inverse-primary": "#8fd3cc", "error": "#ba1a1a", "surface-tint": "#216963", "primary-fixed-dim": "#8fd3cc", "outline": "#6f7977", "tertiary-fixed-dim": "#9ad1cb", "on-surface": "#131b2e", "surface-container-lowest": "#ffffff", "on-primary-fixed-variant": "#00504b", "inverse-surface": "#283044", "surface-dim": "#d2d9f4" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "space-sm": "0.5rem", "gutter": "1rem", "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "space-xs": "0.25rem", "space-lg": "1rem", "space-md": "0.75rem", "space-xl": "1.5rem", "margin": "1rem", "space-2xl": "2rem" }, fontFamily: { "label-numeric": ["Manrope"], "label-md": ["Public Sans"], "headline-sm": ["Manrope"], "headline-lg": ["Manrope"], "display-metric-lg": ["Manrope"], "body-lg": ["Public Sans"], "body-sm": ["Public Sans"], "label-lg": ["Public Sans"], "display-metric-sm": ["Manrope"], "body-md": ["Public Sans"], "headline-md": ["Manrope"] }, fontSize: { "label-numeric": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.02em", "fontWeight": "700" }], "label-md": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-sm": ["1.125rem", { "lineHeight": "1.5rem", "fontWeight": "600" }], "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-metric-lg": ["3.5rem", { "lineHeight": "3.75rem", "letterSpacing": "-0.03em", "fontWeight": "700" }], "body-lg": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }], "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }], "label-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }], "display-metric-sm": ["2.25rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }], "headline-md": ["1.375rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } }</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-28 px-margin flex flex-col justify-between py-space-xs"><div class="flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="ThermoTwin Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X6xX5e0BjyNbxR-D5SAGzY1tEA6YxVh536Al_oOJKQfRTj2xm7WMz-WvodRmpwvoHIhkjeT2HC6YCHYsusbleaJQDYnRWUPGKtdBcxPdUWY9fAQU6Cc22a6bsfoM-DtU9n5HZf6h-ClI2HYtvfgMgwHUvJOvGPSVzxlxljiDH7JsZIIGXfQ18eNE9ZrL-GhQLg4pGqe27dvbipTmQ8-lvqb1HjklFhwQGtlNZ9Cix0buF2-8WdF7zXddI"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary">ThermoTwin</span><span class="font-label-md text-label-md bg-surface-container-high text-on-surface px-space-xs py-0.5 rounded-full">PHC Wagholi, Pune</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Cold Chain Monitor</span></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center bg-surface-container px-space-xs py-1 rounded-full text-on-surface"><button class="min-h-[44px] min-w-[44px] px-space-xs flex items-center justify-center font-label-md text-label-md bg-primary-container text-on-primary rounded-full" type="button">EN</button><span class="text-outline px-0.5">|</span><button class="min-h-[44px] min-w-[44px] px-space-xs flex items-center justify-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface" type="button">हिं</button></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHcQv3XSfUrpM__r8RTo8gcYPSb8_EWFCRlZz_Lrng4c-M4u9F84En0tmcOxB3MYwiarhnTcRBXQlp162mvsurq0Dkbvh5erOCjYjA8vb0n3-irmum0xeanhauXx-9fRWQKHIH535eixawjAnJAMQAQvNH97qwxxnfMK5B-1sACq_9vUjSCbzWi-pOscL52Ncy38cAC8DorKbNEW7CTXMADeshhivDZXbAhFX6YQDJxMtvwFn4Q7Ql"/></div></div><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-0.5 rounded-full"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-md text-label-md text-secondary">Sync: 2 min ago</span></div><div class="flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[16px] text-tertiary">verified</span><span>Telemetry Live</span></div></div></div><div class="bg-surface-container-highest px-margin py-1.5 flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-primary flex-shrink-0">info</span><p class="font-body-sm text-body-sm text-on-surface truncate">WHO official alarms run independently. ThermoTwin is a predictive advisory layer.</p></div></header><main class="flex flex-col relative w-full px-margin pt-28 bg-surface pb-24"><div class="flex flex-col w-full pb-8">
+<!-- Sub-Header / Back Context Bar -->
+<div class="flex items-center justify-between py-space-sm mb-space-sm">
+<a class="inline-flex items-center gap-space-xs text-primary font-label-lg text-label-lg min-h-[48px] px-space-xs -ml-space-xs rounded-lg active:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+<span>Back</span>
+</a>
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-headline-sm text-on-surface">ILR-1 (Vestfrost)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cold Chain Bay 02</span>
+</div>
+</div>
+<!-- 1. Early Warning Banner (Amber Clinical Theme) -->
+<section class="w-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-space-lg">
+<div class="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent p-space-md flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-900 flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="bg-amber-100 text-amber-900 font-label-md text-label-md px-2 py-0.5 rounded-full inline-flex items-center gap-1 font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-ping"></span>
+            EARLY WARNING
+          </span>
+<span class="font-label-md text-label-md text-on-surface-variant">Freeze Risk</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+          May drop below 0°C in about 55 min
+        </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+          Confidence interval: 35–80 min window
+        </p>
+</div>
+</div>
+<div class="px-space-md py-space-sm bg-surface-container-low flex items-center justify-between gap-space-sm flex-wrap text-on-surface">
+<div class="flex items-center gap-1.5 font-label-numeric text-label-numeric">
+<span class="material-symbols-outlined text-primary text-[18px]">thermostat</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Air:</span>
+<span class="font-bold text-on-surface">2.4°C</span>
+</div>
+<div class="flex items-center gap-1.5 font-label-numeric text-label-numeric">
+<span class="material-symbols-outlined text-amber-700 text-[18px]">trending_down</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Rate:</span>
+<span class="font-bold text-amber-800">-0.9°C/hr</span>
+</div>
+<div class="flex items-center gap-1 font-label-md text-label-md text-primary">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>High Confidence</span>
+</div>
+</div>
+</section>
+<!-- 2. High-precision Multi-Curve Temperature Chart -->
+<section class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-space-md mb-space-lg">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">show_chart</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Thermal Twin Projection</h3>
+</div>
+<span class="font-label-md text-label-md px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
+        -6h to +2h Window
+      </span>
+</div>
+<!-- Chart SVG Container -->
+<div class="w-full relative overflow-hidden rounded-lg bg-surface-container-lowest">
+<svg class="w-full h-auto select-none" viewbox="0 0 340 220" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Safe Zone Gradient (Green soft tint) -->
+<lineargradient id="safeBandGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#16a34a" stop-opacity="0.16"></stop>
+<stop offset="100%" stop-color="#16a34a" stop-opacity="0.06"></stop>
+</lineargradient>
+<!-- Vaccine uncertainty envelope -->
+<lineargradient id="vialEnvelope" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0%" stop-color="#0d9488" stop-opacity="0.08"></stop>
+<stop offset="70%" stop-color="#0d9488" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#d97706" stop-opacity="0.22"></stop>
+</lineargradient>
+<!-- Predictive Cone Gradient -->
+<lineargradient id="predictCone" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0%" stop-color="#d97706" stop-opacity="0.28"></stop>
+<stop offset="100%" stop-color="#dc2626" stop-opacity="0.18"></stop>
+</lineargradient>
+</defs>
+<!-- Temperature Gridlines (Y-axis: 8°C=25, 4°C=75, 2°C=100, 0°C=125, -0.5°C=131) -->
+<!-- Safe Band (2.0°C to 8.0°C -> y=100 to y=25, h=75) -->
+<rect fill="url(#safeBandGrad)" height="75" width="294" x="36" y="25"></rect>
+<text fill="#15803d" font-family="Public Sans" font-size="8" font-weight="600" x="40" y="36">Safe Band (2.0°C – 8.0°C)</text>
+<!-- Horizontal Guides -->
+<line stroke="#cbd5e1" stroke-dasharray="2 2" stroke-width="0.75" x1="36" x2="330" y1="25" y2="25"></line>
+<text fill="#64748b" font-family="Manrope" font-size="8" text-anchor="end" x="32" y="28">8°C</text>
+<line stroke="#e2e8f0" stroke-width="0.75" x1="36" x2="330" y1="75" y2="75"></line>
+<text fill="#64748b" font-family="Manrope" font-size="8" text-anchor="end" x="32" y="78">4°C</text>
+<line stroke="#16a34a" stroke-dasharray="3 2" stroke-width="0.75" x1="36" x2="330" y1="100" y2="100"></line>
+<text fill="#15803d" font-family="Manrope" font-size="8" font-weight="700" text-anchor="end" x="32" y="103">2°C</text>
+<!-- 0°C Zero line -->
+<line stroke="#94a3b8" stroke-width="0.75" x1="36" x2="330" y1="125" y2="125"></line>
+<text fill="#475569" font-family="Manrope" font-size="8" text-anchor="end" x="32" y="128">0°C</text>
+<!-- Freeze Damage Threshold (-0.5°C -> y=131) -->
+<line stroke="#dc2626" stroke-dasharray="3 3" stroke-width="1.2" x1="36" x2="330" y1="131" y2="131"></line>
+<rect fill="#fee2e2" height="13" rx="2" width="148" x="180" y="133"></rect>
+<text fill="#b91c1c" font-family="Public Sans" font-size="7.5" font-weight="700" x="184" y="142">⚑ Freeze damage threshold (-0.5°C)</text>
+<!-- Vertical 'NOW' line at x=235 -->
+<line stroke="#0f172a" stroke-dasharray="3 2" stroke-width="1.25" x1="235" x2="235" y1="15" y2="180"></line>
+<rect fill="#0f172a" height="13" rx="2" width="30" x="220" y="4"></rect>
+<text fill="#ffffff" font-family="Manrope" font-size="8" font-weight="700" text-anchor="middle" x="235" y="13">NOW</text>
+<!-- Predictive Cone (+2h) polygon from (x=235, y=95) widening to x=325 -->
+<polygon fill="url(#predictCone)" points="235,95 325,115 325,160 235,95"></polygon>
+<!-- Vaccine Core Uncertainty Envelope (past to present) -->
+<path d="M 40,70 Q 110,68 170,74 T 235,86 L 235,92 Q 170,82 110,76 T 40,76 Z" fill="url(#vialEnvelope)"></path>
+<!-- Curve 1: Measured Fridge Air Probe (Solid Slate/Teal: drops from 4.2°C/y=72 to 2.4°C/y=95 at Now) -->
+<path d="M 40,71 C 90,72 130,73 170,78 C 195,81 215,88 235,95" fill="none" stroke="#0f766e" stroke-linecap="round" stroke-width="2.2"></path>
+<!-- Now point dot -->
+<circle cx="235" cy="95" fill="#0f766e" r="3.5"></circle>
+<text fill="#0f766e" font-family="Manrope" font-size="8.5" font-weight="700" text-anchor="end" x="228" y="107">2.4°C</text>
+<!-- Curve 2: Estimated Vaccine Core Temp (Dashed, thermal lag ~3.1°C at Now / y=86) -->
+<path d="M 40,73 C 100,72 150,75 190,80 C 210,82 225,84 235,86" fill="none" stroke="#2563eb" stroke-dasharray="4 3" stroke-width="1.8"></path>
+<circle cx="235" cy="86" fill="#2563eb" r="3"></circle>
+<text fill="#1d4ed8" font-family="Manrope" font-size="8" font-weight="700" x="240" y="82">3.1°C vial</text>
+<!-- Curve 3: Predicted Trajectory (Dotted Amber/Red from Now to +2h crossing 0°C at x=290, -0.8°C at x=325) -->
+<path d="M 235,95 C 265,105 285,120 325,138" fill="none" stroke="#d97706" stroke-dasharray="2 3" stroke-linecap="round" stroke-width="2.2"></path>
+<!-- Projected crossing point -->
+<circle cx="290" cy="125" fill="#dc2626" r="3"></circle>
+<rect fill="#d97706" height="11" rx="2" width="44" x="268" y="110"></rect>
+<text fill="#ffffff" font-family="Manrope" font-size="7" font-weight="700" text-anchor="middle" x="290" y="118">0°C in ~55m</text>
+<!-- End of projection marker at +2h -->
+<circle cx="325" cy="138" fill="#b91c1c" r="2.5"></circle>
+<text fill="#b91c1c" font-family="Manrope" font-size="8" font-weight="700" text-anchor="end" x="328" y="150">-0.8°C (+2h)</text>
+<!-- X-axis Time Scale -->
+<line stroke="#cbd5e1" stroke-width="0.75" x1="36" x2="330" y1="180" y2="180"></line>
+<text fill="#64748b" font-family="Manrope" font-size="8" x="40" y="193">-6h</text>
+<text fill="#64748b" font-family="Manrope" font-size="8" x="105" y="193">-4h</text>
+<text fill="#64748b" font-family="Manrope" font-size="8" x="170" y="193">-2h</text>
+<text fill="#0f172a" font-family="Manrope" font-size="8.5" font-weight="700" text-anchor="middle" x="235" y="193">Now</text>
+<text fill="#64748b" font-family="Manrope" font-size="8" x="280" y="193">+1h</text>
+<text fill="#64748b" font-family="Manrope" font-size="8" x="325" y="193">+2h</text>
+</svg>
+</div>
+<!-- Chart Legend -->
+<div class="mt-space-sm pt-space-xs grid grid-cols-1 gap-2 bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex items-center gap-space-xs text-on-surface">
+<span class="w-5 h-0.5 bg-[#0f766e] flex-shrink-0"></span>
+<span class="font-body-sm text-body-sm text-on-surface"><strong class="font-semibold text-on-surface">Measured:</strong> Fridge air probe (2.4°C)</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface">
+<span class="w-5 h-0.5 border-t-2 border-dashed border-[#2563eb] flex-shrink-0"></span>
+<span class="font-body-sm text-body-sm text-on-surface"><strong class="font-semibold text-on-surface">Estimated:</strong> Vaccine vial core with thermal lag (3.1°C)</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface">
+<span class="w-5 h-0.5 border-t-2 border-dotted border-[#d97706] flex-shrink-0"></span>
+<span class="font-body-sm text-body-sm text-on-surface"><strong class="font-semibold text-on-surface">Predicted:</strong> Trajectory with cone (+2h breach projection)</span>
+</div>
+</div>
+</section>
+<!-- 3. Detailed Cause Card (Clinical Root Cause & Action Protocol) -->
+<section class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-space-md mb-space-lg">
+<!-- Header of Cause Card -->
+<div class="flex items-start justify-between gap-space-xs mb-space-sm">
+<div>
+<span class="font-label-md text-label-md uppercase tracking-wider text-primary font-bold">Root Cause Diagnosis</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-0.5">Thermostat set too cold</h3>
+</div>
+<div class="px-space-sm py-1 rounded-full bg-primary/10 text-primary flex items-center gap-1 font-label-md text-label-md font-bold whitespace-nowrap">
+<span class="material-symbols-outlined text-[15px]">verified_user</span>
+<span>High (94%)</span>
+</div>
+</div>
+<!-- Observed Telemetry Evidence Section -->
+<div class="bg-surface-container-low rounded-lg p-space-sm mb-space-md">
+<h4 class="font-label-lg text-label-lg text-on-surface mb-space-xs flex items-center gap-1.5 font-bold">
+<span class="material-symbols-outlined text-primary text-[18px]">insights</span>
+        Observed Telemetry Signals
+      </h4>
+<div class="space-y-2 mt-1">
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">electric_meter</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+<strong>Compressor running continuously</strong> for 4 hours without cycling off.
+          </p>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">meeting_room</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+<strong>Zero door openings</strong> recorded in last 3.5 hours (seal integrity maintained).
+          </p>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-surface-container-high text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+<strong>Steady drop rate:</strong> Air cooling consistently at 0.4°C every 10 minutes.
+          </p>
+</div>
+</div>
+</div>
+<!-- Actionable Protocol Checklist -->
+<div class="mb-space-lg">
+<div class="flex items-center justify-between mb-space-xs">
+<h4 class="font-label-lg text-label-lg text-on-surface font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-amber-700 text-[18px]">checklist</span>
+          Do This Now (Protocol)
+        </h4>
+<span class="font-body-sm text-body-sm text-on-surface-variant">3 Required Steps</span>
+</div>
+<div class="space-y-space-sm">
+<!-- Step 1 -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<input class="w-5 h-5 mt-0.5 rounded text-primary focus:ring-0 accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex-1">
+<span class="font-label-numeric text-label-numeric text-on-surface font-bold">1. Adjust Thermostat</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              Turn dial knob <strong>1 step warmer</strong> (e.g., from position 3 down to position 2).
+            </p>
+</div>
+</label>
+<!-- Step 2 -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<input class="w-5 h-5 mt-0.5 rounded text-primary focus:ring-0 accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex-1">
+<span class="font-label-numeric text-label-numeric text-on-surface font-bold">2. Protect Sensitive Vials</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              Shift freeze-sensitive stock (<strong class="text-on-surface">HepB, Pentavalent, Td, PCV</strong>) away from floor and metal walls toward the center basket.
+            </p>
+</div>
+</label>
+<!-- Step 3 -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer select-none">
+<input class="w-5 h-5 mt-0.5 rounded text-primary focus:ring-0 accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex-1">
+<span class="font-label-numeric text-label-numeric text-on-surface font-bold">3. Recheck in 20 min</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              Verify telemetry curve flattens above 2.0°C. If trajectory persists, stage emergency cold box.
+            </p>
+</div>
+</label>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<!-- Primary Action -->
+<button class="w-full min-h-[48px] bg-primary hover:bg-[#0d9488] active:bg-[#134e4a] text-on-primary rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-space-xs shadow-sm transition-all" id="btnAcknowledge" type="button">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>I've done this</span>
+</button>
+<!-- Secondary Supervisor Call Button -->
+<a class="w-full min-h-[48px] bg-surface-container hover:bg-surface-container-high active:bg-surface-container-highest text-on-surface rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-space-xs transition-colors" href="tel:+912025501234">
+<span class="material-symbols-outlined text-primary text-[20px]">call</span>
+<span>Call Cold Chain Supervisor</span>
+</a>
+<!-- Alternative Causes Link -->
+<button class="mt-1 py-2 text-primary font-label-md text-label-md hover:underline flex items-center justify-center gap-1" type="button">
+<span>Not the cause? View other possibilities</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- 4. Clinical Context Footer Note -->
+<footer class="w-full px-space-xs text-center space-y-1">
+<div class="flex items-center justify-center gap-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">lock</span>
+<span>Advisory only. Official WHO fridge alarms run independently.</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">
+      Telemetry synced 2 min ago · Datalogger ID: VST-9481 · Active
+    </p>
+</footer>
+</div>
+<script>
+  (function() {
+    const btnAcknowledge = document.getElementById('btnAcknowledge');
+    if (btnAcknowledge) {
+      btnAcknowledge.addEventListener('click', function() {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="material-symbols-outlined text-[20px]">done_all</span><span>Action Logged – Monitoring Trajectory</span>';
+        this.classList.remove('bg-primary');
+        this.classList.add('bg-secondary');
+        setTimeout(() => {
+          this.innerHTML = originalText;
+          this.classList.remove('bg-secondary');
+          this.classList.add('bg-primary');
+        }, 3500);
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm relative text-on-surface-variant hover:text-on-surface" data-path="cold-chain-monitor" href="#"><span class="material-symbols-outlined">home</span><span class="font-label-md text-label-md">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm relative text-on-surface-variant hover:text-on-surface" data-path="active-alerts" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined">notifications</span><span class="absolute -top-1 -right-2 bg-error text-on-error font-label-numeric text-[10px] w-4 h-4 rounded-full flex items-center justify-center">3</span></div><span class="font-label-md text-label-md">Alerts</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm text-on-surface-variant hover:text-on-surface" data-path="field-tasks" href="#"><span class="material-symbols-outlined">checklist</span><span class="font-label-md text-label-md">Tasks</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm text-on-surface-variant hover:text-on-surface" data-path="emergency-help" href="#"><span class="material-symbols-outlined">support_agent</span><span class="font-label-md text-label-md">Help</span></a></div></nav></body></html>

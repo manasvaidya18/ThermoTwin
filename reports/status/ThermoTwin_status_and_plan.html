@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ThermoTwin status and plan</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color: #14211c; font-size: 10pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 22pt; margin: 0; color: #0f766e; }
+  h2 { break-after: avoid; page-break-after: avoid; font-size: 13pt; margin: 18px 0 6px; color: #0f766e; border-bottom: 1.5px solid #cfe5e1; padding-bottom: 3px; }
+  h3 { font-size: 10.5pt; margin: 12px 0 4px; }
+  p { margin: 4px 0 8px; }
+  .meta { color: #5d6f68; font-size: 9.5pt; margin: 4px 0 14px; }
+  .lead { background: #e6f3f1; border-radius: 8px; padding: 10px 12px; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9.2pt; }
+  tr { break-inside: avoid; }
+  .keep { break-inside: avoid; }
+  th { text-align: left; background: #f1f6f4; color: #3b4b45; font-weight: 700; padding: 5px 7px; border-bottom: 1px solid #d6e2de; }
+  td { padding: 5px 7px; border-bottom: 1px solid #e6edea; vertical-align: top; }
+  .ok { color: #15803d; font-weight: 700; }
+  .todo { color: #b45309; font-weight: 700; }
+  .gap { color: #b91c1c; font-weight: 700; }
+  .kpis { display: flex; gap: 8px; margin: 10px 0; }
+  .kpis div { flex: 1; border: 1px solid #d6e2de; border-radius: 8px; padding: 8px 10px; }
+  .kpis b { display: block; font-size: 16pt; color: #0f766e; }
+  .kpis span { font-size: 8.5pt; color: #5d6f68; }
+  .dark { background: #07130c; border-radius: 8px; padding: 6px; }
+  img { width: 100%; display: block; }
+  .note { font-size: 8.6pt; color: #5d6f68; }
+  .warn { background: #fff4e0; border-radius: 8px; padding: 8px 12px; font-size: 9.2pt; }
+  ul { margin: 4px 0 8px 18px; padding: 0; }
+  li { margin: 2px 0; }
+  .brk { page-break-before: always; }
+  code { font-family: Consolas, monospace; font-size: 8.8pt; background: #f1f6f4; padding: 0 3px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>ThermoTwin: status and plan</h1>
+<div class="meta">Team Alebaple · CODE APEX 3.0, Track 4 (UST) · T4-1 Healthcare cold chain · Status as of 21 October 2026 · Grand finale 24 October 2026</div>
+
+<div class="lead">
+<b>In one paragraph.</b> ThermoTwin is a software early-warning layer for vaccine fridges. It reads the temperature that existing
+loggers (eVIN) already record, estimates the vaccine's own temperature with a per-fridge digital twin (the Virtual Vial),
+predicts freezing 1–2 hours ahead with a LightGBM risk model, and tells staff the likely cause and what to do. WHO alarms keep
+running unchanged. Research, PRD, pitch deck, a clickable demo UI and a working core system are done. On simulated data,
+ThermoTwin warns a median of <b>90 minutes</b> before the vaccine reaches 0 °C, where the WHO rule fires <b>30 minutes after</b>, with
+<b>0.48</b> false alerts per fridge-month. The next three days connect the model to the UI, add the heat and cause models, and validate.
+</div>
+
+<div class="kpis">
+  <div><b>41 / 41</b><span>freeze events caught on held-out fridges</span></div>
+  <div><b>90 min</b><span>median warning before vaccine hits 0 °C</span></div>
+  <div><b>0.48</b><span>false alerts per fridge-month (budget 1.0)</span></div>
+  <div><b>0.08 °C</b><span>Virtual Vial error vs true vaccine temp (raw air: 0.46 °C)</span></div>
+</div>
+<p class="note">All results are from the ColdChain Gym simulator, not field data.</p>
+
+<h2>1. The problem</h2>
+<p>Vaccines must stay at +2 to +8 °C. Freeze-sensitive vaccines (pentavalent, hepatitis B, DTP-containing, PCV, IPV) are permanently damaged
+at or below about −0.5 °C, and a frozen vial looks normal. Indian studies found vaccines below 0 °C for roughly 10–15% of storage time.
+Today's WHO alarms fire only after damage starts (10 h above +8 °C, or 1 h at or below −0.5 °C). India's ~25,000 eVIN loggers across
+about 29,000 cold-chain points (UNDP) already record every fridge, but the data is used for stock, not prediction.</p>
+<p>Ways cooling goes out of control: <b>too cold</b> (thermostat set or drifting cold, relay stuck on, ice-lined cold spots, overshoot after a
+power cut); <b>too warm</b> (power cut, door left open, warm stock, heat waves); <b>slow decline</b> (compressor wear, refrigerant leak, worn gasket,
+dusty condenser, ice build-up); and <b>a lying sensor</b> (stuck, drifting, dropouts).</p>
+
+<h2>2. What has been done</h2>
+<table>
+  <tr><th style="width:20%">Workstream</th><th>Delivered</th><th style="width:12%">Status</th></tr>
+  <tr><td><b>Problem selection</b></td><td>Analysis of all 11 problem statements across the three packs; pitch playbook; T4-1 chosen.</td><td class="ok">Done</td></tr>
+  <tr><td><b>Research</b></td><td>Deep-research report: WHO PQS / eVIN standards, market (Nexleaf, Berlinger, Haier, Controlant…), physics and ML methods, public datasets, alarm-fatigue evidence, and a list of claims to avoid.</td><td class="ok">Done</td></tr>
+  <tr><td><b>PRD</b></td><td>Revision 4 (Claude Doc, Word export): requirements, alert policy, ML spec, design decisions, scientific validity checks, hardware section, training-data plan, model comparison.</td><td class="ok">Done</td></tr>
+  <tr><td><b>Pitch deck</b></td><td>8-slide Canva deck on the CODE APEX template; submitted for Round 1 (11 Oct) and since updated: swimlane architecture, features with digital-twin and Virtual Vial panel, lifeboat routing, scope cards, honest impact wording, sourced figures.</td><td class="ok">Done</td></tr>
+  <tr><td><b>Demo UI</b></td><td>Offline clickable demo: phone app (Home, Alerts, Cause Card, Help; Hindi toggle) and district website (Overview, Facilities, Alerts, Maintenance, Exposure Ledger, Benchmark, Settings, ILR-1 digital twin, Copilot). Packaged as <code>ThermoTwin_UI_demo.zip</code>.</td><td class="ok">Done</td></tr>
+  <tr><td><b>Core system</b></td><td>Python package <code>thermotwin/</code>: simulator, freeze labels, Kalman twin, features, LightGBM hazard model, calibration, alert policies, Replay Benchmark; 6 passing tests; one-command run (~45 s).</td><td class="ok">Done (freeze)</td></tr>
+  <tr><td><b>Pitch support</b></td><td>Speaker script for slides 5–7, UI demo script, answers on the dataset, LightGBM, the Virtual Vial formula and its validity, vaccine-aware alerts.</td><td class="ok">Done</td></tr>
+  <tr><td><b>Not yet done</b></td><td>Heat model, cause classifier, sensor-check model, API, UI wired to the live model, LSTM/foundation baselines, realism checks on public data, demo hardware rig, vaccine-aware alerts.</td><td class="todo">Planned (§5)</td></tr>
+</table>
+
+<h2 class="brk">3. Architecture</h2>
+<div class="dark"><img src="architecture.png" alt="ThermoTwin swimlane architecture"></div>
+<p class="note">Data in (existing loggers, eVIN) → ingest and trust gate → digital twin with fleet priors (Virtual Vial) → LightGBM risk engine → rule-based alert tiers
+(Sensor check, Normal, Advisory, Early warning, Critical) → staff app, SMS/voice, technician ticket, bounded copilot → technician feedback and recalibration.
+Observed alarms are never gated by a forecast; the LLM only rewords Cause Cards.</p>
+
+<h3>How the core pieces work</h3>
+<table>
+  <tr><th style="width:22%">Piece</th><th>Method</th></tr>
+  <tr><td><b>Simulator (ColdChain Gym)</b></td><td>3-node RC heat model (air, product, enclosure) at 1-minute steps, thermostat with hysteresis, clinic-hour door openings, Indian room temperatures, and 7 injected faults (thermostat drifting cold, relay stuck on, compressor wear, gasket leak, power cut, stuck probe, drifting probe). Logs every 10 minutes like eVIN.</td></tr>
+  <tr><td><b>Digital twin / Virtual Vial</b></td><td>Kalman filter per fridge, state [air, slope, vial]. The vial follows Newton's law of cooling: dT<sub>vial</sub>/dt = (T<sub>air</sub> − T<sub>vial</sub>)/τ, with τ = mc/hA from the fridge-class prior. Outputs the vial estimate with an error band and 30/60/120-minute physics forecasts.</td></tr>
+  <tr><td><b>Risk model</b></td><td>LightGBM discrete-time hazard over twelve 10-minute slots; inputs are temperature-only features plus twin outputs. Gives calibrated 1-h and 2-h risk (isotonic), time-to-breach P10/P50/P90, and SHAP drivers for the Cause Card.</td></tr>
+  <tr><td><b>Labels</b></td><td>Freeze event = true vaccine temperature ≤ −0.5 °C for 60 min (from simulator ground truth only). Lead time is measured to the true vaccine crossing 0 °C.</td></tr>
+  <tr><td><b>Alert threshold</b></td><td>Chosen on validation fridges as the most sensitive setting within a budget of 1 false alert per fridge-month.</td></tr>
+</table>
+
+<h2 class="brk">4. Results so far (simulated, held-out fridges)</h2>
+<p>240 fridges × 21 days (5,040 fridge-days), 178 freeze events. Split by fridge: 60% train, 20% validation, 20% test (48 fridges, 41 events).</p>
+<img src="benchmark.png" alt="Benchmark charts">
+<table>
+  <tr><th>Policy</th><th>Caught</th><th>Median warning</th><th>False alerts / fridge-month</th></tr>
+  <tr><td>P0 one reading ≤ 0 °C</td><td>41/41</td><td>70 min before</td><td>1.46</td></tr>
+  <tr><td>P1 WHO rule (≤ −0.5 °C for 60 min)</td><td>41/41</td><td>30 min after</td><td>0.09</td></tr>
+  <tr><td>P2 early rule (≤ 2 °C for 30 min)</td><td>41/41</td><td>190 min before</td><td>4.97</td></tr>
+  <tr><td><b>P3 ThermoTwin</b></td><td><b>41/41</b></td><td><b>90 min before</b></td><td><b>0.48</b></td></tr>
+</table>
+<p><b>Reading the result.</b> ThermoTwin warns about two hours earlier than the WHO rule, within the false-alert budget. The simple early rule warns
+sooner but would send about five false SMS per fridge per month, which is the alarm fatigue we are designed to avoid. The Virtual Vial
+tracks the true vaccine temperature with 0.08 °C mean error (raw air: 0.46 °C), and its 2-sigma band covers 91% of cases (target 95%).</p>
+<div class="warn"><b>Honesty notes.</b> These are simulator results, not field results. The simulator is not yet checked against public fridge traces or a second
+simulator. One realism change was made: a quarter of fridges run close to 2 °C, as real clinics often do; this makes the simple rules look
+worse and is disclosed in the code. The deck's illustrative chart (61 min before vs 77 min after) should be replaced by these measured numbers.</div>
+
+<h2 class="brk">5. Plan to the finale</h2>
+<table>
+  <tr><th style="width:15%">Day</th><th>Work</th><th style="width:26%">Done when</th></tr>
+  <tr><td><b>21 Oct</b> (today)</td><td>Heat-excursion model (same pipeline, heat labels). Cause classifier scored against the injected fault type. Sensor-check tier for stuck and drifting probes.</td><td>Benchmark reports freeze and heat; cause accuracy on held-out fault types.</td></tr>
+  <tr><td><b>22 Oct</b></td><td>FastAPI service (fridges, alerts, Cause Card, simulate-scenario). Wire the website's ILR-1 page and the phone Cause Card to the live model, replaying a simulated freeze. LSTM baseline on the same splits.</td><td>UI shows model output, not fixed numbers; LSTM row in the scorecard.</td></tr>
+  <tr><td><b>23 Oct</b></td><td>Realism checks against public traces (Bangkok fridges, REFIT) once licences are confirmed; cross-simulator test if the Benamirouche generator is available. Update deck slides 2 and 7 with measured numbers. Rehearse pitch and demo twice. Optional ESP32 demo rig.</td><td>Deck shows measured results; demo run-through under 3 min.</td></tr>
+  <tr><td><b>24 Oct</b> (finale, 24 h)</td><td>Run the benchmark on any organiser data. Live fault demo (replay or rig). Stretch: vaccine-aware alerts and the lifeboat-routing calculation in code. Publish the scorecard.</td><td>Scorecard on organiser data; working live demo.</td></tr>
+</table>
+
+<h3>After the hackathon</h3>
+<ul>
+  <li>Shadow-mode pilot beside a clinic's certified logger; field calibration of τ and alert thresholds.</li>
+  <li>Fleet priors refit per fridge, residual learning (ML on the twin's errors), Chronos/TimesFM baseline.</li>
+  <li>Vaccine-aware alerts using eVIN stock lists and published WHO / manufacturer stability data.</li>
+</ul>
+
+<h2>6. Risks and mitigations</h2>
+<table>
+  <tr><th style="width:30%">Risk</th><th>Mitigation</th></tr>
+  <tr><td>Simulator does not match real fridges</td><td>Realism gate against public traces; cross-simulator test; real data used only for testing.</td></tr>
+  <tr><td>Organiser data in an unknown format or temperature-only</td><td>Ingest accepts DS01.2 JSON and CSV; the model already uses temperature only.</td></tr>
+  <tr><td>Demo fails on stage</td><td>Offline UI with no internet dependency; recorded replay as fallback; scripted short path.</td></tr>
+  <tr><td>Over-claiming</td><td>Say "designed to warn earlier" until validated; never "WHO-certified", "first AI cold-chain system" or "decides vaccine safety".</td></tr>
+  <tr><td>Time</td><td>Core path is frozen and working; new features only after the API and UI wiring land.</td></tr>
+</table>
+
+<h2>7. Where everything is</h2>
+<table>
+  <tr><th style="width:28%">Item</th><th>Location</th></tr>
+  <tr><td>Core system</td><td><code>D:\CodeApex\thermotwin</code> · run <code>python run_core_path.py</code></td></tr>
+  <tr><td>Demo UI</td><td><code>D:\CodeApex\ui\ThermoTwin_UI_demo.zip</code> · double-click <code>START_DEMO.bat</code></td></tr>
+  <tr><td>PRD (Revision 4)</td><td>Claude Doc "ThermoTwin PRD" · Word copy <code>D:\CodeApex\ThermoTwin_PRD.docx</code></td></tr>
+  <tr><td>Pitch deck</td><td>Canva: canva.com/d/7LXEnwt4bkt6QJC</td></tr>
+  <tr><td>Research</td><td><code>D:\CodeApex\reports\ThermoTwin cold chain market research.md</code></td></tr>
+</table>
+
+</body>
+</html>

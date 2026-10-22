@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&amp;family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "tertiary-container": "#265d59", "background": "#faf8ff", "primary": "#004541", "on-tertiary": "#ffffff", "on-surface-variant": "#3f4947", "on-secondary-fixed": "#00201d", "secondary-fixed-dim": "#6bd8cb", "error-container": "#ffdad6", "on-tertiary-container": "#9cd4ce", "on-tertiary-fixed-variant": "#144f4b", "inverse-on-surface": "#eef0ff", "on-background": "#131b2e", "tertiary-fixed": "#b5ede7", "surface-bright": "#faf8ff", "secondary-fixed": "#89f5e7", "on-secondary-container": "#006f66", "on-secondary-fixed-variant": "#005049", "on-tertiary-fixed": "#00201e", "primary-fixed": "#abefe8", "surface-variant": "#dae2fd", "on-error": "#ffffff", "on-primary": "#ffffff", "surface-container-highest": "#dae2fd", "on-secondary": "#ffffff", "primary-container": "#115e59", "secondary": "#006a61", "surface-container-high": "#e2e7ff", "on-error-container": "#93000a", "surface": "#faf8ff", "on-primary-container": "#91d5ce", "outline-variant": "bec9c7", "secondary-container": "#86f2e4", "surface-container-low": "#f2f3ff", "tertiary": "#044541", "on-primary-fixed": "#00201e", "surface-container": "#eaedff", "inverse-primary": "#8fd3cc", "error": "#ba1a1a", "surface-tint": "#216963", "primary-fixed-dim": "#8fd3cc", "outline": "#6f7977", "tertiary-fixed-dim": "#9ad1cb", "on-surface": "#131b2e", "surface-container-lowest": "#ffffff", "on-primary-fixed-variant": "#00504b", "inverse-surface": "#283044", "surface-dim": "#d2d9f4" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "space-sm": "0.5rem", "gutter": "1rem", "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "space-xs": "0.25rem", "space-lg": "1rem", "space-md": "0.75rem", "space-xl": "1.5rem", "margin": "1rem", "space-2xl": "2rem" }, fontFamily: { "label-numeric": ["Manrope"], "label-md": ["Public Sans"], "headline-sm": ["Manrope"], "headline-lg": ["Manrope"], "display-metric-lg": ["Manrope"], "body-lg": ["Public Sans"], "body-sm": ["Public Sans"], "label-lg": ["Public Sans"], "display-metric-sm": ["Manrope"], "body-md": ["Public Sans"], "headline-md": ["Manrope"] }, fontSize: { "label-numeric": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.02em", "fontWeight": "700" }], "label-md": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-sm": ["1.125rem", { "lineHeight": "1.5rem", "fontWeight": "600" }], "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-metric-lg": ["3.5rem", { "lineHeight": "3.75rem", "letterSpacing": "-0.03em", "fontWeight": "700" }], "body-lg": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }], "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }], "label-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.01em", "fontWeight": "600" }], "display-metric-sm": ["2.25rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["0.875rem", { "lineHeight": "1.375rem", "fontWeight": "400" }], "headline-md": ["1.375rem", { "lineHeight": "1.75rem", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } }</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-28 px-margin flex flex-col justify-between py-space-xs"><div class="flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="ThermoTwin Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X6xX5e0BjyNbxR-D5SAGzY1tEA6YxVh536Al_oOJKQfRTj2xm7WMz-WvodRmpwvoHIhkjeT2HC6YCHYsusbleaJQDYnRWUPGKtdBcxPdUWY9fAQU6Cc22a6bsfoM-DtU9n5HZf6h-ClI2HYtvfgMgwHUvJOvGPSVzxlxljiDH7JsZIIGXfQ18eNE9ZrL-GhQLg4pGqe27dvbipTmQ8-lvqb1HjklFhwQGtlNZ9Cix0buF2-8WdF7zXddI"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary">ThermoTwin</span><span class="font-label-md text-label-md bg-surface-container-high text-on-surface px-space-xs py-0.5 rounded-full">PHC Wagholi, Pune</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Cold Chain Monitor</span></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center bg-surface-container px-space-xs py-1 rounded-full text-on-surface"><button class="min-h-[44px] min-w-[44px] px-space-xs flex items-center justify-center font-label-md text-label-md bg-primary-container text-on-primary rounded-full" type="button">EN</button><span class="text-outline px-0.5">|</span><button class="min-h-[44px] min-w-[44px] px-space-xs flex items-center justify-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface" type="button">हिं</button></div><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHcQv3XSfUrpM__r8RTo8gcYPSb8_EWFCRlZz_Lrng4c-M4u9F84En0tmcOxB3MYwiarhnTcRBXQlp162mvsurq0Dkbvh5erOCjYjA8vb0n3-irmum0xeanhauXx-9fRWQKHIH535eixawjAnJAMQAQvNH97qwxxnfMK5B-1sACq_9vUjSCbzWi-pOscL52Ncy38cAC8DorKbNEW7CTXMADeshhivDZXbAhFX6YQDJxMtvwFn4Q7Ql"/></div></div><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-0.5 rounded-full"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-md text-label-md text-secondary">Sync: 2 min ago</span></div><div class="flex items-center gap-space-xs font-label-md text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[16px] text-tertiary">verified</span><span>Telemetry Live</span></div></div></div><div class="bg-surface-container-highest px-margin py-1.5 flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-primary flex-shrink-0">info</span><p class="font-body-sm text-body-sm text-on-surface truncate">WHO official alarms run independently. ThermoTwin is a predictive advisory layer.</p></div></header><main class="flex flex-col relative w-full px-margin pt-28 bg-surface pb-24"><div class="flex flex-col w-full pb-6 space-y-space-md">
+<!-- Page Header Sub-bar -->
+<div class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Alerts &amp; Incidents</h1>
+<span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-space-xs py-0.5 rounded-full font-bold">PHC Wagholi</span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-space-xs py-1 rounded-full text-secondary font-label-md text-label-md">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-medium text-[11px]">Sync: 2m ago</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="inline-flex items-center gap-1 bg-error-container text-on-error-container font-label-numeric text-[11px] px-1.5 py-0.5 rounded-md font-bold">3 Active</span>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface font-label-numeric text-[11px] px-1.5 py-0.5 rounded-md">1 Watching</span>
+<span class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant font-label-numeric text-[11px] px-1.5 py-0.5 rounded-md">4 Resolved</span>
+</div>
+<span class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant text-[11px]">
+<span class="material-symbols-outlined text-[13px] text-tertiary">sensors</span> Datalogger Live
+      </span>
+</div>
+</div>
+<!-- Filter Chips (Scrollable row) -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 no-scrollbar text-nowrap">
+<button class="flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-3 py-2 rounded-full shadow-sm active:scale-95 transition-transform" type="button">
+<span>All</span>
+<span class="bg-primary-container text-on-primary-container text-[11px] font-label-numeric px-1.5 py-0.2 rounded-full">8</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-lowest text-on-surface font-label-md text-label-md px-3 py-2 rounded-full shadow-sm hover:bg-surface-container-low active:scale-95 transition-transform" type="button">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span>Critical</span>
+<span class="bg-error-container text-on-error-container text-[11px] font-label-numeric px-1.5 py-0.2 rounded-full font-bold">1</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-lowest text-on-surface font-label-md text-label-md px-3 py-2 rounded-full shadow-sm hover:bg-surface-container-low active:scale-95 transition-transform" type="button">
+<span class="w-2 h-2 rounded-full bg-amber-600"></span>
+<span>Early</span>
+<span class="bg-amber-100 text-amber-900 text-[11px] font-label-numeric px-1.5 py-0.2 rounded-full font-bold">2</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-lowest text-on-surface font-label-md text-label-md px-3 py-2 rounded-full shadow-sm hover:bg-surface-container-low active:scale-95 transition-transform" type="button">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span>Advisory</span>
+<span class="bg-blue-100 text-blue-900 text-[11px] font-label-numeric px-1.5 py-0.2 rounded-full font-bold">2</span>
+</button>
+<button class="flex items-center gap-1.5 bg-surface-container-lowest text-on-surface font-label-md text-label-md px-3 py-2 rounded-full shadow-sm hover:bg-surface-container-low active:scale-95 transition-transform" type="button">
+<span class="w-2 h-2 rounded-full bg-purple-600"></span>
+<span>Sensor check</span>
+<span class="bg-purple-100 text-purple-900 text-[11px] font-label-numeric px-1.5 py-0.2 rounded-full font-bold">1</span>
+</button>
+</div>
+<!-- SECTION 1: TODAY -->
+<div class="flex flex-col space-y-space-sm pt-1">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">Today</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">3 items</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Wednesday, 24 Oct</span>
+</div>
+<!-- Card 1: Early Warning - Freeze Risk (Open) -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden transition-all duration-200">
+<!-- Amber accent ribbon for early warning -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-amber-500"></div>
+<!-- Header: ID + State Chip -->
+<div class="flex items-start justify-between gap-space-xs mt-1">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-amber-600 text-[18px]">warning</span>
+<span class="font-label-numeric text-[11px] tracking-wider text-amber-800 uppercase font-bold">EARLY WARNING</span>
+<span class="text-outline text-xs">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Freeze Risk</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">ILR-1 (Vestfrost) · Room 102</span>
+</div>
+<span class="inline-flex items-center gap-1 bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full font-label-md text-[11px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-ping"></span>
+          Open
+        </span>
+</div>
+<!-- Core Message -->
+<div class="mt-2.5 p-space-sm bg-amber-50/70 rounded-lg">
+<p class="font-body-md text-body-md text-on-surface font-semibold text-[13px] leading-snug">
+          May drop below 0 °C in about 55 min · Downward velocity -0.9 °C/hr
+        </p>
+</div>
+<!-- Telemetry Triad Info Bar -->
+<div class="grid grid-cols-2 gap-space-xs mt-3 bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant text-[11px]">CURRENT READING</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-display-metric-sm text-[1.4rem] font-bold text-on-surface">2.4 °C</span>
+<span class="font-label-md text-label-md text-amber-700 font-semibold text-[11px]">Freezing threshold 2.0 °C</span>
+</div>
+</div>
+<div class="flex flex-col justify-end items-end">
+<span class="font-label-md text-label-md text-on-surface-variant text-[11px]">DETECTED</span>
+<span class="font-label-numeric text-label-numeric text-on-surface text-[12px] mt-0.5">10:42 AM (18 min ago)</span>
+</div>
+</div>
+<!-- Dynamic Visual Threshold Indicator -->
+<div class="mt-3 flex flex-col gap-1">
+<div class="flex justify-between items-center text-[10px] font-label-numeric text-on-surface-variant px-0.5">
+<span class="text-error font-semibold">0.0°C Freeze Danger</span>
+<span class="text-secondary font-bold">Safe: 2.0°C – 8.0°C</span>
+<span class="text-error font-semibold">10.0°C Heat</span>
+</div>
+<div class="relative w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+<!-- Danger zone 0-20% -->
+<div class="absolute left-0 top-0 bottom-0 w-[20%] bg-error-container"></div>
+<!-- Safe zone 20-80% -->
+<div class="absolute left-[20%] top-0 bottom-0 w-[60%] bg-secondary-container"></div>
+<!-- Current temp marker (2.4°C is ~24%) -->
+<div class="absolute top-0 bottom-0 w-2.5 -ml-1 left-[24%] bg-amber-600 rounded-full shadow-sm flex items-center justify-center">
+<span class="w-1 h-1 rounded-full bg-white"></span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-3 pt-2.5 flex items-center justify-between border-t border-surface-container-high/60">
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Recommended: Open ILR lid check</span>
+<button class="min-h-[44px] px-3.5 py-1.5 bg-primary text-on-primary font-label-md text-label-md rounded-md flex items-center gap-1 active:scale-95 transition-transform font-bold" type="button">
+          View Cause &amp; Steps <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Early Warning - Recovery in Progress (Watching Recovery) -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden transition-all duration-200">
+<!-- Amber to Teal gradient ribbon -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-secondary"></div>
+<!-- Header: ID + State Chip -->
+<div class="flex items-start justify-between gap-space-xs mt-1">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">visibility</span>
+<span class="font-label-numeric text-[11px] tracking-wider text-secondary uppercase font-bold">EARLY WARNING</span>
+<span class="text-outline text-xs">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Thermostat Offset</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">ILR-2 (Haier) · Main Bay</span>
+</div>
+<span class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label-md text-[11px] font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+          Watching recovery
+        </span>
+</div>
+<!-- One-line action synopsis -->
+<p class="font-body-md text-body-md text-on-surface mt-2 font-medium text-[13px]">
+        Thermostat adjusted +1 notch at 09:30 AM by Cold Chain Handler.
+      </p>
+<!-- Recovery Progress Tracker Box -->
+<div class="mt-2.5 p-space-sm bg-surface-container-low rounded-lg flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-secondary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">trending_up</span> Recovering as expected
+          </span>
+<span class="font-label-numeric text-label-numeric text-on-surface-variant text-[11px]">Back in range in ~15 min</span>
+</div>
+<!-- Milestones visual bar -->
+<div class="flex flex-col gap-1">
+<div class="relative w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<!-- Progress fill: 2.1C to 2.6C on track to 3.5C -->
+<div class="h-full bg-gradient-to-r from-amber-400 via-secondary-container to-secondary rounded-full" style="width: 68%;"></div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-label-numeric text-on-surface-variant pt-0.5">
+<span>Low: 2.1 °C</span>
+<span class="text-secondary font-bold">Current: 2.6 °C</span>
+<span class="font-semibold text-on-surface">Target: 3.5 °C</span>
+</div>
+</div>
+</div>
+<!-- Action & Timestamp Footer -->
+<div class="mt-3 flex items-center justify-between pt-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 09:30 AM · Started 1h 30m ago
+        </span>
+<button class="min-h-[44px] px-3 text-secondary font-label-md text-label-md flex items-center gap-1 hover:underline active:scale-95 transition-transform font-bold" type="button">
+          View Trajectory <span class="material-symbols-outlined text-[15px]">timeline</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Sensor Check (Purple) -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm relative overflow-hidden transition-all duration-200">
+<!-- Purple accent ribbon -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-purple-600"></div>
+<!-- Header: ID + State Chip -->
+<div class="flex items-start justify-between gap-space-xs mt-1">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-purple-700 text-[18px]">cable</span>
+<span class="font-label-numeric text-[11px] tracking-wider text-purple-800 uppercase font-bold">SENSOR CHECK</span>
+<span class="text-outline text-xs">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Hardware Diagnostic</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">Deep Freezer DF-1 · Prep Room</span>
+</div>
+<span class="inline-flex items-center gap-1 bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full font-label-md text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px]">done</span> Acknowledged
+        </span>
+</div>
+<div class="mt-2.5 p-space-sm bg-purple-50/60 rounded-lg">
+<p class="font-body-md text-body-md text-on-surface font-medium text-[13px] leading-snug">
+          Probe readings look stuck – please check the probe cable and socket.
+        </p>
+</div>
+<div class="mt-2.5 flex items-center gap-2 bg-surface-container-low p-space-sm rounded-lg">
+<span class="material-symbols-outlined text-purple-700 text-[18px] flex-shrink-0">troubleshoot</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">
+          Unvarying flatline <strong class="text-on-surface font-label-numeric">-18.2 °C</strong> across 4.5 hrs with zero sensor variance.
+        </span>
+</div>
+<!-- Footer CTA -->
+<div class="mt-3 flex items-center justify-between pt-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">history</span> Detected 07:15 AM
+        </span>
+<button class="min-h-[44px] px-3.5 py-1.5 bg-surface-container text-on-surface font-label-md text-label-md rounded-md flex items-center gap-1 hover:bg-surface-container-high active:scale-95 transition-transform font-bold" type="button">
+          Cable Check Protocol <span class="material-symbols-outlined text-[15px]">build</span>
+</button>
+</div>
+</div>
+</div>
+<!-- SECTION 2: YESTERDAY -->
+<div class="flex flex-col space-y-space-sm pt-3">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">Yesterday</span>
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">3 resolved items</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tuesday, 23 Oct</span>
+</div>
+<!-- Card 4: Critical High Temperature Breach (Resolved/Closed) -->
+<div class="flex flex-col bg-surface-container-lowest/80 rounded-xl p-space-md shadow-sm relative overflow-hidden transition-all opacity-95">
+<!-- Dimmed subtle red/green top status -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-surface-container-high"></div>
+<!-- Header: ID + State Chip -->
+<div class="flex items-start justify-between gap-space-xs mt-1">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-error text-[18px]">report</span>
+<span class="font-label-numeric text-[11px] tracking-wider text-error uppercase font-bold">CRITICAL</span>
+<span class="text-outline text-xs">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Breach Excursion</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">ILR-1 (Vestfrost) · Room 102</span>
+</div>
+<span class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label-md text-[11px] font-bold">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Closed · Resolved
+        </span>
+</div>
+<!-- Incident Note -->
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 text-[13px] leading-snug">
+        Door left unsealed during morning stock load; internal temperature peaked at <span class="font-semibold text-error">8.4 °C</span>.
+      </p>
+<!-- Resolution Audit Box -->
+<div class="mt-2.5 p-space-sm bg-surface-container-low rounded-lg flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px] mt-0.5 flex-shrink-0">verified</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold text-[12px]">Resolution verified</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">
+            Door resealed by ANM S. Sharma; normalized back to 4.2 °C in 35 min. No thermal vial impact.
+          </span>
+</div>
+</div>
+<div class="mt-2.5 flex items-center justify-between text-on-surface-variant font-label-md text-[11px]">
+<span>Yesterday, 04:15 PM</span>
+<button class="min-h-[44px] px-2 text-primary font-bold hover:underline active:scale-95 transition-transform flex items-center gap-1" type="button">
+          Incident Log <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Card 5: Advisory - Power Fluctuation (Closed) -->
+<div class="flex flex-col bg-surface-container-lowest/80 rounded-xl p-space-md shadow-sm relative overflow-hidden transition-all opacity-90">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-blue-600 text-[18px]">bolt</span>
+<span class="font-label-numeric text-[11px] tracking-wider text-blue-800 uppercase font-bold">ADVISORY</span>
+<span class="text-outline text-xs">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Power Grid</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">ILR-2 (Haier) · Main Bay</span>
+</div>
+<span class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full font-label-md text-[11px]">
+          Closed
+        </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 text-[13px]">
+        Grid voltage surge switched ILR to internal stabilizer backup. Continuous cooling maintained without deviation.
+      </p>
+<div class="mt-2.5 flex items-center justify-between text-on-surface-variant font-label-md text-[11px]">
+<span>Yesterday, 06:10 AM</span>
+<span class="font-body-sm text-body-sm text-secondary flex items-center gap-0.5 text-[11px]">
+<span class="material-symbols-outlined text-[13px]">offline_bolt</span> Generator auto-stabilized
+        </span>
+</div>
+</div>
+<!-- Card 6: Advisory - Ambient Heat Advisory (Acknowledged) -->
+<div class="flex flex-col bg-surface-container-lowest/80 rounded-xl p-space-md shadow-sm relative overflow-hidden transition-all opacity-90">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-blue-600 text-[18px]">device_thermostat</span>
+<span class="font-label-numeric text-[11px] tracking-wider text-blue-800 uppercase font-bold">ADVISORY</span>
+<span class="text-outline text-xs">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Ambient Environment</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">Cold Chain Room · Ambient Sensor</span>
+</div>
+<span class="inline-flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-0.5 rounded-full font-label-md text-[11px] font-medium">
+          Acknowledged
+        </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 text-[13px]">
+        Room ambient temp exceeded 38 °C – check ventilation fan and room blinds.
+      </p>
+<div class="mt-2.5 flex items-center justify-between text-on-surface-variant font-label-md text-[11px]">
+<span>Yesterday, 02:20 PM</span>
+<button class="min-h-[44px] px-2 text-primary font-bold hover:underline active:scale-95 transition-transform flex items-center gap-1" type="button">
+          Review Fans <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- WHO Protocol & Informational Footer -->
+<div class="mt-4 p-space-md bg-surface-container-low rounded-xl flex items-start gap-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary text-[20px] flex-shrink-0 mt-0.5">security_update_good</span>
+<div class="flex flex-col space-y-0.5">
+<span class="font-label-md text-label-md text-on-surface font-bold">WHO Compliance Advisory</span>
+<p class="font-body-sm text-body-sm text-[11px] leading-relaxed">
+        Official WHO fridge alarms run independently. ThermoTwin is a predictive digital twin advisory layer designed for proactive cold-chain loss prevention.
+      </p>
+</div>
+</div>
+</div>
+<script>
+  // Simple interactive filter toggle for prototype demonstration
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.no-scrollbar button');
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.className = 'flex items-center gap-1.5 bg-surface-container-lowest text-on-surface font-label-md text-label-md px-3 py-2 rounded-full shadow-sm hover:bg-surface-container-low active:scale-95 transition-transform';
+        });
+        btn.className = 'flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-3 py-2 rounded-full shadow-sm active:scale-95 transition-transform';
+      });
+    });
+  });
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-bold"><div class="flex justify-around items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm relative text-on-surface-variant hover:text-on-surface" data-path="cold-chain-monitor" href="#"><span class="material-symbols-outlined">home</span><span class="font-label-md text-label-md">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm relative text-on-surface-variant hover:text-on-surface" data-path="active-alerts" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined">notifications</span><span class="absolute -top-1 -right-2 bg-error text-on-error font-label-numeric text-[10px] w-4 h-4 rounded-full flex items-center justify-center">3</span></div><span class="font-label-md text-label-md">Alerts</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm text-on-surface-variant hover:text-on-surface" data-path="field-tasks" href="#"><span class="material-symbols-outlined">checklist</span><span class="font-label-md text-label-md">Tasks</span></a><a class="flex flex-col items-center justify-center gap-space-xs min-h-[48px] min-w-[48px] px-space-sm text-on-surface-variant hover:text-on-surface" data-path="emergency-help" href="#"><span class="material-symbols-outlined">support_agent</span><span class="font-label-md text-label-md">Help</span></a></div></nav></body></html>

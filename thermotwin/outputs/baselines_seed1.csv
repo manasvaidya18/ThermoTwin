@@ -1,0 +1,9 @@
+kind,model,caught,lead_median_min,false_per_fridge_month,train_s,infer_s,size_kb
+freeze,P1 WHO (<= -0.5 °C for 60 min),38/41,-30.0,0.02976190476190476,,,
+freeze,P2 early rule (<= 2 °C for 30 min),40/41,210.0,5.684523809523809,,,
+freeze,"LSTM (raw air, no physics)",39/41,90.0,0.1488095238095238,22.6069974899292,4.7972729206085205,122.677734375
+freeze,ThermoTwin (twin + LightGBM),41/41,110.0,0.26785714285714285,33.34223461151123,10.1708505153656,1373.2099609375
+heat,P1 WHO (> 8 °C for 10 h),0/10,,0.0,,,
+heat,P2 early rule (> 8 °C for 30 min),9/10,0.0,0.41666666666666663,,,
+heat,"LSTM (raw air, no physics)",7/10,30.0,0.38690476190476186,19.34226965904236,5.2930145263671875,122.677734375
+heat,ThermoTwin (twin + LightGBM),7/10,40.0,0.23809523809523808,33.77109408378601,8.989144802093506,1371.2421875

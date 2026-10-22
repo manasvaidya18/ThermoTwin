@@ -1,0 +1,242 @@
+<article class="view" id="v-dv1" data-track="dv" data-title="Untangle Graph">
+<header class="phead">
+  <div class="kicker"><span class="chip dv">DeltaV pack</span><span class="chip">#01 Untangle</span></div>
+  <h2>Untangle Graph</h2>
+  <p class="sub">Read a customer's piping and instrumentation drawing, turn it into a flow graph, and redraw it as a clean left-to-right sketch with only the equipment and instruments the operators need.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●○○○</b></div><div>No data wait<b>●●○○○</b></div><div>Stands out<b>●●●●●</b></div><div>Demo impact<b>●●●●●</b></div><div>Provable<b>●●●○○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>A P&amp;ID (piping and instrumentation diagram) is the engineering drawing of a process plant: tanks, pumps, heat exchangers, hundreds of pipes with bends, crossings and valves, and instruments attached everywhere. It represents the plant as built, so it is cluttered. The operators' screens in the control room need a simplified picture of the same process: only major equipment (tanks, vessels, pumps, exchangers) and the instruments listed in the IO list (the instruments the control system actually reads), connected in the right flow order, drawn with straight lines and no crossings. Today an engineer marks up each P&amp;ID by hand, traces the flow and redraws it. Every drawing is different, so it is slow and error-prone.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>P&amp;ID</td><td>Piping and instrumentation diagram; delivered here as a PDF.</td></tr>
+<tr><td>IO list</td><td>Excel list of instruments connected to the control system (tag and signal description), for example <code>LT-101 Tank level</code>.</td></tr>
+<tr><td>Instrument tag</td><td>Letters plus a loop number. First letter is what is measured (P pressure, F flow, L level, T temperature); following letters give the function (T transmitter, I indicator, C controller, V valve, S switch). <code>PT-101A</code> is the pressure transmitter of loop 101, variant A. Based on the ISA 5.1 convention.</td></tr>
+<tr><td>Equipment tag</td><td>Letter plus number: T or V (tank, vessel), P (pump), E (exchanger). <code>P-101A/B</code> are a duty and a standby pump.</td></tr>
+<tr><td>Duty and standby</td><td>Two identical pumps in parallel; one runs, one waits. On the drawing their pipes may cross over each other; logically they are parallel branches.</td></tr>
+<tr><td>Process line, signal line</td><td>Thick solid lines carry fluid; thin dashed lines carry signals from instruments.</td></tr>
+</tbody></table></div>
+<h4>What the PDF requires</h4>
+<ul>
+<li>Input: customer P&amp;ID PDF and IO list Excel. Output: a simplified sketch as PDF, PPT or image showing major equipment and <b>all</b> IO-list instruments with their tags, connected in correct flow order with correct direction.</li>
+<li>A <b>tag-check report</b>: IO-list tags found versus not found on the P&amp;ID.</li>
+<li>A good output is complete, accurate (same connections and flow direction), smart (duty and standby shown as parallel lines), readable (left to right, minimal bends, no crossovers) and generic (works on a P&amp;ID it has never seen).</li>
+<li>The tool must create the sketch itself; declare any third-party tools, APIs or models; sample data is for hackathon use only and must not be shared.</li>
+<li>Example in the PDF: 18 instruments drawn, 14 in the IO list; duty and standby pumps (P-101A/B), each with a PT and FT, crossing; the sketch shows two parallel lines.</li>
+</ul>
+
+<h3>Our concept: Untangle Graph</h3>
+<div class="g3">
+<div class="card"><h4>1. Drawing becomes a graph first</h4><p>Everything is built on a correct connectivity graph with flow direction. Layout is then a pure graph-drawing problem. We never "trace and copy lines".</p></div>
+<div class="card"><h4>2. Series-parallel reasoning</h4><p>Duty and standby pumps are a parallel composition of identical branches. Detecting that structure lets the layout draw them as parallel rows, which solves the "pumps cross each other" case by construction.</p></div>
+<div class="card"><h4>3. Trace-back and confidence</h4><p>Click a line in the sketch and the original path lights up on the P&amp;ID. Low-confidence elements are flagged. Trust comes from showing the source.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>Untangle Graph</th></tr></thead>
+<tbody>
+<tr><td>Ask a vision model to "redraw this P&amp;ID simply"</td><td>Hallucinated connections; no tag completeness; cannot be checked.</td><td>Explicit graph with evidence; model used only for classification, with a rules cross-check.</td></tr>
+<tr><td>Detect symbols only</td><td>Knows what is there, not what connects to what.</td><td>Line tracing and junction logic; flow direction solved as constraints.</td></tr>
+<tr><td>Train a detector from scratch</td><td>No labelled P&amp;IDs.</td><td>Use vector data where present, geometric rules, a synthetic generator for tests and training.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>The most striking before-and-after in the whole hackathon, with real intellectual content (graph reduction, series-parallel decomposition, orthogonal layout). Few teams will attempt it, so a partial but honest solution on sample P&amp;IDs still stands out.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>It depends on the organisers' sample P&amp;IDs, which we do not have. Real drawings are messy (scanned, skewed, text as outlines). Scope must be controlled: vector input first, one drawing family, honest confidence flags.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Ingest</b><span>Detect vector versus raster; extract paths and text; render tiles for vision.</span></div>
+<div class="st"><b>Symbols and tags</b><span>Instrument bubbles, equipment, valves; read and normalise tags.</span></div>
+<div class="st"><b>Lines</b><span>Process and signal lines; snap endpoints; junctions versus crossings.</span></div>
+<div class="st"><b>Graph and flow</b><span>Nodes, edges, direction solved as constraints.</span></div>
+<div class="st"><b>Simplify</b><span>Keep major equipment and IO instruments; contract the rest.</span></div>
+<div class="st"><b>Structure</b><span>Series-parallel decomposition; duty and standby groups; recycles.</span></div>
+<div class="st"><b>Layout</b><span>Left-to-right layered layout with orthogonal routing and few bends.</span></div>
+<div class="st"><b>Report</b><span>Sketch (SVG, PDF, PPT, PNG), tag-check report, confidence overlay, trace-back.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>ingest/</td><td>PDF classification, path and text extraction, tiling, rendering</td><td>PyMuPDF (vector paths and words with coordinates), pdf2image or PyMuPDF rendering</td></tr>
+<tr><td>vision/</td><td>Instrument bubble detection, equipment and valve classification, OCR</td><td>OpenCV (Hough circles, contours), OCR engine (PaddleOCR, Tesseract or a vision-language model), optional detector</td></tr>
+<tr><td>tags/</td><td>Tag grammar, normalisation, fuzzy matching to the IO list</td><td>rapidfuzz, regular expressions, pandas</td></tr>
+<tr><td>lines/</td><td>Segment extraction, classification, snapping, junction logic</td><td>Shapely, NumPy, networkx</td></tr>
+<tr><td>graph/</td><td>Graph building, flow solver, simplification, series-parallel reduction</td><td>networkx, OR-Tools or a SAT solver for orientation</td></tr>
+<tr><td>layout/</td><td>Layering, ordering, orthogonal routing, rendering</td><td>ELK (elkjs) or Graphviz dot with orthogonal splines; SVG templates</td></tr>
+<tr><td>export/</td><td>SVG to PDF, PPTX shapes, PNG, tag report</td><td>cairosvg, python-pptx, openpyxl</td></tr>
+<tr><td>gen/</td><td>Synthetic P&amp;ID generator with ground-truth graphs</td><td>reportlab or SVG writer</td></tr>
+<tr><td>ui/</td><td>Upload, review overlay, graph view, sketch, trace-back</td><td>FastAPI, React or Streamlit</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Ingestion: three kinds of PDF</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Case</th><th>How to recognise it</th><th>Strategy</th></tr></thead>
+<tbody>
+<tr><td>A. Vector with a text layer</td><td>Many path operators; words extractable.</td><td>Best case. Take geometry and text with coordinates directly. Symbol recognition from primitives (circles, polylines).</td></tr>
+<tr><td>B. Vector, text drawn as outlines</td><td>Many paths; no extractable words.</td><td>Geometry from vectors, text from OCR on rendered crops.</td></tr>
+<tr><td>C. Raster scan</td><td>Page is an image.</td><td>Render at 300 dpi (tiles for A0 or A1 sheets with 20% overlap), OCR, line segment detection, skeletonisation.</td></tr>
+</tbody></table></div>
+<p>Always keep a rendered image for visual overlays and for any vision-model step. Remember the PDF says sample files are not to be shared; keep them local.</p>
+<h4>2. Symbols and tags</h4>
+<ul>
+<li><b>Instrument bubbles.</b> Circles with text inside (and sometimes a horizontal bar). In vector input, find circles of the bubble size; in raster input use Hough circles. Read the text into a tag such as <code>PT-101A</code>.</li>
+<li><b>Equipment.</b> Large closed shapes with a label nearby. The label's letter prefix gives the type (T or V tank or vessel, P pump, E exchanger), so shape recognition only needs to find ports. This shortcut makes the system robust to symbol-style differences between customers.</li>
+<li><b>Valves.</b> Bow-tie symbols on lines; control valves have an actuator on top; check valves show direction. Most valves are not in the IO list and will be contracted away, but their direction cues feed the flow solver.</li>
+<li><b>Tag normalisation.</b> Uppercase, strip spaces and dashes, map common OCR confusions (O and 0, I and 1, S and 5), then fuzzy-match to the IO list under the ISA grammar. Record exact, normalised, fuzzy or not found, with distance and confidence.</li>
+<li><b>Optional learning.</b> Where a model helps (symbol classification of crops, reading difficult tags) use a vision-language model or a small detector. Declare it. Cross-check with rules so that no answer relies on the model alone.</li>
+</ul>
+<h4>3. Lines</h4>
+<ul>
+<li><b>Extract</b> line segments and polylines (vector) or detected segments (raster). Merge collinear pieces.</li>
+<li><b>Classify</b> by stroke width and dash pattern: thick solid is a process line; thin dashed or dash-dot is a signal line. Learn thresholds per drawing from the histogram of widths.</li>
+<li><b>Snap and split.</b> Snap endpoints within a tolerance (for example 1.5 times the stroke width). Split lines at T-junctions. A <b>crossing without a junction dot is not a connection</b>; a crossing with a dot, or a T, is. Detect small filled dots.</li>
+<li><b>Ports.</b> Where a process line ends on an equipment boundary, create a port on that equipment.</li>
+<li><b>Instrument attachment.</b> A signal line from a bubble to a process line or equipment attaches the instrument there. A bubble placed directly on a line attaches at that point.</li>
+</ul>
+<h4>4. Graph and flow direction</h4>
+<pre class="code">Nodes   : equipment (with ports), instruments (IO and non-IO), valves, junctions, off-page connectors
+Edges   : process line segments between nodes (with polyline geometry), signal links (instrument to host)
+Evidence for direction of each process edge:
+   arrowheads on the line (strong) ;  pump: suction -&gt; discharge (strong) ;  check valve triangle (strong)
+   off-page labels "FROM T-101" / "TO UNIT 200" (strong) ;  vessel nozzle semantics: feed in, product out (medium)
+   layout prior: left-to-right and top-to-bottom (weak)
+Solve   : choose orientation o(e) in {+1,-1} per edge maximising sum of evidence weights
+          subject to junction consistency (a split or merge has coherent inflow and outflow) and no unexplained sinks
+          (small SAT / ILP with OR-Tools; fall back to propagation from the strongest evidence)</pre>
+<h4>5. Simplification</h4>
+<ol>
+<li>Define the <b>keep set</b>: major equipment plus IO-list instruments found.</li>
+<li>Contract every other node (elbows, reducers, minor valves, non-IO instruments) by merging its two incident edges. Remove dead ends (vents, drains) unless they carry an IO instrument.</li>
+<li>Represent IO instruments as <b>taps</b>: attached to the nearest process edge or equipment, ordered by distance along the flow.</li>
+<li>Check invariants: every IO tag found is still present; connectivity between kept nodes equals the original (reachability preserved); no dangling edge.</li>
+</ol>
+<h4>6. Series-parallel structure</h4>
+<p>Reduce the simplified graph repeatedly: merge nodes in series, merge parallel edges, and compare parallel branches. If two branches have matching sequences of component types (pump with a PT and FT, each) and common endpoints, mark them as a <b>duty and standby group</b> (name suffixes A and B are a supporting hint). The result is an SP-tree: series nodes lay out left to right, parallel nodes lay out as stacked rows. Parts that are not series-parallel (recycles, bypasses) go through the general layered layout, with the recycle edge drawn as a return path above.</p>
+<h4>7. Layout</h4>
+<ul>
+<li><b>Layering.</b> After removing cycles, assign layers by longest path or network simplex, so flow goes left to right.</li>
+<li><b>Ordering.</b> Within layers, order by the barycentre heuristic to reduce crossings; keep SP groups together as clusters.</li>
+<li><b>Routing.</b> Orthogonal edges with a bend budget; instruments placed as bubbles on or just above their line, in flow order; minimum spacing for readability. Use ELK (elkjs, layered algorithm with orthogonal routing) or Graphviz <code>dot</code> with orthogonal splines. Constrain parallel groups to align.</li>
+<li><b>Render.</b> SVG with a small symbol library (tank, vessel, pump, exchanger, valve, instrument bubble), tags under symbols, arrowheads. Export to PDF, PPTX shapes and PNG.</li>
+</ul>
+<h4>8. Tag-check report and trace-back</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>IO tag</th><th>Status</th><th>Where found</th><th>Match</th><th>Confidence</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>PT-101A</td><td>Found</td><td>x 812, y 440 (crop)</td><td>Exact</td><td>0.99</td><td>On discharge of P-101A</td></tr>
+<tr><td>FT-101B</td><td>Found</td><td>x 905, y 612 (crop)</td><td>Normalised (FT101B)</td><td>0.93</td><td></td></tr>
+<tr><td>LT-102</td><td>Near miss</td><td>x 130, y 205 (crop)</td><td>Fuzzy to LT-I02</td><td>0.58</td><td>OCR ambiguity: review</td></tr>
+<tr><td>TT-103</td><td>Not found</td><td>none</td><td>none</td><td>none</td><td>May be on a continuation sheet</td></tr>
+</tbody></table></div>
+<p>Trace-back: every element of the sketch stores references to its source geometry (path ids, bounding boxes). The review view highlights these on the original P&amp;ID when the user hovers or clicks.</p>
+<h4>9. Synthetic P&amp;ID generator</h4>
+<p>Because real sample files are limited, build a generator that produces vector P&amp;IDs with known ground truth. Randomly compose process templates (tank to pump to exchanger to vessel), duty and standby pairs, bypasses and recycles; add instruments (PT, FT, LT, TT) with random IO-list membership; route lines with bends and crossovers; render with ISA-like symbols and noise (width variation, text as outlines, raster scan simulation). Output the PDF, the IO list and the ground-truth graph. Use it for unit tests, accuracy numbers on unseen drawings, and optional detector training.</p>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Upload P&amp;ID and IO list</td><td><span class="tier core">Core</span></td><td>PDF and Excel ingestion.</td><td>The task.</td><td>S</td></tr>
+<tr><td>Tag extraction and check report</td><td><span class="tier core">Core</span></td><td>Tag grammar, normalisation, fuzzy match.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Connectivity graph with flow direction</td><td><span class="tier core">Core</span></td><td>Lines, junctions, evidence-weighted orientation.</td><td>Accuracy foundation.</td><td>L</td></tr>
+<tr><td>Simplified sketch</td><td><span class="tier core">Core</span></td><td>Contract, layered layout, orthogonal routes.</td><td>Required output.</td><td>L</td></tr>
+<tr><td>Export PDF, PPT, PNG</td><td><span class="tier core">Core</span></td><td>SVG to formats.</td><td>Required output.</td><td>S</td></tr>
+<tr><td>Duty and standby detection</td><td><span class="tier wow">Wow</span></td><td>Series-parallel reduction and signatures.</td><td>The "smart" requirement, visible in the picture.</td><td>M</td></tr>
+<tr><td>Trace-back</td><td><span class="tier wow">Wow</span></td><td>Click an edge, see the source path.</td><td>Trust in one gesture.</td><td>M</td></tr>
+<tr><td>Confidence overlay</td><td><span class="tier wow">Wow</span></td><td>Amber for uncertain nodes and edges.</td><td>Honest automation.</td><td>S</td></tr>
+<tr><td>Before and after slider</td><td><span class="tier wow">Wow</span></td><td>Original on one side, sketch on the other.</td><td>The demo image.</td><td>S</td></tr>
+<tr><td>Two-extractor cross-check</td><td><span class="tier stretch">Stretch</span></td><td>Rules graph versus vision-model graph; disagreements queued.</td><td>Reliability idea.</td><td>M</td></tr>
+<tr><td>Synthetic generator benchmark</td><td><span class="tier wow">Wow</span></td><td>Infinite drawings with ground truth.</td><td>Real accuracy numbers.</td><td>M</td></tr>
+<tr><td>Multi-sheet stitching</td><td><span class="tier stretch">Stretch</span></td><td>Off-page connectors join sheets.</td><td>Real plants span sheets.</td><td>M</td></tr>
+<tr><td>Correct-the-graph UI</td><td><span class="tier stretch">Stretch</span></td><td>Fix an edge in the graph and re-layout (not hand-drawing).</td><td>Practical value.</td><td>M</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Upload.</b> P&amp;ID PDF and IO list; preview thumbnail; ingestion type detected.</li>
+<li><b>Review overlay.</b> The original P&amp;ID with toggleable layers: tags, equipment, valves, process lines, signal lines, graph nodes; confidence colouring; tag-check side panel.</li>
+<li><b>Graph view.</b> The extracted graph before simplification, with flow arrows.</li>
+<li><b>Sketch.</b> The final simplified sketch; legend; click for trace-back; export buttons.</li>
+<li><b>Compare.</b> Before and after slider; duty and standby group highlighted.</li>
+<li><b>Benchmark.</b> Results on synthetic and sample drawings: tag recall, edge F1, crossings and bends.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>Definition</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>IO tag recall</td><td>IO-list tags found on the drawing divided by those truly present.</td><td>95% or higher on vector input</td></tr>
+<tr><td>Equipment recall</td><td>Major equipment detected.</td><td>95% or higher</td></tr>
+<tr><td>Edge precision and recall</td><td>Connections in the sketch versus ground truth (match by node tag or position).</td><td>90% or higher</td></tr>
+<tr><td>Flow direction accuracy</td><td>Correctly oriented edges.</td><td>90% or higher</td></tr>
+<tr><td>Duty and standby detection</td><td>Groups recognised.</td><td>Near 100% on clean cases</td></tr>
+<tr><td>Readability</td><td>Crossings per sketch, bends per edge, fraction of edges that go left to right.</td><td>Zero crossings unless unavoidable; under 2 bends per edge; over 95% rightward</td></tr>
+<tr><td>Runtime</td><td>Seconds per sheet.</td><td>Under 60 s on a laptop</td></tr>
+</tbody></table></div>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>If a sample P&amp;ID is in hand: extract text and paths with PyMuPDF; print the tag-check report.</li><li>If not: a 20-line synthetic graph, simplify, layout with ELK or Graphviz, render. Before and after on one slide.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Ingestion, tag extraction and matching, symbols.</li>
+<li><b>Day 2.</b> Lines, junctions, graph, flow solver.</li>
+<li><b>Day 3.</b> Simplification, series-parallel, layout, rendering, exports.</li>
+<li><b>Day 4.</b> UI overlay, trace-back, benchmark on generator, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 3 h: run the unseen P&amp;IDs; collect failures by stage.</li>
+<li>3 to 10: fix highest-impact failure modes (tags, junctions, direction).</li>
+<li>10 to 16: improve layout quality; confidence UI.</li>
+<li>16 to 22: report polish, rehearsal.</li>
+<li>22 to 24: freeze and record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Vision and OCR lead:</b> ingestion, symbols, tags.</li><li><b>Graph lead:</b> lines, flow solver, simplification, SP.</li><li><b>Layout and frontend:</b> layout, rendering, review UI.</li><li><b>Data and pitch:</b> generator, benchmark, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>No sample P&amp;IDs yet</td><td>Cannot tune.</td><td>Synthetic generator; request samples; keep all heuristics parameterised.</td></tr>
+<tr><td>Scanned or low-quality drawings</td><td>Poor OCR and lines.</td><td>Vector first; confidence flags; human correction of the graph.</td></tr>
+<tr><td>Text drawn as outlines</td><td>No text layer.</td><td>OCR on crops; closed-vocabulary matching against the IO list raises accuracy.</td></tr>
+<tr><td>Flow direction ambiguity</td><td>Wrong arrows.</td><td>Evidence weighting; mark low-confidence edges.</td></tr>
+<tr><td>Layout still shows crossings</td><td>Fails readability.</td><td>SP clusters, crossing minimisation, accept unavoidable crossings with a jump symbol.</td></tr>
+<tr><td>Scope</td><td>Nothing finishes.</td><td>Vertical slice first: one drawing, tags to sketch end to end.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Operators need a clean picture of the process, but engineers still trace every P&amp;ID by hand. Untangle Graph reads the drawing, builds a flow graph with evidence for every connection, keeps only the equipment and IO instruments, recognises duty and standby pumps as parallel branches, and redraws it left to right with straight lines. It reports which IO tags it found, and you can click any line to see the original path.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> Show a tangled P&amp;ID with crossing pump lines.</li>
+<li><b>0:40 Upload.</b> Drop PDF and IO list. Layers appear: tags, equipment, lines.</li>
+<li><b>1:30 Tag check.</b> 14 of 14 found; one near miss flagged for review.</li>
+<li><b>2:10 Graph.</b> Show the extracted graph with arrows; click an edge to trace it on the P&amp;ID.</li>
+<li><b>3:00 Sketch.</b> The simplified output with parallel duty and standby lines; slide before and after.</li>
+<li><b>3:50 Generic.</b> Run a second, unseen drawing from the generator or sample set.</li>
+<li><b>4:30 Close.</b> Accuracy numbers and limits.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> control-system engineers and operators.</p><p><b>Gap:</b> each P&amp;ID is redrawn by hand into a simplified graphic, which is slow and error-prone.</p><p><b>Why now:</b> projects are bigger and faster; document-understanding AI is finally good enough to help.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> graph first; flow solved with evidence; series-parallel detection; trace-back.</p><p><b>Mechanism:</b> read, graph, direction, simplify, structure, layout.</p><p><b>Feasible:</b> prototype on synthetic and sample drawings: tag recall X%, edge F1 Y% (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Python, PyMuPDF, OpenCV, OCR engine, networkx, OR-Tools, ELK or Graphviz, SVG, python-pptx, FastAPI, React. Name any vision model used.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Review overlay, tag-check report, graph view, sketch, before and after, trace-back.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> tag extraction, tiny graph to sketch. <b>In progress:</b> lines and flow solver. <b>Next:</b> multi-sheet, raster robustness.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Hours of redrawing per P&amp;ID saved; consistent sketches; foundation for auto-generated operator graphics.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How do you know the connections are right?</summary><p>Every edge is built from traced geometry with evidence for direction; we measure edge precision and recall against ground truth and let users trace any edge back to the drawing.</p></details>
+<details class="qa"><summary>Does it work on a drawing it has never seen?</summary><p>The approach uses generic geometry and tag grammar, and we test on synthetic drawings with randomised layouts and on the sample set.</p></details>
+<details class="qa"><summary>What about scanned drawings?</summary><p>We handle them through rendering and OCR, with lower confidence flagged; vector input is the reliable path.</p></details>
+<details class="qa"><summary>How are duty and standby pumps recognised?</summary><p>By series-parallel reduction: two branches with matching component sequences between the same endpoints.</p></details>
+<details class="qa"><summary>Where is AI used?</summary><p>Symbol classification and reading difficult text where needed, and layout heuristics; all cross-checked by deterministic rules. We declare the models.</p></details>
+<details class="qa"><summary>What if an IO tag is not found?</summary><p>It is reported in the tag-check report with a reason (near miss, likely on another sheet) rather than invented.</p></details>
+</article>

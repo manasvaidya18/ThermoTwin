@@ -1,0 +1,266 @@
+<article class="view" id="v-im4" data-track="im" data-title="DayOne">
+<header class="phead">
+  <div class="kicker"><span class="chip im">iMocha track</span><span class="chip">IM-04 AI Job Simulator</span></div>
+  <h2>DayOne</h2>
+  <p class="sub">Practise the first day at work before it happens. AI characters react to what you say, the world changes around you, and the debrief quotes your own words as evidence.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●○○○</b></div><div>Demo impact<b>●●●●○</b></div><div>Provable<b>●●○○○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Interviews and tests rarely show how someone handles real work: a production incident, a code review, an unclear requirement from a client, a difficult conversation with a teammate. Students seldom get to practise these situations before their first job. Build an AI-powered simulator in which people practise realistic workplace scenarios with AI characters and receive fair, evidence-based feedback afterwards.</p>
+<h4>What the PDF requires</h4>
+<ul>
+<li>Realistic scenarios with AI characters (manager, client, teammate), through chat or voice.</li>
+<li>Scenarios that <b>react</b> to what the person says and does instead of following a fixed script.</li>
+<li>A debrief at the end graded against a <b>clear rubric</b> that <b>quotes moments from the conversation as evidence</b>.</li>
+<li>Optional: generate new scenarios from a job description; track progress over several attempts.</li>
+<li>Outcomes: two or three complete, realistic scenarios; a rubric-based debrief with every point backed by a moment from the session; feedback a student would find genuinely useful.</li>
+<li>Stage 1: roles and scenarios, rubric, conversation design, how feedback will be made fair and specific. Stage 2: one complete text scenario from start to debrief. Stage 3: voice or video interaction, several scenarios, scenario generation from a job description, progress tracking.</li>
+</ul>
+<h4>Why plain chatbots fail here</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Failure</th><th>What happens</th><th>Our design response</th></tr></thead>
+<tbody>
+<tr><td>The conversation wanders</td><td>An LLM improvises and loses the scenario's point.</td><td>A Director holds world state and beats.</td></tr>
+<tr><td>Hidden facts leak</td><td>The "client" blurts out the real requirement on turn one.</td><td>Characters know only what they should; facts unlock by triggers; a leak checker.</td></tr>
+<tr><td>Feedback is vague</td><td>"Good communication, work on prioritisation."</td><td>Rubric with verbatim quotes, better moves and missed opportunities.</td></tr>
+<tr><td>Unfair comparisons</td><td>Each person gets a different conversation.</td><td>Seeded worlds: same facts and beats for everyone.</td></tr>
+<tr><td>Hard to author</td><td>Writing scenarios is slow.</td><td>A spec format and generation from a job description, with automated quality checks.</td></tr>
+</tbody></table></div>
+
+<h3>Our concept: DayOne</h3>
+<div class="g3">
+<div class="card"><h4>1. Director, actors, assessor</h4><p>Three roles. The <b>Director</b> owns the hidden world state and decides what happens next. <b>Actors</b> voice characters within what they know. The <b>Assessor</b> silently tags behaviours to the rubric with turn ids while you play.</p></div>
+<div class="card"><h4>2. Evidence you can check</h4><p>Every debrief point quotes your words. A program checks each quote exists in the transcript. Each dimension also shows "a stronger move would have been..." and "missed opportunities" drawn from beats you did not trigger.</p></div>
+<div class="card"><h4>3. Rewind and retry</h4><p>The world state is stored per turn. Go back to the moment it went wrong, try a different approach, and compare the two branches in the debrief.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>DayOne</th></tr></thead>
+<tbody>
+<tr><td>One prompt: "act as my manager"</td><td>No state, no rubric, no fairness.</td><td>Scenario spec, state machine, assessor.</td></tr>
+<tr><td>LLM writes a feedback paragraph</td><td>Unsupported and generic.</td><td>Quote-verified, rubric-anchored debrief.</td></tr>
+<tr><td>Fixed branching script</td><td>Not reactive; boring.</td><td>Reactive actors inside a constrained world.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>It is the most emotionally engaging problem and our design makes it credible: verifiable quotes, fair seeded worlds, scenarios tested automatically by simulated candidates. Voice and rewind make a great demo.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>Crowded and hard to prove objectively. Without quote verification and the fairness story, it looks like a roleplay chatbot. Latency and character consistency are the technical risks, so test them early.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Scenario spec</b><span>World facts, hidden facts, characters, beats, artefacts, rubric, example moves.</span></div>
+<div class="st"><b>Director</b><span>Keeps state; fires beats and timed events; selects who speaks.</span></div>
+<div class="st"><b>Actors</b><span>In-character replies within knowledge limits; leak and consistency checks.</span></div>
+<div class="st"><b>Assessor</b><span>Tags behaviours to the rubric with turn ids, live.</span></div>
+<div class="st"><b>Debrief</b><span>Scores, verbatim quotes, better moves, missed opportunities.</span></div>
+<div class="st"><b>Verifier</b><span>Quote and turn id checks; consistency across two assessor passes.</span></div>
+<div class="st"><b>Progress</b><span>Attempts, radar over time, replay and compare.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>spec/</td><td>YAML schema, validator, scenario library</td><td>Pydantic, YAML</td></tr>
+<tr><td>engine/director</td><td>State store, beat triggers, timers, meters, branching</td><td>Python state machine, SQLite or Redis</td></tr>
+<tr><td>engine/actors</td><td>Character prompts, knowledge boundaries, style, safety</td><td>LLM API with per-character system prompts</td></tr>
+<tr><td>engine/assessor</td><td>Behaviour tagging and scoring</td><td>LLM structured outputs plus rules</td></tr>
+<tr><td>debrief/</td><td>Rubric scoring, quote verification, report</td><td>Python</td></tr>
+<tr><td>voice/</td><td>Speech to text and text to speech, latency handling</td><td>Web Speech API or Whisper; browser SpeechSynthesis or a TTS API</td></tr>
+<tr><td>generator/</td><td>Job description to scenario; validation by simulated candidates</td><td>LLM plus test harness</td></tr>
+<tr><td>web/</td><td>Chat or voice UI, artefact panes, meters, rewind, progress</td><td>React, FastAPI, WebSocket</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Scenario spec</h4>
+<pre class="code">id: incident_checkout_down
+role: backend_engineer_intern
+setting: "2:07 AM. You are on call for the first time. The checkout service is failing."
+world_facts:                        # known to everyone
+  - checkout error rate jumped to 40% at 01:58
+hidden_facts:                       # unlocked by triggers
+  - id: deploy      text: "A deploy at 01:50 reduced the DB connection pool from 50 to 5"        unlock: [asked_recent_changes]
+  - id: cdn_alert   text: "A CDN latency alert is a red herring"
+characters:
+  - id: priya   role: engineering_manager  goal: "get status and an ETA every 10 minutes"  style: "anxious, brief"
+                knows: [world_facts, customer_impact]
+  - id: arjun   role: senior_on_call       goal: "help without taking over"              style: "calm, slow replies"
+                knows: [world_facts, deploy]   reveal: "only if asked a specific question"
+artefacts: [ dashboard_chart, error_log_snippet, deploy_list ]
+beats:
+  - id: b1  trigger: "turn &gt;= 3 and not status_update_sent"  action: priya.pings("Any update? Customers are complaining.")  meter: patience -1
+  - id: b2  trigger: "asked_recent_changes"                    action: reveal(deploy)
+  - id: b3  trigger: "proposed_rollback and not assessed_risk" action: priya.asks("What is the risk if we roll back?")
+timers: [ { at_turn: 6, event: "pager_alert: payment provider timeouts" } ]
+rubric: [ prioritisation, communication, technical_judgement, ownership ]
+success_paths: [ [asked_recent_changes, proposed_rollback, sent_status_update, scheduled_postmortem] ]</pre>
+<h4>2. Turn loop</h4>
+<ol>
+<li>The user message arrives (typed or transcribed).</li>
+<li><b>Assessor</b> (asynchronous) tags observable behaviours: asked a clarifying question, gave a status update with ETA, escalated appropriately, proposed rollback, blamed someone, stayed silent too long. Each tag carries the turn id and the span of text.</li>
+<li><b>Director</b> updates flags and meters, evaluates beat triggers, fires timed events, and chooses which character responds.</li>
+<li><b>Actor</b> generates the reply from its persona, current emotion, knowledge list and the flags that unlocked facts. A checker verifies the reply does not mention facts the character should not know and does not break character.</li>
+<li>The state snapshot is stored for this turn (enabling rewind).</li>
+</ol>
+<h4>3. Fairness through seeded worlds</h4>
+<p>For assessment use, fix the random seed and the beat schedule so every candidate faces the same facts, characters and events. Actor wording may vary, but the hidden facts and triggers are identical. Practice mode may add randomness for variety. This is the difference between a practice toy and a fair evaluation.</p>
+<h4>4. Rubric</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Dimension</th><th>Anchors (0 to 3)</th><th>Observable behaviours</th></tr></thead>
+<tbody>
+<tr><td>Prioritisation</td><td>0 chases side issues; 3 isolates the biggest customer impact first and sequences actions.</td><td>Asks about impact; mitigates before investigating root cause.</td></tr>
+<tr><td>Communication</td><td>0 vague or silent; 3 concise, regular updates with ETA and next step.</td><td>Status updates; tailors message to the audience.</td></tr>
+<tr><td>Technical judgement</td><td>0 guesses; 3 forms and tests hypotheses, weighs risk of rollback.</td><td>Checks recent changes; asks for logs; considers risk.</td></tr>
+<tr><td>Ownership</td><td>0 deflects; 3 takes responsibility and plans follow-up.</td><td>Says "I will"; proposes postmortem.</td></tr>
+<tr><td>Collaboration and empathy</td><td>0 dismissive; 3 supportive and clear.</td><td>Acknowledges feelings; gives specific feedback.</td></tr>
+<tr><td>Handling ambiguity</td><td>0 assumes; 3 asks targeted questions and confirms understanding.</td><td>Clarifying questions; restates requirements.</td></tr>
+</tbody></table></div>
+<p>Each scenario uses a subset of four dimensions. Each level has a short example transcript for good, average and weak behaviour, used as calibration examples in the assessor prompt.</p>
+<h4>5. The debrief</h4>
+<pre class="code">Dimension: Communication            Score: 2 / 3         Confidence: high (two assessor passes agree)
+Evidence (+): turn 9   "Rollback started at 02:21, I expect checkout to recover within 10 minutes. Next update at 02:31."
+Evidence (-): turns 2 to 6  no update to Priya for 5 turns after she asked (her patience meter fell from 3 to 1)
+A stronger move: after finding the pool change (turn 5), send a one-line update immediately, then continue investigating.
+Missed opportunity: you never asked Arjun about recent deploys until turn 7; asking at turn 2 would have unlocked the cause earlier.
+Next time try: use the pattern "what I know, what I am doing, when you will hear from me".</pre>
+<ul>
+<li><b>Quote verifier.</b> Every quoted string must be an exact substring of the transcript at the cited turn. Failing items are dropped and regenerated once.</li>
+<li><b>Two assessor passes</b> with different prompts. Agreement is shown; disagreements lower confidence and are flagged.</li>
+<li><b>Missed opportunities</b> come from beats the Director did not fire and hidden facts that stayed locked, so they are factual, not invented.</li>
+<li><b>Fairness controls.</b> Accent and grammar are not scored unless the dimension is communication clarity; Hinglish and non-native phrasing are accepted; the dispute button highlights the evidence and requests a re-read.</li>
+</ul>
+<h4>6. Scenario generation from a job description</h4>
+<ol>
+<li>Extract role, seniority, tools and soft-skill expectations from the job description.</li>
+<li>Pick templates from the library: incident, code review, ambiguous request, teammate conflict, estimation and pushback, mentoring, stakeholder update.</li>
+<li>Instantiate: company context, systems and names; write hidden facts and beats; choose rubric dimensions.</li>
+<li><b>Auto-validate:</b> every dimension has at least two observable opportunities; at least one success path exists; no contradictions between facts; reasonable length.</li>
+<li><b>Simulation test:</b> run the scenario with three simulated candidates (good, average, weak personas, played by an LLM). The scenario passes only if the scores separate (good above average above weak by at least one level) and hidden facts do not leak. This quality gate is a strong engineering idea.</li>
+</ol>
+<h4>7. Voice</h4>
+<ul>
+<li>Speech to text through the browser's Web Speech API (quick) or Whisper (more accurate); text to speech through the browser or a TTS API with different voices per character.</li>
+<li>Latency budget about 2 to 3 seconds round trip: stream tokens, start speaking on the first sentence, keep replies short.</li>
+<li>Show live captions and keep a text fallback.</li>
+<li>Optional delivery indicators (pace, filler words) shown separately and never mixed into the rubric score.</li>
+</ul>
+<h4>8. Progress and replay</h4>
+<ul>
+<li>Store attempts with scores, evidence and timestamps. Show a radar over attempts, per-dimension trend, streaks.</li>
+<li>Replay a session, or compare attempt 1 and attempt 3 on the same scenario with the same seed.</li>
+<li><b>Rewind and branch.</b> Jump to any turn, restore its stored state, play a different line, and compare branches.</li>
+</ul>
+<h4>9. Launch scenarios</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Scenario</th><th>Characters</th><th>Hidden twist</th><th>Rubric focus</th></tr></thead>
+<tbody>
+<tr><td>2:07 AM, checkout is down</td><td>Priya (manager), Arjun (senior on call), Support lead</td><td>Deploy changed the DB pool size; the CDN alert is a red herring.</td><td>Prioritisation, communication, technical judgement, ownership</td></tr>
+<tr><td>The pull request with a secret</td><td>Kabir (junior, defensive), Tech lead</td><td>Hard-coded API key and N+1 queries; Kabir is anxious about his first PR.</td><td>Technical judgement, collaboration and empathy, communication</td></tr>
+<tr><td>The vague client brief</td><td>Ms Rao (client), Account manager</td><td>Real constraint: a trade-show deadline and a fixed budget she mentions only if asked.</td><td>Handling ambiguity, communication, ownership</td></tr>
+<tr><td>Bonus: deadline disagreement</td><td>Senior engineer, PM</td><td>Hidden dependency on another team.</td><td>Collaboration, prioritisation</td></tr>
+</tbody></table></div>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Chat with AI characters</td><td><span class="tier core">Core</span></td><td>Actors with personas and knowledge limits.</td><td>The task.</td><td>M</td></tr>
+<tr><td>Reactive scenarios</td><td><span class="tier core">Core</span></td><td>Director with beats and flags.</td><td>Not scripted.</td><td>L</td></tr>
+<tr><td>Rubric debrief with quotes</td><td><span class="tier core">Core</span></td><td>Assessor tags and verified quotes.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Three complete scenarios</td><td><span class="tier core">Core</span></td><td>Spec files.</td><td>Required outcome.</td><td>M</td></tr>
+<tr><td>Pressure meters</td><td><span class="tier wow">Wow</span></td><td>Manager patience and client trust shown live.</td><td>Game-like clarity.</td><td>S</td></tr>
+<tr><td>Missed opportunities</td><td><span class="tier wow">Wow</span></td><td>Unfired beats and locked facts.</td><td>Feedback that teaches.</td><td>M</td></tr>
+<tr><td>Rewind and retry</td><td><span class="tier wow">Wow</span></td><td>Stored state per turn.</td><td>Judges love time travel.</td><td>M</td></tr>
+<tr><td>Work artefacts</td><td><span class="tier wow">Wow</span></td><td>Chart, log, diff or ticket panes the user can reference.</td><td>Feels like real work.</td><td>M</td></tr>
+<tr><td>Voice mode</td><td><span class="tier wow">Wow</span></td><td>Speech in and out with captions.</td><td>Emotional demo.</td><td>M</td></tr>
+<tr><td>Scenario generator with auto-validation</td><td><span class="tier wow">Wow</span></td><td>Job description to scenario; simulated candidates gate quality.</td><td>Scales content; rigorous.</td><td>L</td></tr>
+<tr><td>Seeded fair mode</td><td><span class="tier wow">Wow</span></td><td>Same facts and events for all candidates.</td><td>Fairness story.</td><td>S</td></tr>
+<tr><td>Progress dashboard</td><td><span class="tier stretch">Stretch</span></td><td>Radar over attempts.</td><td>Motivation.</td><td>M</td></tr>
+<tr><td>Employer mode</td><td><span class="tier stretch">Stretch</span></td><td>Assign scenarios, compare reports.</td><td>Second customer.</td><td>M</td></tr>
+<tr><td>Multi-character war room</td><td><span class="tier stretch">Stretch</span></td><td>Several actors in one thread.</td><td>Realism.</td><td>M</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Scenario picker.</b> Cards with difficulty, skills practised, time; a "Generate from job description" option.</li>
+<li><b>Briefing.</b> Setting and goal, without hidden facts; "start" begins the clock.</li>
+<li><b>Simulation.</b> Chat or voice; character avatars and names; side panel with artefacts; meters; timer; rewind button.</li>
+<li><b>Debrief.</b> Overall summary; rubric cards with score, quotes (click to jump to the turn), better move, missed opportunities, next-time tips; confidence and dispute button.</li>
+<li><b>Progress.</b> Attempts, radar, trend, compare two attempts.</li>
+<li><b>Author view.</b> Spec editor with validation results and the simulated-candidate test report.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>How</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Quote validity</td><td>Share of debrief quotes that are exact transcript substrings.</td><td>100%</td></tr>
+<tr><td>Hidden-fact leak rate</td><td>Facts mentioned before their trigger in 50 simulated runs.</td><td>0</td></tr>
+<tr><td>Score separation</td><td>Good, average, weak simulated personas.</td><td>At least one level apart on average</td></tr>
+<tr><td>Assessor agreement</td><td>Two passes; percentage within one level and kappa.</td><td>85% within one level; kappa 0.6 or higher</td></tr>
+<tr><td>Character consistency</td><td>Contradictions per session found by a checker.</td><td>Under 1</td></tr>
+<tr><td>Latency</td><td>Text turn and voice round trip.</td><td>Under 3 s and under 4 s</td></tr>
+<tr><td>Usefulness</td><td>Rating from 8 to 10 students on realism and feedback value (1 to 5).</td><td>4 or higher</td></tr>
+<tr><td>Fairness checks</td><td>Same behaviour in different phrasing styles.</td><td>Score difference within tolerance</td></tr>
+</tbody></table></div>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Write the incident scenario spec and rubric.</li><li>Simple loop: Director flags plus two actors in a terminal chat.</li><li>One debrief with verified quotes. Screenshot for slides.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Spec schema, Director, actors, chat UI.</li>
+<li><b>Day 2.</b> Assessor, debrief, quote verifier, second scenario.</li>
+<li><b>Day 3.</b> Third scenario, artefacts panel, meters, progress storage.</li>
+<li><b>Day 4.</b> Rewind, seeded mode, simulated-candidate harness, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 5 h: voice mode.</li>
+<li>5 to 12: generator from job description with validation.</li>
+<li>12 to 18: progress dashboard, comparison, polish.</li>
+<li>18 to 24: user test with peers; rehearse; record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Engine lead:</b> Director, actors, assessor.</li><li><b>Content and rubric:</b> scenarios, rubric, calibration examples.</li><li><b>Frontend and voice:</b> UI, voice, replay.</li><li><b>Evaluation and pitch:</b> harness, user test, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Character drift or leaks</td><td>Unrealistic or unfair.</td><td>Knowledge lists, checker, short replies, tests with 50 simulated runs.</td></tr>
+<tr><td>Latency in voice</td><td>Awkward demo.</td><td>Streaming; short replies; text fallback; pre-warmed models.</td></tr>
+<tr><td>LLM scoring variance</td><td>Unfair feedback.</td><td>Anchored rubric, two passes, confidence.</td></tr>
+<tr><td>Scenario authoring effort</td><td>Not enough content.</td><td>Spec format and generator; reuse templates.</td></tr>
+<tr><td>Over-claiming prediction of job performance</td><td>Credibility.</td><td>Position as practice and feedback, not hiring decision.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>The hardest parts of a first job are the ones nobody practises: an outage at 2 AM, feedback on a teammate's code, a client who cannot say what they want. DayOne lets students rehearse these with AI characters who react to what they say, then gives a debrief that quotes their own words against a clear rubric, shows what they missed and lets them rewind and try again. Scenarios are fair, seeded and automatically tested, and can be generated from any job description.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> "Nobody practises the 2 AM page."</li>
+<li><b>0:40 Start.</b> Briefing; meters at 3.</li>
+<li><b>1:15 Play.</b> Ask Arjun about recent deploys; the pool change unlocks; Priya pings for an update; the meter drops, then recovers after a good status message.</li>
+<li><b>2:30 Voice moment.</b> Switch to voice for a status update.</li>
+<li><b>3:00 Debrief.</b> Rubric cards; click a quote and jump to the turn; read a missed opportunity.</li>
+<li><b>3:40 Rewind.</b> Jump to turn 3, ask the right question earlier, compare branches.</li>
+<li><b>4:15 Generator.</b> Paste a job description, show the scenario and the simulated-candidate validation report.</li>
+<li><b>4:50 Close.</b> Progress radar and roadmap.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> students preparing for a first job; employers wanting realistic evaluation.</p><p><b>Gap:</b> no safe place to practise real workplace situations; interview formats miss them.</p><p><b>Why now:</b> LLMs can play believable characters, if kept inside a controlled world.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> Director, actors and assessor; verified-quote debriefs; rewind; auto-validated generated scenarios.</p><p><b>Mechanism:</b> spec, turn loop, assessor tags, rubric debrief.</p><p><b>Feasible:</b> one scenario complete in text with debrief (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>React, FastAPI, WebSocket, LLM API with structured outputs, SQLite or Redis, Web Speech or Whisper, TTS. State models.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Scenario picker, simulation with meters and artefacts, debrief with quotes, rewind, progress.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> spec, incident scenario, debrief. <b>In progress:</b> second and third scenarios, voice. <b>Next:</b> generator, employer mode.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>More confident first-time employees; fairer, richer evaluation for employers; scalable content through generation.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How do you stop the AI from just improvising?</summary><p>A Director holds the hidden state and beats; actors only know what their character knows and cannot reveal locked facts.</p></details>
+<details class="qa"><summary>How do you know the feedback is fair?</summary><p>Anchored rubric, two assessor passes with agreement shown, every point backed by a verified quote, seeded worlds in assessment mode, and a dispute option.</p></details>
+<details class="qa"><summary>Can feedback be fabricated?</summary><p>No quote is accepted unless it is an exact transcript substring; unsupported items are dropped.</p></details>
+<details class="qa"><summary>How are new scenarios checked?</summary><p>Structure checks, plus a simulation with good, average and weak candidates; the scenario passes only if scores separate and nothing leaks.</p></details>
+<details class="qa"><summary>Is it a hiring tool?</summary><p>Primarily practice and feedback. Employer mode needs more validation and we say so.</p></details>
+<details class="qa"><summary>What about accents and language?</summary><p>Grammar and accent are not scored unless the dimension is communication clarity; multilingual input is accepted.</p></details>
+</article>

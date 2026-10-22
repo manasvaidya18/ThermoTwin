@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Home</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-page="home">
+<main>
+  <h1 data-i18n="home.title">3 fridges monitored</h1>
+  <p class="note"><span class="dot"></span>Synced 2 min ago · WHO alarms run separately</p>
+
+  <div class="summary">
+    <div><b style="color:var(--warn)">1</b><span data-i18n="home.attn">Needs attention</span></div>
+    <div><b style="color:var(--ok)">2</b><span data-i18n="home.normal">Normal</span></div>
+  </div>
+
+  <a class="card warn" href="alert-ilr1.html">
+    <div class="row">
+      <div><div class="name">ILR-1</div><div class="kind">Ice-lined fridge · Room 102</div></div>
+      <span class="pill warn" data-i18n="st.early">Early warning</span>
+    </div>
+    <div class="temp">2.4<small> °C</small></div>
+    <div class="range">Falling 0.4 °C every 10 min · safe range 2–8 °C</div>
+    <div class="msg warn" data-i18n="ilr1.msg">May go below 0 °C in about 60 min</div>
+    <div class="cta" data-i18n="cta.see">See what to do →</div>
+  </a>
+
+  <div class="card">
+    <div class="row">
+      <div><div class="name">ILR-2</div><div class="kind">Ice-lined fridge · Main bay</div></div>
+      <span class="pill ok" data-i18n="st.normal">Normal</span>
+    </div>
+    <div class="temp">4.6<small> °C</small></div>
+    <div class="range">Stable · safe range 2–8 °C</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div><div class="name">DF-1</div><div class="kind">Deep freezer · Ice packs</div></div>
+      <span class="pill ok" data-i18n="st.normal">Normal</span>
+    </div>
+    <div class="temp">−18.2<small> °C</small></div>
+    <div class="range">Stable · target −25 to −15 °C</div>
+  </div>
+</main>
+<script src="app.js"></script>
+<script src="../shared/live.js"></script>
+<script src="live-phone.js"></script>
+</body>
+</html>

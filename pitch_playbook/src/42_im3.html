@@ -1,0 +1,258 @@
+<article class="view" id="v-im3" data-track="im" data-title="ProofPass">
+<header class="phead">
+  <div class="kicker"><span class="chip im">iMocha track</span><span class="chip">IM-03 Skill Passport</span></div>
+  <h2>ProofPass</h2>
+  <p class="sub">A skill profile where every skill points to evidence you can open, and anything unproven is never shown as verified. Role match, a learning plan that creates new proof, and a one-minute recruiter view.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●○○○</b></div><div>Demo impact<b>●●●○○</b></div><div>Provable<b>●●●○○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Resumes list skills but rarely prove them. A student's real abilities are scattered across code repositories, project reports, portfolios and certificates. Recruiters cannot check all of that quickly, and learners often do not know which skills they lack for the role they want. Build an AI system that turns real work into a verified skill profile, with each skill backed by evidence and linked to a path for growth.</p>
+<h4>What the PDF requires</h4>
+<ul>
+<li>Analyse a person's work: code repositories, project documents, a portfolio or certificates.</li>
+<li>Produce a skill profile in which <b>every skill and level links to cited evidence</b> (a project, a file or a piece of work).</li>
+<li>Compare the profile with a target role and show matches and gaps; generate a personalised learning plan to close the gaps.</li>
+<li>Offer a shareable "skill passport" view a recruiter can read <b>in under a minute</b>.</li>
+<li><b>Guard against invented claims:</b> a skill without evidence must never appear as verified.</li>
+<li>Outcomes: passports for a few sample users from public or sample data; every claimed skill traceable to its evidence; a clear explanation of how well a person matches a role, and why.</li>
+<li>Stage 1 must name the skill framework, data sources, how evidence links to each skill, and passport mock-ups. Stage 2: a passport from one public code repository and a resume with every skill linked to evidence. Stage 3: multiple data sources, role matching, learning plans, a recruiter view, and checks that prevent unsupported claims.</li>
+<li>Use public, sample or synthetic data; do not use real people's personal information without consent.</li>
+</ul>
+
+<h3>Our concept: ProofPass</h3>
+<div class="g3">
+<div class="card"><h4>1. Evidence first, language second</h4><p>Code extracts evidence deterministically (dependencies, code structure, tests, CI, git history). The language model only organises and phrases, and may cite nothing but evidence ids that a checker verifies. Unsupported sentences are deleted, not softened.</p></div>
+<div class="card"><h4>2. Claim versus proof</h4><p>Resume claims become a ledger: Verified, Weak evidence, Claimed only, Contradicted. Claimed-only skills never count toward the score. The planted-lie test proves it: fake skills in a resume must stay unverified.</p></div>
+<div class="card"><h4>3. The plan creates proof</h4><p>Each learning-plan step is a small project whose output is analysed again. A gap can become Verified, so the loop closes. A short quiz built from the person's own code checks they understand what they submitted.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>ProofPass</th></tr></thead>
+<tbody>
+<tr><td>Feed the repo and resume to an LLM and ask for skills</td><td>Hallucinated skills; reads README claims; no traceability.</td><td>Deterministic evidence extraction; cite-or-delete rule; checker.</td></tr>
+<tr><td>Count languages and stars</td><td>Popularity is not skill.</td><td>Substance metrics, authorship share, practices.</td></tr>
+<tr><td>Generic learning-plan generator</td><td>Hallucinated resources; no feedback loop.</td><td>Curated resource list; proof tasks re-analysed.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>It is built on a promise that is easy to test: nothing unproven is shown as verified. A planted-lie experiment and a 100% traceability number make the claim real. The quiz built from the candidate's own repo is a memorable anti-gaming feature.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>Crowded. Many teams will produce "resume plus GitHub into a skill chart". Differentiate through evidence rigour, the lie test and the closed learning loop; do not rely on visual polish alone.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Collect</b><span>Public repos (GitHub), resume PDF, certificates, project reports, portfolio URL.</span></div>
+<div class="st"><b>Extract evidence</b><span>Static analysis, dependencies, git history, docs parsing; each item gets an id and a source pointer.</span></div>
+<div class="st"><b>Extract claims</b><span>Skills and levels the person asserts, from resume and reports.</span></div>
+<div class="st"><b>Score</b><span>Evidence recipes aggregate into levels per skill; claims matched to evidence.</span></div>
+<div class="st"><b>Verify language</b><span>Citation checker; unsupported statements removed.</span></div>
+<div class="st"><b>Match and plan</b><span>Role profile comparison, gap ranking, learning plan with proof tasks.</span></div>
+<div class="st"><b>Present</b><span>Passport, recruiter view, evidence drawer, signed share link.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>connectors/</td><td>GitHub API or local clone; PDF and document parsing; certificate link checks</td><td>GitPython, PyDriller, PyMuPDF, requests</td></tr>
+<tr><td>analyzers/</td><td>Language-specific static analysis, practices detection, authorship, duplicates</td><td>tree-sitter, radon, ast, MinHash</td></tr>
+<tr><td>evidence/</td><td>Evidence store with ids and pointers</td><td>SQLite, networkx graph</td></tr>
+<tr><td>skills/</td><td>Ontology, recipes, level thresholds, claim matching</td><td>YAML, Python</td></tr>
+<tr><td>llm/</td><td>Claim extraction, evidence summaries, plan text; strict JSON with evidence ids</td><td>LLM structured outputs</td></tr>
+<tr><td>verifier/</td><td>Citation checks, numeric checks, fail-closed filter</td><td>Python</td></tr>
+<tr><td>roles/</td><td>Role profiles, match scoring, gap analysis, plan generator</td><td>Python</td></tr>
+<tr><td>web/</td><td>Passport, recruiter view, evidence drawer, cohort view</td><td>FastAPI, React</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Skill framework</h4>
+<p>Stage 1 requires naming the framework. Proposal: a compact <b>internal ontology of about 120 to 200 software skills</b> in three levels (domain, skill, sub-skill), each mapped where possible to identifiers in open frameworks such as ESCO or O*NET so the passport can speak a standard language. Keep it small enough to define a recipe for each skill. Levels use a five-point scale with behavioural definitions:</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Level</th><th>Name</th><th>Meaning</th><th>Evidence needed</th></tr></thead>
+<tbody>
+<tr><td>L0</td><td>None</td><td>No trace.</td><td>None</td></tr>
+<tr><td>L1</td><td>Aware</td><td>Used in a basic way (a tutorial-level artefact).</td><td>One artefact</td></tr>
+<tr><td>L2</td><td>Working</td><td>Built something that runs using the skill.</td><td>At least two independent artefact types</td></tr>
+<tr><td>L3</td><td>Proficient</td><td>Applied it with good practice (tests, structure, error handling) across more than one project.</td><td>Several artefacts with quality signals</td></tr>
+<tr><td>L4</td><td>Advanced</td><td>Design-level decisions, performance or scale concerns, review of others' work.</td><td>Deep, varied, recent evidence</td></tr>
+</tbody></table></div>
+<h4>2. Evidence extraction</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Source</th><th>What is extracted</th></tr></thead>
+<tbody>
+<tr><td>Dependency manifests</td><td>Frameworks and libraries used (requirements, pyproject, package.json, pom, go.mod).</td></tr>
+<tr><td>Source code (AST)</td><td>Language features (async, typing coverage, decorators, generators), module structure, error handling, API routes, database models, ML training and evaluation scripts, data pipeline stages.</td></tr>
+<tr><td>Tests and CI</td><td>Test files and counts, test-to-code ratio, CI workflows that run tests or deploy, lint and type-check configuration.</td></tr>
+<tr><td>Infrastructure files</td><td>Dockerfile (multi-stage?), compose, Kubernetes manifests, Terraform.</td></tr>
+<tr><td>Git history</td><td>Commit cadence and span, authorship share by identity, merge and review activity, refactor commits, suspicious single-commit dumps.</td></tr>
+<tr><td>Documentation</td><td>README structure, architecture notes, setup instructions that actually match the project.</td></tr>
+<tr><td>Resume and reports</td><td>Claims (skill, claimed level, context), results claimed ("92% accuracy") to cross-check with scripts and logs.</td></tr>
+<tr><td>Certificates</td><td>Issuer and id; verified only if a public verification link or id check succeeds, otherwise "self-declared".</td></tr>
+</tbody></table></div>
+<p>Each evidence item is stored as <code>{id, type, source (repo, path, line range, commit, URL), snippet hash, strength, timestamp}</code>. Authorship share comes from git blame by author identity (the user confirms their emails). Vendored and generated code is excluded. Forks and template boilerplate are down-weighted using the fork flag and file-hash comparison against common templates and between the candidate's own repos (MinHash).</p>
+<h4>3. Evidence recipes (declarative, per skill)</h4>
+<pre class="code">skill: docker
+evidence:
+  - { type: dockerfile_present,        weight: 0.35 }
+  - { type: multistage_build,          weight: 0.20, requires: dockerfile_present }
+  - { type: compose_multi_service,     weight: 0.25 }
+  - { type: ci_builds_image,           weight: 0.25 }
+  - { type: image_pushed_to_registry,  weight: 0.15 }
+aggregate: noisy_or            # S = 1 - prod(1 - w_i * quality_i), with recency decay exp(-lambda * age_years)
+levels:    { L1: 0.30, L2: 0.55, L3: 0.75, L4: 0.90 }
+independence: L2+ needs at least 2 evidence types from different files or repos
+authorship:   evidence counts only if the person authored at least 30% of the lines in the cited files</pre>
+<div class="tw"><table class="t">
+<thead><tr><th>Skill</th><th>Typical evidence types</th></tr></thead>
+<tbody>
+<tr><td>Python</td><td>Code volume authored, typing coverage, async or generators, packaging, tests, CLI or API frameworks.</td></tr>
+<tr><td>SQL and databases</td><td>Schema files, migrations, ORM models, raw queries with joins, indexes, transactions.</td></tr>
+<tr><td>REST API design</td><td>Routes, status code handling, validation, authentication, API docs, tests against endpoints.</td></tr>
+<tr><td>Testing</td><td>Test count and ratio, mocks, fixtures, CI running tests, coverage config.</td></tr>
+<tr><td>Git and collaboration</td><td>Commit history, branches, pull requests, reviews, issues.</td></tr>
+<tr><td>Frontend (React)</td><td>Components, hooks, state management, build config, tests.</td></tr>
+<tr><td>Machine learning</td><td>Training script, data pipeline, evaluation metrics, experiment logs, reproducible environment.</td></tr>
+<tr><td>Security hygiene</td><td>Secrets handling, input validation, dependency pinning, authentication flows.</td></tr>
+<tr><td>Documentation</td><td>README quality, architecture notes, docstrings.</td></tr>
+</tbody></table></div>
+<h4>4. The claim ledger</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Status</th><th>Rule</th><th>Counts in score</th></tr></thead>
+<tbody>
+<tr><td>Verified</td><td>Evidence recipe gives at least L2 with the independence rule satisfied and authorship confirmed.</td><td>Yes</td></tr>
+<tr><td>Weak evidence</td><td>Some evidence but below the threshold.</td><td>Partially, labelled</td></tr>
+<tr><td>Claimed only</td><td>On the resume or report; no evidence found.</td><td>No; shown grey</td></tr>
+<tr><td>Contradicted</td><td>Evidence disagrees with the claim (for example "5 years of Python" but the visible history spans six months).</td><td>No; flagged</td></tr>
+</tbody></table></div>
+<h4>5. Language that must cite</h4>
+<ul>
+<li>The model produces JSON: a list of statements, each with <code>skill</code>, <code>level</code>, <code>text</code> and <code>evidence_ids[]</code>.</li>
+<li>The <b>verifier</b> checks that each id exists; that the cited file and line range exist at the cited commit; that identifiers or numbers in the statement appear in the evidence; that the statement's level does not exceed the evidence-derived level. Failures: regenerate once with a stricter prompt, otherwise <b>delete the statement</b>. Fail-closed.</li>
+<li>Numeric claims from reports ("accuracy 92%") must match a logged value or the item stays unverified.</li>
+</ul>
+<h4>6. Role match and gap analysis</h4>
+<ul>
+<li><b>Role profile.</b> From a job description (LLM extracts required skills and levels) or a template (Backend developer, Data analyst, ML engineer, Frontend developer, DevOps engineer): required skills with weights and minimum levels.</li>
+<li><b>Match score</b> = sum over skills of weight × min(1, verified level ÷ required level), divided by total weight. Unverified skills contribute zero, which makes the number conservative. Show a "potential if claims were verified" figure separately.</li>
+<li><b>Explanation.</b> A matrix of required versus achieved, top three blockers, and marginal gain: "adding SQL L2 raises your match from 64% to 78%".</li>
+</ul>
+<h4>7. Learning plan that produces evidence</h4>
+<ul>
+<li>Order gaps by marginal gain and prerequisite graph (for example HTTP before REST before authentication).</li>
+<li>Each step: what to learn (from a <b>curated resource list</b>, so no invented links), estimated hours, and a <b>proof task</b>: a small project spec with acceptance checks the analyser can verify.</li>
+<li>Weekly plan within the person's available hours.</li>
+<li>"Re-verify" re-runs the analysis; the passport shows what changed.</li>
+</ul>
+<h4>8. Understanding quiz from the person's own code</h4>
+<p>Pick two functions from the person's strongest evidence and ask a short question about each ("what does this function return for an empty list?", "why is this index created?"). The answer key comes from running the code or from the code itself. It deters showing off someone else's repository and adds a trust signal. Keep it optional and short.</p>
+<h4>9. Passport and sharing</h4>
+<ul>
+<li><b>One-minute recruiter view.</b> Name, target role, match score, a trust bar ("17 of 22 shown skills verified"), the three strongest proofs, the top gaps, and red flags (single-commit dumps, contradicted claims).</li>
+<li><b>Evidence drawer.</b> Click any skill: evidence list with file, line, snippet, commit link.</li>
+<li><b>Tamper evidence.</b> Export the passport as JSON, hash the evidence snapshot, sign it (Ed25519) and show a QR code to a verification page. A changed passport fails verification.</li>
+<li><b>Interview helper.</b> Suggested interview questions drawn from the person's strongest and weakest evidence.</li>
+<li><b>Placement-cell cohort view.</b> Aggregate skill coverage versus role demand across students; identify who needs support.</li>
+</ul>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Repo and resume analysis</td><td><span class="tier core">Core</span></td><td>Connectors and analysers.</td><td>The task.</td><td>L</td></tr>
+<tr><td>Skills with levels and cited evidence</td><td><span class="tier core">Core</span></td><td>Recipes and evidence store.</td><td>Central requirement.</td><td>L</td></tr>
+<tr><td>Role match and gaps</td><td><span class="tier core">Core</span></td><td>Weighted coverage with explanation.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Learning plan</td><td><span class="tier core">Core</span></td><td>Gap order, curated resources, proof tasks.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>One-minute recruiter view</td><td><span class="tier core">Core</span></td><td>Compact page.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Fail-closed citation checker</td><td><span class="tier wow">Wow</span></td><td>Verifier deletes unsupported statements.</td><td>"It cannot lie."</td><td>M</td></tr>
+<tr><td>Claim versus proof ledger</td><td><span class="tier wow">Wow</span></td><td>Four statuses.</td><td>Summarised in a single line.</td><td>M</td></tr>
+<tr><td>Planted-lie test</td><td><span class="tier wow">Wow</span></td><td>Fake skills must stay unverified.</td><td>A convincing live experiment.</td><td>S</td></tr>
+<tr><td>Proof tasks that upgrade skills</td><td><span class="tier wow">Wow</span></td><td>Re-run analysis after the task.</td><td>Closes the loop.</td><td>M</td></tr>
+<tr><td>Quiz from your own code</td><td><span class="tier wow">Wow</span></td><td>Questions graded by the code.</td><td>Anti-gaming and fun.</td><td>M</td></tr>
+<tr><td>Signed, QR passport</td><td><span class="tier wow">Wow</span></td><td>Hash plus signature plus verifier page.</td><td>Tamper evidence in one scan.</td><td>S</td></tr>
+<tr><td>Interview question suggestions</td><td><span class="tier stretch">Stretch</span></td><td>From strongest and weakest evidence.</td><td>Direct recruiter value.</td><td>S</td></tr>
+<tr><td>Cohort dashboard for placement cells</td><td><span class="tier stretch">Stretch</span></td><td>Aggregate coverage.</td><td>The college angle.</td><td>M</td></tr>
+<tr><td>Skill decay</td><td><span class="tier stretch">Stretch</span></td><td>Recency weighting visualised.</td><td>Realism.</td><td>S</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Connect.</b> GitHub username or repo URLs, resume upload, certificate links, consent checkbox.</li>
+<li><b>Analysis progress.</b> Evidence items appearing live, counts by type.</li>
+<li><b>Passport.</b> Skill grid with level and status chips; trust bar; role match gauge; evidence chips on every skill.</li>
+<li><b>Evidence drawer.</b> File, line range, snippet, commit, why it counts.</li>
+<li><b>Claims ledger.</b> Table of resume claims with status.</li>
+<li><b>Role match.</b> Choose a role or paste a job description; matrix, blockers, marginal gains.</li>
+<li><b>Learning plan.</b> Weekly list with proof tasks; re-verify button.</li>
+<li><b>Recruiter view.</b> One page; share link; QR.</li>
+<li><b>Cohort.</b> Heat-map of skills versus roles.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<ul>
+<li><b>Samples.</b> Eight to ten passports: repos of consenting teammates, public open-source maintainers' repos (with public data only), and synthetic personas. Never use real people's personal data without consent.</li>
+<li><b>Planted-lie test.</b> Add false claims to resumes. Target: false-verified rate 0.</li>
+<li><b>Traceability.</b> Every displayed skill and statement links to at least one existing evidence item. Target: 100%.</li>
+<li><b>Claim-level accuracy.</b> Hand-label about 100 claims; measure precision and recall of Verified status.</li>
+<li><b>Level agreement.</b> Three human reviewers assign levels on a subset; report agreement with ours (weighted kappa or Spearman).</li>
+<li><b>Recruiter reading test.</b> Five peers answer five questions about a candidate from the one-page view; target under 60 seconds with 80% correct.</li>
+</ul>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Ontology of 15 skills with recipes for five of them.</li><li>Analyse one public repo; list evidence items with ids.</li><li>Resume with two fake skills; show them flagged Claimed only. Screenshot for slide 6.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Connectors, analysers, evidence store.</li>
+<li><b>Day 2.</b> Recipes, levels, claim extraction and ledger.</li>
+<li><b>Day 3.</b> Citation verifier, role match, plan, passport UI.</li>
+<li><b>Day 4.</b> Signing and QR, recruiter view, tests, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 4 h: run on judges' or sample repos; fix analyser crashes.</li>
+<li>4 to 12: quiz, cohort view, more recipes.</li>
+<li>12 to 18: polish; planted-lie live demo.</li>
+<li>18 to 24: rehearse and record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Analysis lead:</b> analysers, authorship, recipes.</li><li><b>LLM and verifier lead:</b> claims, citations, plan.</li><li><b>Frontend:</b> passport, recruiter view.</li><li><b>Data and pitch:</b> samples, tests, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Analyser breadth</td><td>Unsupported languages.</td><td>Start with Python and JavaScript; generic checks (git, CI, Docker, tests) cover others.</td></tr>
+<tr><td>Gaming (dummy repos, commit spam)</td><td>False credit.</td><td>Authorship share, substance metrics, template detection, quiz.</td></tr>
+<tr><td>Private repos and privacy</td><td>Data issues.</td><td>Public data only; local analysis option; consent.</td></tr>
+<tr><td>API rate limits</td><td>Slow or failing runs.</td><td>User token; cached samples for the demo.</td></tr>
+<tr><td>Over-claiming accuracy</td><td>Credibility.</td><td>Show levels as bands; document limits.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>A resume says "Docker, SQL, REST". Who checks? ProofPass reads a student's real work, repositories and projects, and builds a skill passport where every skill links to evidence you can open. Anything without proof is shown as unproven, never verified. It matches the profile to a target role, explains the gaps, and gives a learning plan whose projects create new proof. A recruiter reads it in a minute and can verify it has not been altered.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> A resume with ten skills; "which are real?"</li>
+<li><b>0:40 Connect.</b> GitHub repos plus the resume. Evidence items stream in.</li>
+<li><b>1:30 Passport.</b> Verified skills with chips; open one evidence drawer: file, lines, commit.</li>
+<li><b>2:15 The lie test.</b> The resume claimed Kubernetes and Rust; the ledger shows Claimed only, with no credit.</li>
+<li><b>3:00 Role match.</b> Choose "Backend developer": 71%; blockers and marginal gains.</li>
+<li><b>3:40 Plan.</b> Proof task for SQL; re-verify shows a change.</li>
+<li><b>4:15 Recruiter view and QR.</b> One-minute page; scan; "valid".</li>
+<li><b>4:50 Close.</b></li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> students and job seekers, recruiters, placement cells.</p><p><b>Gap:</b> skills on resumes are unproven, real work is scattered, and learners do not know their gaps.</p><p><b>Why now:</b> AI can read work at scale, but only if it is forced to cite evidence.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> cite-or-delete verifier, claim versus proof ledger, proof-task learning loop, quiz from own code.</p><p><b>Mechanism:</b> extract evidence, score by recipe, verify language, match role, plan.</p><p><b>Feasible:</b> built passport from one repo and a resume with two planted lies (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Python, GitPython, tree-sitter, PyMuPDF, SQLite, networkx, LLM with structured output, FastAPI, React. Open skills frameworks acknowledged.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Passport, evidence drawer, claims ledger, role match, learning plan, recruiter view, signed QR.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> evidence extraction, five recipes, ledger. <b>In progress:</b> verifier, role match. <b>Next:</b> more sources, cohort view.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Faster, fairer screening; learners know exactly what to build next; colleges see skill gaps early.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How do you stop the AI from inventing skills?</summary><p>It can only cite evidence ids; a verifier checks each citation against the repository and deletes anything unsupported. We also run a planted-lie test.</p></details>
+<details class="qa"><summary>How can you tell someone wrote the code themselves?</summary><p>Authorship share from git blame, history shape, template and duplicate detection, and an optional quiz about their own code. We state it is strong evidence, not proof.</p></details>
+<details class="qa"><summary>What skill framework did you use?</summary><p>A compact internal ontology mapped to open frameworks such as ESCO and O*NET, with explicit level definitions and evidence recipes.</p></details>
+<details class="qa"><summary>Is it biased towards GitHub users?</summary><p>Yes, as a limit. Reports, certificates and portfolios are also sources, and the plan is built to create new evidence.</p></details>
+<details class="qa"><summary>How is the role match computed?</summary><p>Weighted coverage of required skills by verified level, conservative by construction, with a separate "potential" figure and a marginal-gain explanation.</p></details>
+<details class="qa"><summary>What about privacy?</summary><p>Public or consented data only, local analysis possible, and the person controls what is shared.</p></details>
+</article>

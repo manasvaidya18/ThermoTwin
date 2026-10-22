@@ -1,0 +1,92 @@
+<div class="wrap">
+<div class="top">
+  <div class="kicker"><span class="chip a">Track 4 · Technology for Social Cause (UST)</span><span class="chip">T4-1</span><span class="chip">Round 1 PPT · 11 Oct 2026</span></div>
+  <button type="button" class="themebtn" id="themebtn">Theme: auto</button>
+</div>
+<h1>ThermoTwin</h1>
+<p class="lede">A digital twin for every vaccine fridge. It predicts cold-chain excursions before the standard alarms fire, freezing first. It explains the cause in the health worker's own language, and it turns repeated alarms into verified repairs.</p>
+<nav class="snav" id="snav" aria-label="Sections"></nav>
+
+<h2 id="problem"><small>Research, part 1</small>The problem, as the evidence shows it</h2>
+<p class="sub">The research changed the framing. The measured risk in India is mostly silent <b>freezing</b>, not heat. The standard alarms are designed to fire late. And India already has connected loggers whose data is used for stock, not for prediction.</p>
+<div class="facts">
+  <div class="fact"><span class="n">10 h · 60 min</span><p>WHO-prequalified fridge alarms fire only after 10 continuous hours at or above +8 °C, or 60 minutes at or below −0.5 °C.</p><span class="src"><a href="https://extranet.who.int/prequal/sites/default/files/document_files/PQS%20E006%20DS01.2.pdf" target="_blank" rel="noopener">WHO PQS E006/DS01.2</a></span></div>
+  <div class="fact f"><span class="n">10.5–14.8%</span><p>Share of storage time below 0 °C in two multi-state Indian logger studies. Two-thirds of shake-tested DTP vials showed freezing.</p><span class="src"><a href="https://pubmed.ncbi.nlm.nih.gov/24347729/" target="_blank" rel="noopener">Murhekar 2013</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7268609/" target="_blank" rel="noopener">Das 2020</a></span></div>
+  <div class="fact f"><span class="n">5.6%</span><p>Devices where paper logbooks flagged any deviation, while loggers recorded about 15% of time below 0 °C.</p><span class="src"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7268609/" target="_blank" rel="noopener">Das 2020</a></span></div>
+  <div class="fact h"><span class="n">1 in 20</span><p>Stores and facilities that lost vaccine to temperature damage within a year, across WHO assessments in 93 countries.</p><span class="src"><a href="https://cdn.who.int/media/docs/default-source/immunization/supply-chain/evm-global-data-analysis-2009-2020.pdf" target="_blank" rel="noopener">WHO EVM 2009–2020</a></span></div>
+</div>
+
+<figure class="figure" id="fig-window">
+<div class="lbl">The unalarmed window</div>
+<div class="scroll">
+<svg viewBox="0 -30 760 310" role="img" aria-label="Illustrative temperature trace: a thermostat fault drives a fridge from the 2 to 8 degree band toward freezing. ThermoTwin warns at 1 hour 8 minutes, the product crosses 0 degrees at 2 hours 9 minutes, and the WHO freeze alarm fires at 3 hours 26 minutes.">
+  <rect class="svg-band" x="60" y="66.67" width="670" height="110"/>
+  <rect class="svg-frz" x="60" y="213.33" width="670" height="36.67"/>
+  <rect class="svg-lead" x="249.8" y="36" width="385.3" height="22"/>
+  <line class="svg-axis" x1="60" y1="250" x2="730" y2="250"/>
+  <line class="svg-axis" x1="60" y1="30" x2="60" y2="250"/>
+  <line class="svg-zero" x1="60" y1="213.33" x2="730" y2="213.33"/>
+  <text class="svg-txt" x="52" y="34" text-anchor="end">+10</text>
+  <text class="svg-txt" x="52" y="70.7" text-anchor="end">+8</text>
+  <text class="svg-txt" x="52" y="125.7" text-anchor="end">+5</text>
+  <text class="svg-txt" x="52" y="180.7" text-anchor="end">+2</text>
+  <text class="svg-txt" x="52" y="217.3" text-anchor="end">0</text>
+  <text class="svg-txt" x="52" y="254" text-anchor="end">−2 °C</text>
+  <text class="svg-txt" x="60" y="268" text-anchor="middle">0 h</text>
+  <text class="svg-txt" x="227.5" y="268" text-anchor="middle">1 h</text>
+  <text class="svg-txt" x="395" y="268" text-anchor="middle">2 h</text>
+  <text class="svg-txt" x="562.5" y="268" text-anchor="middle">3 h</text>
+  <text class="svg-txt" x="730" y="268" text-anchor="end">4 h</text>
+  <text class="svg-lab" x="66" y="82">+2 to +8 °C safe band</text>
+  <text class="svg-frztxt" x="66" y="241">below 0 °C: freeze damage, invisible to vial monitors</text>
+  <polyline class="svg-trace" points="60,140 87.9,121.67 115.8,154.67 143.75,125.33 171.7,156.5 199.6,129 227.5,158.33 269.4,169.33 311.25,184 353.1,196.83 395,207.83 436.9,217 478.75,224.33 520.6,229.83 562.5,233.5 604.4,236.25 646.25,238.08 688.1,239.37 730,240.47"/>
+  <line class="svg-tt" x1="249.8" y1="8" x2="249.8" y2="250"/>
+  <line class="svg-who" x1="635.1" y1="8" x2="635.1" y2="250"/>
+  <circle class="svg-crit" cx="420.1" cy="213.33" r="4"/>
+  <text class="svg-frztxt" x="428" y="203">crosses 0 °C at 2 h 09 min</text>
+  <text class="svg-lab svg-acc" x="254" y="-14">ThermoTwin freeze warning</text>
+  <text class="svg-lab svg-acc" x="254" y="2">0 °C in ~60 min (p 0.78)</text>
+  <text class="svg-lab svg-crit" x="631" y="-14" text-anchor="end">WHO freeze alarm</text>
+  <text class="svg-lab svg-crit" x="631" y="2" text-anchor="end">(≤ −0.5 °C for 60 min)</text>
+  <text class="svg-lab" x="442.5" y="51" text-anchor="middle">≈ 2 h 18 min earlier than the WHO alarm</text>
+</svg>
+</div>
+<figcaption>Illustrative trace, not measured data. A thermostat fault keeps the compressor running and pulls a fridge toward freezing. The standard alarm waits for 60 minutes at or below −0.5 °C. ThermoTwin's twin sees that the cooling will not stop and warns while the fridge is still inside the band. Use this as the slide 2 visual.</figcaption>
+</figure>
+
+<h3>What this means for ThermoTwin</h3>
+<div class="g2">
+<div class="card"><h4>Freezing is the silent killer</h4><p>Vaccine vial monitors record only heat, so freeze damage leaves no visible mark. Only about 40% of service-level health workers understand the shake test. Freeze-sensitive vaccines include pentavalent, hepatitis B, HPV, PCV, TT/Td and IPV. ThermoTwin predicts both directions and treats freezing as the urgent one.</p></div>
+<div class="card"><h4>The standards leave a window open</h4><p>Under default rules a fridge can sit above +8 °C for almost 10 hours, or below −0.5 °C for almost an hour, before any alarm. Forecasting the time to a WHO-grade alarm is the job the standards leave undone. WHO's own catalogue names "predictive failure responses" as the goal.</p></div>
+<div class="card"><h4>The data already exists</h4><p>India's eVIN runs about 25,000 SIM loggers at about 29,000 cold-chain points, reading every 10 minutes and uploading hourly. Its published outcomes concern stock-outs, not excursions. ThermoTwin is an analytics layer on that telemetry, with a cheap add-on node where no logger exists.</p></div>
+<div class="card"><h4>Alerts alone do not fix fridges</h4><p>In a Mozambique trial, SMS monitoring cut time in the WHO freeze-alarm state from 4–6 to 2 hours a month, but chronically broken fridges kept failing. Slow response, not alarm volume, is the bottleneck. So ThermoTwin diagnoses the cause and closes the repair loop.</p></div>
+</div>
+<div class="co a"><span class="lbl">Why now</span><p>From 2026 every vaccine refrigerator must carry a WHO-standard equipment monitoring system, and the WHO data standard (DS01.2) defines alarm codes and a JSON format for raw data. That gives ThermoTwin ready-made prediction targets and a vendor-neutral input format. Close to a billion people are served by health facilities with no or unreliable electricity, so power cuts are a constant, not an exception.</p></div>
+
+<h3>Who is affected</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Person</th><th>Their problem today</th><th>What ThermoTwin gives them</th></tr></thead>
+<tbody>
+<tr><td>ANM, vaccine and cold-chain handler at a PHC or sub-centre</td><td>Learns about an excursion hours later, or never (freezing). Alarms in English, no cause, no guidance.</td><td>An early warning with a countdown, the likely cause and the next steps, in Hindi or the regional language, by SMS, voice call and WhatsApp.</td></tr>
+<tr><td>District cold-chain officer</td><td>Hundreds of fridges, alarms after the fact, no way to know which unit will fail next.</td><td>Fleet triage: which fridges are likely to fail in the next 30 days, response-time tracking, a weekly digest.</td></tr>
+<tr><td>Cold-chain technician</td><td>Travels without knowing the fault; cannot confirm that a repair worked.</td><td>A diagnosis ticket with evidence before the visit, and a twin that confirms the repair 24 hours later.</td></tr>
+<tr><td>Children and families</td><td>Receive doses that may have been silently frozen.</td><td>Fewer damaged doses reaching them.</td></tr>
+<tr><td>Pharmacies, blood banks, food cold rooms</td><td>Threshold alarms, false alarms from doors and defrost, product loss.</td><td>The same engine with different equipment profiles. Lack of refrigeration causes the loss of an estimated 12% of global food production (UNEP and FAO).</td></tr>
+</tbody></table></div>
+
+<h2 id="market"><small>Research, part 2</small>What exists, and the gap</h2>
+<p class="sub">Across the market, stationary monitors alarm on thresholds. Where vendors say "predictive", they mean shipments or supermarket maintenance over days to weeks. No vendor we found publishes forecast lead time or false-alarm rates.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Segment</th><th>Examples</th><th>What "early warning" means there</th><th>Horizon</th><th>Gap ThermoTwin fills</th></tr></thead>
+<tbody>
+<tr><td>Vaccine fridge remote monitors</td><td>Nexleaf ColdTrace 5/X, Berlinger (now Sensitech) Fridge-tag and SmartMonitor, Haier U-Cool, Beyond Wireless, B Medical, India's eVIN loggers</td><td>Threshold plus delay; Berlinger "Warnings" are lower user-set thresholds</td><td>At or after breach</td><td>Right users and hardware, no forecasting, no cause</td></tr>
+<tr><td>Pharma, lab, food stationary monitoring</td><td>ELPRO, Testo Saveris, Rotronic, Dickson (now Copeland), SensoScientific, LogTag, Monnit</td><td>Tiered thresholds, delays, MKT reports, audit trails</td><td>At or after breach</td><td>Compliance-grade, no forecasting</td></tr>
+<tr><td>Shipment visibility</td><td>Sensitech TempTale and Lynx, Controlant, Tive, Copeland Oversight, Parsyl</td><td>ETA, lane and route risk</td><td>Per shipment</td><td>Different problem (transit)</td></tr>
+<tr><td>Refrigeration predictive maintenance</td><td>Axiom Cloud, Danfoss Alsense, Copeland Site Supervisor and Bueno, SmartSense ONE, Elemental Machines</td><td>Degradation scores, compressor and icing detection</td><td>Days to weeks</td><td>Supermarkets and lab freezers, enterprise budgets, not clinic fridges</td></tr>
+<tr><td>Indian IoT players</td><td>Ecozen, Atsuya Kryo, DATOMS, Prompt Warewatch</td><td>Threshold alerts; vague "predictive" claims</td><td>At breach</td><td>Price competitors, not capability competitors</td></tr>
+</tbody></table></div>
+<div class="g2">
+<div class="card"><h4>Closest analogues (say this honestly)</h4><p>Emanate PowerPath Temp (2016–17) used machine learning on power draw to learn defrost and door patterns and issue predictive alarms for hospital fridges; its current status is unknown. Predictive-maintenance vendors do condition monitoring for supermarkets. An ESP32 autoencoder paper (Harrabi 2024) detects vaccine-fridge faults but does not forecast. So we claim the combination, not the idea of prediction.</p></div>
+<div class="card"><h4>Our white space</h4><p>Short-horizon excursion forecasting, freezing first, with automatic cause attribution and a measured false-alarm budget. It runs on low-cost, low-connectivity hardware and sits as a vendor-neutral layer beside the certified logger. It reads WHO DS01.2 JSON or 10-minute eVIN-style logs. We will publish our lead time and false-alert numbers, which no competitor does.</p></div>
+</div>
+<div class="co warn"><span class="lbl">The window is closing</span><p>Sensitech bought Berlinger's monitoring business (2024). Copeland now owns Dickson (completed September 2026) and agreed to buy Bueno Analytics. Digi bought Jolt and launched SmartSense ONE with "predictive insights". Nexleaf has the largest LMIC fridge dataset and door sensors in the field. Any of them could add short-horizon prediction, so ThermoTwin's position is "open, vendor-neutral, measured, and built for India's existing telemetry".</p></div>

@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Large or regenerable outputs (models.pkl is kept so the live demo runs after cloning)
+thermotwin/outputs/models_seed*.pkl
+thermotwin/outputs/*.npz
+
+# Hackathon brief PDFs from the organisers and packaged zips
+/*-*-*-*-*.pdf
+*.zip
+
+# Local tooling
+.claude/

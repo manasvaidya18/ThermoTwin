@@ -1,0 +1,120 @@
+<h2 id="ideas"><small>Our answer</small>Eight ideas that make ThermoTwin different</h2>
+<div class="g2">
+<div class="idea"><span class="num">Freeze-first</span><h4>Two-sided prediction, freezing treated as urgent</h4><p>Most teams will predict "temperature rising". India's measured damage is mostly freezing, which nobody can see afterwards. ThermoTwin forecasts both edges of the 2 to 8 °C band and fast-tracks freeze risk, mirroring WHO's own asymmetry (60 minutes for freeze, 10 hours for heat).</p></div>
+<div class="idea"><span class="num">Physics plus ML</span><h4>A digital twin of every fridge, ML on what physics misses</h4><p>Each unit gets a small grey-box thermal model whose parameters are learned online. It forecasts physically, and its drifting parameters reveal causes: a leaking gasket, weak cooling, a drifting thermostat. Gradient-boosted trees learn the residual and the risk.</p></div>
+<div class="idea"><span class="num">Three clocks</span><h4>Breach clock, WHO clock, holdover clock</h4><p>Minutes until the product leaves 2 to 8 °C. Hours until a WHO-grade alarm would fire. During a power cut, hours of holdover left. Staff act on countdowns, not on raw temperatures.</p></div>
+<div class="idea"><span class="num">Two-key alerts</span><h4>ML and physics must agree before anyone's phone rings</h4><p>A forecast becomes an SMS only when the ML hazard and the twin's own rollout both predict a breach. Clinical studies show multi-signal fusion removed up to 90% of false alarms. WHO-grade rule alarms are never suppressed.</p></div>
+<div class="idea"><span class="num">Product, not air</span><h4>Virtual Vial and the Vaccine Life Meter</h4><p>Alarms run on a simulated product temperature, like the glycol-buffered probe CDC requires, so door-opening air spikes do not page anyone. A life meter shows rolling 24-hour MKT, vial-monitor-equivalent heat used, and a separate freeze-exposure counter.</p></div>
+<div class="idea"><span class="num">Fix loop</span><h4>From alarm to verified repair</h4><p>A Cause Card explains what is wrong. A ticket with the evidence goes to the technician. After the repair, the twin checks that cooling strength or seal health is back to baseline and closes the loop: "Repair verified".</p></div>
+<div class="idea"><span class="num">Bounded agent</span><h4>An AI copilot that explains and drafts, but never decides</h4><p>One orchestrator calls typed tools to write the Cause Card in Hindi or Marathi, guide staff through the SOP, draft maintenance tickets and weekly district digests. Detection and escalation stay deterministic, because agent benchmarks show low root-cause accuracy.</p></div>
+<div class="idea"><span class="num">Published scorecard</span><h4>A replay benchmark nobody else publishes</h4><p>We run four alerting policies over the same traces (naive threshold, WHO default, Nexleaf-style early alerts, ThermoTwin) and publish lead time, recall on WHO-grade events, true-alarm suppression and false alerts per fridge-month.</p></div>
+</div>
+
+<h2 id="architecture"><small>System design</small>Architecture</h2>
+<p class="sub">Six layers, top to bottom in the order data flows. The physics twin sits in the middle so every layer above it can ask "what would a healthy version of this fridge do now?"</p>
+<div class="arch">
+<div class="layers">
+  <div class="layer"><div class="ln"><i>Layer 0</i><b>Sense and ingest</b><span>every 5 min</span></div><div class="boxes"><span class="bx">ESP32 add-on node: probe in glycol vial, ambient, door reed, compressor current clamp, mains detect, buzzer</span><span class="bx">eVIN-style 10-min logs</span><span class="bx">WHO DS01.2 JSON from any monitoring system</span><span class="bx">Organiser dataset adapter (CSV)</span><span class="bx">Offline ring buffer and store-and-forward</span></div></div>
+  <div class="flowdown">↓ aligned 5-minute ticks</div>
+  <div class="layer l1"><div class="ln"><i>Layer 1</i><b>Twin</b><span>physics core</span></div><div class="boxes"><span class="bx">Virtual Vial (product temperature)</span><span class="bx">3-node RC model: air, evaporator and wall, product</span><span class="bx">Online parameter tracker (EKF)</span><span class="bx">Twin Vitals: cooling strength, seal health, thermostat margin, holdover</span><span class="bx">Scenario rollouts: as is, door stays open, power stays off</span></div></div>
+  <div class="flowdown">↓ residuals, vitals, rollouts</div>
+  <div class="layer"><div class="ln"><i>Layer 2</i><b>Sentinel</b><span>ML risk engine</span></div><div class="boxes"><span class="bx">Sensor Trust Gate</span><span class="bx">Hazard model (LightGBM, 12 × 5-min steps)</span><span class="bx">Time-to-breach quantiles</span><span class="bx">Cause classifier with SHAP</span><span class="bx">Slow-fault engine: change points, 30-day failure risk</span><span class="bx">Calibration and adaptive conformal</span></div></div>
+  <div class="flowdown">↓ calibrated risk, causes, intervals</div>
+  <div class="layer l3"><div class="ln"><i>Layer 3</i><b>Guardian</b><span>deterministic policy</span></div><div class="boxes"><span class="bx">Two-key rule</span><span class="bx">Tier state machine</span><span class="bx">Context suppression with re-arm</span><span class="bx">Alarm budget controller</span><span class="bx">Escalation ladder with acknowledgements</span><span class="bx">Vaccine Life Meter</span></div></div>
+  <div class="flowdown">↓ decided alerts (the LLM never decides)</div>
+  <div class="layer l4"><div class="ln"><i>Layer 4</i><b>Copilot</b><span>bounded LLM agent</span></div><div class="boxes"><span class="bx">Cause Card narrator (Hindi, Marathi, English, voice script)</span><span class="bx">SOP Guide</span><span class="bx">Maintenance ticket drafter</span><span class="bx">Weekly district digest</span><span class="bx">Ask ThermoTwin (read-only)</span><span class="bx">Verifier and template fallback</span></div></div>
+  <div class="flowdown">↓</div>
+  <div class="layer"><div class="ln"><i>Layer 5</i><b>Command</b><span>apps and channels</span></div><div class="boxes"><span class="bx">Facility app (mobile, offline-friendly)</span><span class="bx">Technician view and Fix verification</span><span class="bx">District fleet triage map</span><span class="bx">Buzzer, SMS, voice call, WhatsApp</span><span class="bx">REST API and webhooks</span></div></div>
+</div>
+<div class="side">
+  <div class="card"><span class="lbl">Feeds every layer</span><b>ColdChain Gym</b><span>Our simulator: fridge, ILR, freezer and cold-room profiles, Indian seasons, power cuts, door habits, faults, sensor errors, all labelled.</span></div>
+  <div class="card"><span class="lbl">Proves it</span><b>Replay Benchmark</b><span>Four alert policies on the same traces; lead time, recall, suppression, false alerts per fridge-month.</span></div>
+  <div class="card"><span class="lbl">Learns from people</span><b>Feedback loop</b><span>Staff tags ("restocking", "power cut", "false alarm") become labels for weekly per-unit recalibration.</span></div>
+  <div class="card"><span class="lbl">Contract</span><b>One data format</b><span>t, probe temp, ambient, door, compressor current, mains, optional second probe; maps to DS01.2.</span></div>
+</div>
+</div>
+
+<h2 id="logic"><small>Internal logic</small>What happens every 5 minutes</h2>
+<p class="sub">One tick of the pipeline, per fridge. Steps 1 to 9 run on the edge gateway or server in well under a second; step 10 is asynchronous and off the critical path.</p>
+<div class="flow">
+<div class="st"><b>Ingest and align</b><span>Resample to 5 min, mark gaps, derive compressor on/off from current, door minutes, mains state.</span></div>
+<div class="st"><b>Trust gate</b><span>Spikes (Hampel), flatlines, rates the twin calls impossible, second-probe disagreement. Score 0 to 1.</span></div>
+<div class="st"><b>Virtual Vial</b><span>Update product temperature from the twin's product node (or a filter matched to a 20 ml glycol vial).</span></div>
+<div class="st"><b>Twin update</b><span>EKF predict and correct; parameters drift slowly as random walks; refresh Twin Vitals.</span></div>
+<div class="st"><b>Rollouts</b><span>Simulate 60 min ahead three ways: as is, door stays open, power stays off. Holdover until breach.</span></div>
+<div class="st"><b>Features</b><span>About 60: levels, slopes, duty cycle, door, ambient, residuals, vitals, rollout minima and maxima, time of day.</span></div>
+<div class="st"><b>Hazard</b><span>Breach hazard for each of the next 12 steps, giving a survival curve, P(breach in 15/30/60 min) and time-to-breach.</span></div>
+<div class="st"><b>Cause</b><span>Rules on door, mains and current, plus classifier and SHAP over vitals drift. Top causes from a fixed list.</span></div>
+<div class="st"><b>Guardian</b><span>Two-key check, tier state machine, suppression and re-arm, budget, escalation ladder.</span></div>
+<div class="st"><b>Copilot and log</b><span>Explain, translate, draft; verify numbers; store everything with timestamps for audit.</span></div>
+</div>
+
+<h3>The two-key rule</h3>
+<pre class="code">forecast_alert(unit, t) =
+      trust(t)            &gt;= 0.7                                   # data is believable
+  AND P_breach(&lt;= 30 min) &gt;= theta_budget(unit)                    # ML key, threshold set by the false-alert budget
+  AND twin_rollout_as_is crosses the band within 45 min             # physics key
+  AND NOT valid_suppression(unit, t)                                # door, restock or defrost window still open
+
+freeze_fast_track(unit, t) =
+      trust(t) &gt;= 0.7 AND P(product &lt; 0 C within 30 min) &gt;= theta_freeze   # lower threshold, freeze-first
+
+rule_alerts (never suppressed):  WHO FRZE  product or logger &lt;= -0.5 C for 60 min
+                                 WHO HEAT  &gt;= +8 C for 10 h
+early rule tiers:                &lt; +2 C for 30 min, &gt; +8 C for 60 min, door open &gt; 5 min, power off with holdover &lt; 4 h</pre>
+
+<h3>Alert tiers (asymmetric: freeze fast, heat slow)</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Tier</th><th>Triggers</th><th>Channel</th><th>Target share</th></tr></thead>
+<tbody>
+<tr><td><span class="pill adv">Advisory</span></td><td>P(breach in 60 min) at least 0.3; a Twin Vital falling more than 10% in 7 days; high 30-day failure risk; door-habit warning</td><td>Dashboard and daily WhatsApp digest only</td><td>About 80% of everything raised</td></tr>
+<tr><td><span class="pill ew">Early warning</span></td><td>Two-key forecast; freeze fast-track; product below +2 °C for 30 min or above +8 °C for 60 min; door open over 5 min; power off with less than 4 h holdover</td><td>Local buzzer and SMS, WhatsApp Cause Card</td><td>About 15%</td></tr>
+<tr><td><span class="pill cr">Critical</span></td><td>WHO-grade FRZE or HEAT; product predicted below 0 °C within 15 min with p at least 0.8</td><td>SMS, voice call with retries, escalation, SOP Guide</td><td>About 5%</td></tr>
+<tr><td><span class="pill f">Sensor check</span></td><td>Trust below 0.5</td><td>"Check the probe" message; product alerts held at advisory unless the certified logger agrees</td><td>Separate lane</td></tr>
+</tbody></table></div>
+<p class="sub">The 80/15/5 split and the early-warning thresholds come from alarm-management practice (ISA-18.2 summaries) and the thresholds Nexleaf used in its Mozambique trial. The critical tier copies WHO DS01.2.</p>
+
+<h3>State machine per fridge</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>State</th><th>Enter when</th><th>Leave when</th></tr></thead>
+<tbody>
+<tr><td>Normal</td><td>Start, or recovered for 20 min</td><td>Any tier trigger</td></tr>
+<tr><td>Advisory</td><td>Advisory trigger</td><td>Trigger clears for 30 min, or escalates</td></tr>
+<tr><td>Early warning</td><td>Early trigger</td><td>Product back inside +2.5 to +7.5 °C (0.5 °C hysteresis) and P(breach) below 0.1 for 20 min, or escalates</td></tr>
+<tr><td>Critical</td><td>Critical trigger</td><td>Only by acknowledgement plus recovery plus a cause note (resolution is a human act)</td></tr>
+<tr><td>Recovering</td><td>Trigger cleared, waiting for stability</td><td>20 min stable, then Normal; any new trigger re-enters at the higher tier</td></tr>
+<tr><td>Sensor check</td><td>Trust below 0.5</td><td>Trust above 0.7 for 30 min, or probe replaced</td></tr>
+</tbody></table></div>
+
+<h3>Suppression with re-arm (so delays never hide a real fault)</h3>
+<ul>
+<li>Known contexts open a suppression window: door session, restocking, a scheduled defrost. Only Advisory and Early tiers are suppressed, never Critical.</li>
+<li>The window length is the unit's own learned recovery time τ<sub>rec</sub> from the twin, times 1.5. If the fridge has not recovered by then, the alert re-arms immediately. This stops a stuck defrost or a door left ajar from hiding behind a delay.</li>
+<li>Every suppression is logged with its reason. Manual shelving expires automatically after 2 hours and is always listed on the dashboard.</li>
+</ul>
+
+<h3>Alarm budget controller</h3>
+<ul>
+<li>On validation traces, θ<sub>budget</sub> is the lowest threshold that keeps SMS-tier false alerts at or below <b>1 per fridge per month</b>. That ceiling is our judgement, based on the Belize deployment's real rate of about 0.28 alarms per device per month.</li>
+<li>The safety counterweight is the <b>true-alarm suppression rate</b>: alerts we hold back that turn out to be real must stay below 1%, the safety margin used by clinical alarm-reduction studies.</li>
+<li>In deployment, adaptive conformal inference nudges each unit's threshold so its realised false-alert rate tracks the budget.</li>
+</ul>
+
+<h3>Escalation ladder</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Time after alert</th><th>Step</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>0 min</td><td>Local buzzer</td><td>Works with no network.</td></tr>
+<tr><td>0 min</td><td>SMS from a registered template</td><td>Fridge, temperature, countdown, cause code, "reply 1 to acknowledge". Indian commercial SMS must match a TRAI DLT pre-registered template, so the text is templated, not LLM-written.</td></tr>
+<tr><td>0 min</td><td>WhatsApp Cause Card</td><td>Explanation, chart, SOP steps in the local language (LLM-written, verified).</td></tr>
+<tr><td>10 min, no acknowledgement</td><td>Voice call in Hindi or regional language</td><td>Up to 5 retries. In India's Kilkari voice programme, 50% of calls were answered on the first attempt, 76% by the third, 99.5% by the ninth.</td></tr>
+<tr><td>30 min</td><td>Medical officer</td><td>SMS and call.</td></tr>
+<tr><td>60 min (Critical only)</td><td>District cold-chain officer</td><td>With the incident summary.</td></tr>
+</tbody></table></div>
+<p class="sub">Acknowledgement time and resolution time are stored as first-class data, because slow response, not alarm count, is what loses vaccine in the field studies.</p>
+
+<h3>Feedback loop and cold start</h3>
+<div class="g2">
+<div class="card"><h4>Learning from staff</h4><p>Every acknowledgement can carry a one-tap tag: restocking, door was open, power cut, technician visit, false alarm. Tags become labels; each week the unit's calibration and suppression windows update. Disagreements between tags and the model are queued for review.</p></div>
+<div class="card"><h4>A new fridge on day one</h4><p>Start from priors for its equipment class (WHO E003 holdover and capacity figures), run the global model and the rule tiers, and identify the twin over the first 48 to 72 hours of normal cycling. Forecast alerts switch on once the twin's 20-minute error is stable.</p></div>
+</div>

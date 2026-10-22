@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin Demo</title>
+<style>
+  body { margin: 0; background: #0b1410; color: #e6f2ea; font-family: Inter, system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 16px; }
+  h1 { color: #4af66d; margin: 0 0 6px; font-size: 32px; }
+  .sub { color: #b9c7bd; margin: 0 0 32px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .card { background: #0d2016; border: 2px solid #4af66d; border-radius: 16px; padding: 20px; }
+  .card.web { border-color: #7fb2ff; }
+  .card h2 { margin: 0 0 4px; }
+  .card p { color: #b9c7bd; margin: 0 0 14px; }
+  .open { display: inline-block; background: #4af66d; color: #062010; font-weight: 700; padding: 10px 16px;
+          border-radius: 999px; text-decoration: none; margin-bottom: 14px; }
+  .web .open { background: #7fb2ff; }
+  .shots { display: flex; gap: 10px; overflow-x: auto; }
+  .shots a { flex: 0 0 auto; color: #e6f2ea; font-size: 12px; text-decoration: none; text-align: center; }
+  .shots img { display: block; height: 170px; border-radius: 8px; border: 1px solid #2c4636; margin-bottom: 4px; }
+  .live { display:block; width:94px; height:170px; overflow:hidden; border-radius:8px; border:1px solid #2c4636; margin-bottom:4px; background:#fff; }
+  .live iframe { width:375px; height:680px; border:0; transform:scale(.25); transform-origin:0 0; pointer-events:none; }
+  .links { display:flex; flex-wrap:wrap; gap:8px; }
+  .links a { color:#e6f2ea; background:#13301f; border:1px solid #2c4636; border-radius:999px; padding:5px 12px; font-size:13px; text-decoration:none; }
+  .tip { color: #b9c7bd; font-size: 13px; margin-top: 28px; }
+  kbd { background: #1d2a23; border-radius: 4px; padding: 1px 6px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>ThermoTwin</h1>
+  <p class="sub">Two interfaces: a phone app for clinic staff and a website for district officers.</p>
+  <div class="grid">
+    <section class="card">
+      <h2>Phone app · clinic handler</h2>
+      <p>PHC Wagholi: fridge status, alerts, the ILR-1 Cause Card and help. Works offline; Hindi toggle included.</p>
+      <a class="open" href="phone.html">Open phone app</a>
+      <div class="shots">
+        <a href="mobile/home.html"><span class="live"><iframe src="mobile/home.html" tabindex="-1" title="Phone home"></iframe></span>Home</a>
+        <a href="mobile/alerts.html"><span class="live"><iframe src="mobile/alerts.html" tabindex="-1" title="Phone alerts"></iframe></span>Alerts</a>
+        <a href="mobile/alert-ilr1.html"><span class="live"><iframe src="mobile/alert-ilr1.html" tabindex="-1" title="Cause card"></iframe></span>Cause Card</a>
+        <a href="mobile/help.html"><span class="live"><iframe src="mobile/help.html" tabindex="-1" title="Help"></iframe></span>Help</a>
+      </div>
+    </section>
+    <section class="card web">
+      <h2>Website · district officer</h2>
+      <p>Pune district: overview, facilities, alerts, maintenance, exposure ledger, benchmark, settings, the ILR-1 digital twin and the copilot. Works offline.</p>
+      <a class="open" href="web/overview.html">Open website</a>
+      <div class="links">
+        <a href="web/overview.html">Overview</a><a href="web/fridge-ilr1.html">ILR-1 digital twin</a><a href="web/alerts.html">Alerts</a>
+        <a href="web/facilities.html">Facilities</a><a href="web/maintenance.html">Maintenance</a><a href="web/exposure.html">Exposure Ledger</a>
+        <a href="web/benchmark.html">Benchmark</a><a href="web/settings.html">Settings</a><a href="web/copilot.html">Ask ThermoTwin</a>
+      </div>
+    </section>
+  </div>
+  <p class="tip">Both apps work offline. Website: use the left sidebar. Phone: use the bottom tabs; EN / हिं switches language.</p>
+</main>
+</body>
+</html>

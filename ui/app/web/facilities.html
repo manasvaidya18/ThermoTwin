@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Facilities</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="facilities" data-title="Facilities" data-sub="64 facilities · 186 fridges in Pune district">
+<main>
+  <div class="card">
+    <div class="row between">
+      <div class="chips" data-filter="fac">
+        <button class="on" data-f="all">All</button><button data-f="attn">Needs attention</button><button data-f="ok">All normal</button>
+      </div>
+      <input type="search" id="q" placeholder="Search facility or taluka" style="width:260px">
+    </div>
+    <table data-group="fac" style="margin-top:12px">
+      <thead><tr><th>Facility</th><th>Taluka</th><th>Fridges</th><th>Worst status</th><th>Alerts answered</th><th>Last sync</th></tr></thead>
+      <tbody id="rows">
+        <tr data-tags="attn" data-href="fridge-ilr1.html"><td><b>PHC Wagholi</b></td><td>Haveli</td><td>3</td><td><span class="pill warn">Early warning</span></td><td>96% within 15 min</td><td>2 min ago</td></tr>
+        <tr data-tags="attn"><td><b>Junnar PHC-2</b></td><td>Junnar</td><td>2</td><td><span class="pill crit">Critical</span></td><td>81% within 15 min</td><td>4 min ago</td></tr>
+        <tr data-tags="attn"><td><b>Baramati SDH</b></td><td>Baramati</td><td>4</td><td><span class="pill warn">Early warning</span></td><td>90% within 15 min</td><td>3 min ago</td></tr>
+        <tr data-tags="attn"><td><b>Khed PHC</b></td><td>Khed</td><td>3</td><td><span class="pill sensor">Sensor check</span></td><td>88% within 15 min</td><td>1 h ago</td></tr>
+        <tr data-tags="attn"><td><b>Shirur RH</b></td><td>Shirur</td><td>5</td><td><span class="pill info">Advisory</span></td><td>93% within 15 min</td><td>2 min ago</td></tr>
+        <tr data-tags="attn"><td><b>Daund SDH</b></td><td>Daund</td><td>4</td><td><span class="pill info">Advisory</span></td><td>95% within 15 min</td><td>5 min ago</td></tr>
+        <tr data-tags="ok"><td><b>PHC Lonikand</b></td><td>Haveli</td><td>2</td><td><span class="pill ok">Normal</span></td><td>100% within 15 min</td><td>2 min ago</td></tr>
+        <tr data-tags="ok"><td><b>Bhor PHC</b></td><td>Bhor</td><td>2</td><td><span class="pill ok">Normal</span></td><td>97% within 15 min</td><td>6 min ago</td></tr>
+        <tr data-tags="ok"><td><b>Maval RH</b></td><td>Maval</td><td>4</td><td><span class="pill ok">Normal</span></td><td>98% within 15 min</td><td>3 min ago</td></tr>
+        <tr data-tags="ok"><td><b>Mulshi PHC</b></td><td>Mulshi</td><td>2</td><td><span class="pill ok">Normal</span></td><td>100% within 15 min</td><td>2 min ago</td></tr>
+      </tbody>
+    </table>
+    <p class="muted small" style="margin:12px 0 0">Showing 10 of 64 facilities. Click PHC Wagholi to open the ILR-1 digital twin.</p>
+  </div>
+</main>
+<script src="web.js"></script>
+<script>
+  document.getElementById('q').addEventListener('input', function () {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('#rows tr').forEach(function (r) { r.style.display = r.textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none'; });
+  });
+</script>
+</body>
+</html>

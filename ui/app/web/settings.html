@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Settings</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="settings" data-title="Settings" data-sub="Alert rules, languages, contacts and data sources">
+<main>
+  <div class="grid g2">
+    <div class="card">
+      <h2>Alert rules</h2>
+      <p class="hint">Rules decide alerts, not AI. Measured alarms are never silenced.</p>
+      <div class="list">
+        <div class="row between"><span>False-SMS budget per fridge-month</span><select><option>1.0</option><option>0.5</option><option>2.0</option></select></div>
+        <div class="row between"><span>Early-warning horizon</span><select><option>Up to 2 hours</option><option>Up to 1 hour</option></select></div>
+        <div class="row between"><span>Voice call if no reply after</span><select><option>10 min</option><option>5 min</option><option>15 min</option></select></div>
+        <div class="row between"><span>Call medical officer after</span><select><option>20 min</option><option>30 min</option></select></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Languages</h2>
+      <p class="hint">Used for SMS, voice calls and Cause Cards</p>
+      <div class="list">
+        <label class="row"><input type="checkbox" checked> Marathi</label>
+        <label class="row"><input type="checkbox" checked> Hindi</label>
+        <label class="row"><input type="checkbox" checked> English</label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Escalation contacts</h2>
+      <div class="list">
+        <div class="row between"><span>District cold-chain officer</span><b>Dr. Anita Deshmukh</b></div>
+        <div class="row between"><span>Technician · North</span><b>Ravi K.</b></div>
+        <div class="row between"><span>Technician · Central</span><b>Meena P.</b></div>
+        <div class="row between"><span>Technician · South</span><b>Arif S.</b></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Data sources</h2>
+      <div class="list">
+        <div class="row between"><span>eVIN temperature loggers (10-min)</span><span class="pill ok">Connected</span></div>
+        <div class="row between"><span>WHO DS01.2 JSON import</span><span class="pill ok">Enabled</span></div>
+        <div class="row between"><span>Demo rig (ESP32)</span><span class="pill grey">Optional</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn primary" onclick="ttToast('Demo: settings saved.')">Save changes</button></div>
+</main>
+<script src="web.js"></script>
+</body>
+</html>

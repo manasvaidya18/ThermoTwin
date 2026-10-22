@@ -1,0 +1,257 @@
+<article class="view" id="v-im5" data-track="im" data-title="CodeSherpa">
+<header class="phead">
+  <div class="kicker"><span class="chip im">iMocha track</span><span class="chip">IM-05 Codebase Mentor</span></div>
+  <h2>CodeSherpa</h2>
+  <p class="sub">An onboarding mentor that reads a repository and guides a newcomer through it. Every statement cites the exact lines it relies on, is checked against the code, and "why" questions are answered from the project's history.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●○○○</b></div><div>Demo impact<b>●●●○○</b></div><div>Provable<b>●●●○○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>New developers often spend weeks understanding an unfamiliar codebase. Much of the important knowledge lives only in senior engineers' heads and is lost when they move on, while written documentation is usually incomplete or out of date. Build an AI mentor that reads a code repository and helps a newcomer understand it quickly, with every answer grounded in the actual code.</p>
+<h4>What the PDF requires</h4>
+<ul>
+<li>An <b>architecture overview</b>: main parts of the system and how they connect.</li>
+<li><b>Guided tours</b> of key flows, for example "what happens when a user signs up".</li>
+<li>Answers to "how" and "why" questions that <b>link to the exact files and lines</b> they are based on.</li>
+<li>Suggested <b>starter tasks</b> that help a newcomer make a first contribution.</li>
+<li>Optional: keep the generated documentation up to date as the code changes.</li>
+<li>Outcomes: works on a real open-source repository; every answer cites the code it relies on so it can be checked; a small test with peers showing newcomers understand the codebase faster with the mentor.</li>
+<li>Stage 1: the onboarding problem, target users, approach, how answers stay grounded. Stage 2: question answering with cited code and an architecture overview for one repository. Stage 3: guided tours, starter tasks, documentation that updates with code changes, results from a small user test.</li>
+</ul>
+<h4>Why "chat with your repo" is not enough</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Common failure</th><th>Result</th><th>Our response</th></tr></thead>
+<tbody>
+<tr><td>Retrieval of random chunks</td><td>Answers about the wrong file.</td><td>Symbol-level index, hybrid retrieval, graph expansion.</td></tr>
+<tr><td>Hallucinated names and lines</td><td>Confident but false.</td><td>Citation verifier; unverified claims removed.</td></tr>
+<tr><td>No "why"</td><td>Code says what, not why.</td><td>Mine git history, blame and pull request text.</td></tr>
+<tr><td>Static answers</td><td>Docs rot.</td><td>Living docs with code anchors.</td></tr>
+<tr><td>No learning path</td><td>Newcomer is still lost.</td><td>Tours, reading order, quizzes, starter tasks.</td></tr>
+</tbody></table></div>
+
+<h3>Our concept: CodeSherpa</h3>
+<div class="g3">
+<div class="card"><h4>1. Verified grounding</h4><p>Answers are built as claims with citations (<code>path:Lstart-Lend@commit</code>). A verifier reopens the lines and checks that they support the claim. Anything unsupported is removed. When the evidence is thin, the mentor says so and points to where to look.</p></div>
+<div class="card"><h4>2. History is the memory</h4><p>Why was this written this way? The answer lives in commit messages, blame, issues and pull request discussion. We route "why" questions to history, which is exactly where the knowledge in senior engineers' heads leaks into the record.</p></div>
+<div class="card"><h4>3. Living docs and tribal knowledge</h4><p>Docs carry code anchors and refresh only when anchored code changes. Questions the mentor cannot answer go to a maintainer; the reply is saved as a verified note tied to the code.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>CodeSherpa</th></tr></thead>
+<tbody>
+<tr><td>Embed files, retrieve, let an LLM answer</td><td>Plausible but unverified answers.</td><td>Structured claims, citation verification, abstain when unsure.</td></tr>
+<tr><td>Generate a README once</td><td>Stale by next week.</td><td>Anchored sections that refresh on change.</td></tr>
+<tr><td>List "good first issues"</td><td>No context or difficulty sense.</td><td>Task cards with reading order, steps, tests, owners and risk.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>A measurable claim (citation precision) and a user test with real peers. The history-based "why" and the verified-claim answers are features other teams will skip.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>It is the most obvious idea in the iMocha set. Without the verifier, history mining and a peer study, it will blend in. Large repositories and language coverage are engineering risks, so choose the demo repository carefully.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Ingest</b><span>Clone; detect languages; parse with tree-sitter; read git history and docs.</span></div>
+<div class="st"><b>Model the code</b><span>Symbols, imports, call graph, entry points, tests, co-change graph.</span></div>
+<div class="st"><b>Index</b><span>Symbol chunks with context headers; keyword and embedding indexes.</span></div>
+<div class="st"><b>Retrieve</b><span>Route question type; hybrid search; graph expansion; history lookup.</span></div>
+<div class="st"><b>Answer</b><span>Structured claims with citations.</span></div>
+<div class="st"><b>Verify</b><span>Check citations and support; drop or flag; abstain.</span></div>
+<div class="st"><b>Teach</b><span>Architecture map, guided tours, starter tasks, quizzes.</span></div>
+<div class="st"><b>Keep fresh</b><span>Anchors, change detection, doc regeneration PRs.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>ingest/</td><td>Clone, language detection, file filters, git log, blame</td><td>GitPython, PyDriller</td></tr>
+<tr><td>code_model/</td><td>Symbol table, imports, call graph, entry points, test mapping</td><td>tree-sitter, networkx</td></tr>
+<tr><td>index/</td><td>Chunking, embeddings, keyword index, rerank</td><td>sentence-transformers or an embeddings API, BM25, FAISS or Chroma</td></tr>
+<tr><td>qa/</td><td>Question router, retrieval plans, answer composer</td><td>LLM structured outputs</td></tr>
+<tr><td>verify/</td><td>Citation and support checker, abstention</td><td>Python, optional NLI model</td></tr>
+<tr><td>arch/</td><td>Module clustering, naming, diagram</td><td>Louvain (networkx), Mermaid or React Flow</td></tr>
+<tr><td>tours/</td><td>Flow tracing, step narration, quizzes</td><td>Graph traversal plus LLM</td></tr>
+<tr><td>tasks/</td><td>Starter task mining and scoring</td><td>GitHub API, static analysis</td></tr>
+<tr><td>docs/</td><td>Anchored documentation, drift detection, update PRs</td><td>Git hooks or GitHub Action</td></tr>
+<tr><td>web/</td><td>Chat, code viewer, diagrams, tours, tasks</td><td>FastAPI, React, CodeMirror or Monaco</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. The code model</h4>
+<ul>
+<li><b>Symbols.</b> Parse each file with tree-sitter into functions, classes, methods with name, signature, docstring, line range and parent. Start with Python and JavaScript or TypeScript; add more as time allows.</li>
+<li><b>Imports and calls.</b> Build an import graph. Resolve calls by name and import mapping to an approximate call graph; mark uncertain edges as "may call".</li>
+<li><b>Entry points.</b> Detect <code>main</code>, CLI commands (argparse, click), web routes (Flask and FastAPI decorators, Express handlers, Django URLs), background jobs, message consumers.</li>
+<li><b>Tests.</b> Map test functions to the modules they import or exercise.</li>
+<li><b>Data model.</b> Detect ORM classes or schema files.</li>
+<li><b>History.</b> Commit log with messages, authors, files; line-level blame; <b>co-change graph</b> (files that change together reveal hidden coupling); pull request and issue text if the GitHub API is available.</li>
+</ul>
+<h4>2. Index and retrieval</h4>
+<ul>
+<li><b>Chunks</b> are symbols with a context header: <code>repo | path | Class &gt; method | lines | one-line summary</code>. Summaries are generated once offline and stored.</li>
+<li><b>Hybrid search</b>: BM25 plus dense embeddings combined by reciprocal rank fusion, then a small cross-encoder reranker.</li>
+<li><b>Graph expansion</b>: add callers and callees (one or two hops) and co-changed files of the top hits.</li>
+<li><b>Question router.</b> Classify the question: <i>where</i> or <i>what</i> (locate), <i>how</i> (flow), <i>why</i> (history), <i>how to</i> (task), <i>who</i> (ownership), <i>architecture</i>. Each type uses a different retrieval plan:</li>
+</ul>
+<div class="tw"><table class="t">
+<thead><tr><th>Type</th><th>Plan</th></tr></thead>
+<tbody>
+<tr><td>Where or what</td><td>Hybrid search over symbols; return top definitions with citations.</td></tr>
+<tr><td>How (flow)</td><td>Find the entry point by retrieval; traverse the call graph; narrate the path.</td></tr>
+<tr><td>Why</td><td>Retrieve the code, then <code>git log -L</code> or blame for those lines; read commit messages, linked issues and PR text; answer from them with citations to commits.</td></tr>
+<tr><td>How to (implement or change)</td><td>Locate extension points, similar existing code, tests to update.</td></tr>
+<tr><td>Who</td><td>CODEOWNERS and blame statistics.</td></tr>
+<tr><td>Architecture</td><td>Use the module graph and the overview.</td></tr>
+</tbody></table></div>
+<h4>3. Answering with proof</h4>
+<pre class="code">Answer JSON from the model:
+{ "summary": "...",
+  "claims": [ { "text": "Signup is handled by create_user() in users/service.py",
+                "citations": [ {"path":"users/service.py","start":41,"end":78,"commit":"a3f9c1e"} ] }, ... ],
+  "uncertainties": [ "I did not find where the welcome email is sent." ] }
+
+Verifier, per claim:
+  1. the path exists at that commit and the line range is valid
+  2. identifiers named in the claim appear in the cited lines (lexical support)
+  3. an entailment check: "do these lines support this sentence?" -&gt; yes / partial / no (small model or LLM)
+  yes     -&gt; keep, show a green citation chip
+  partial -&gt; keep with a "partially supported" flag
+  no      -&gt; remove; try one more retrieval round; if still unsupported, report in "uncertainties"
+Grounding score shown on each answer: verified claims / total claims   (abstain if below a threshold)</pre>
+<h4>4. Architecture overview</h4>
+<ul>
+<li>Weighted graph of files or packages: import edges, call edges and co-change weights. Run community detection (Louvain) to find modules; name each with an LLM from its top symbols and README snippets; limit to 6 to 12 components.</li>
+<li>Draw a layered diagram: entry points, services or controllers, domain logic, data layer, external dependencies. Make each box clickable to a summary with key files, key flows, owners, and a "start here" reading order ranked by centrality.</li>
+<li>Overlay <b>hot spots</b> (high change frequency and complexity) and <b>dark corners</b> (little test coverage or documentation).</li>
+</ul>
+<h4>5. Guided tours</h4>
+<ol>
+<li>Pick a flow, such as sign-up, the main request lifecycle, data model, background jobs, or build and test.</li>
+<li>Find the entry point and traverse the call graph with limited depth. Prune plumbing (logging, getters, small utilities) using centrality and an "interestingness" score so each tour has 6 to 10 steps.</li>
+<li>For each step show the code with highlighted lines, a short explanation with citations, and a mini path diagram.</li>
+<li>Add <b>predict-then-reveal</b> mini-questions ("what do you expect happens next?") and a final quiz.</li>
+<li>Pre-generate tours for the top flows; allow custom tours from any question.</li>
+</ol>
+<h4>6. Starter tasks</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Source</th><th>What is mined</th></tr></thead>
+<tbody>
+<tr><td>Issues</td><td>Labels like good first issue and help wanted; clear reproduction steps.</td></tr>
+<tr><td>Code</td><td>TODO and FIXME with blame age; skipped or xfail tests; missing docstrings in public APIs.</td></tr>
+<tr><td>Quality</td><td>Low-test modules; lint warnings; duplicated code.</td></tr>
+<tr><td>History</td><td>Past similar fixes (so we can say "see how commit X fixed Y").</td></tr>
+</tbody></table></div>
+<p>Score tasks by blast radius (reverse-dependency count), size and complexity of the area, test availability, and clarity. The output is a <b>task card</b>: why it matters, where (files and lines), reading list in order, steps, how to verify (commands and tests), pitfalls from history, who to ask (CODEOWNERS or top blame authors), estimated time, and the PR checklist from the contributing guide. A "first PR coach" can review the newcomer's diff against repository conventions.</p>
+<h4>7. Living documentation</h4>
+<ul>
+<li>Documentation is a set of sections (architecture, flows, glossary, FAQ). Each section stores <b>anchors</b>: symbol ids, file paths and content hashes.</li>
+<li>On push or pull request, compute which anchors changed. Mark dependent sections stale and regenerate only those, citing the new code, then open a pull request with the doc diff.</li>
+<li>A CI check can warn when code changes without matching doc updates, and a freshness badge shows the share of sections up to date.</li>
+<li>The glossary is mined from identifiers and README terms.</li>
+</ul>
+<h4>8. Tribal knowledge capture</h4>
+<p>When the mentor abstains or the user rates an answer unhelpful, offer "ask a maintainer". The maintainer's reply is stored as a note anchored to the relevant code with a "maintainer-verified" badge, and used in future answers. If the anchor changes, the note is flagged for review.</p>
+<h4>9. Learning path and quizzes</h4>
+<p>Generate a reading path by role (backend, frontend, DevOps). Track progress. Short quizzes after tours check understanding with questions whose answers can be found in the code.</p>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Ask questions with cited code</td><td><span class="tier core">Core</span></td><td>Retrieval, structured answers, citation chips.</td><td>The task.</td><td>L</td></tr>
+<tr><td>Architecture overview</td><td><span class="tier core">Core</span></td><td>Clustering and diagram.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Guided tours</td><td><span class="tier core">Core</span></td><td>Call-graph tracing and narration.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Starter tasks</td><td><span class="tier core">Core</span></td><td>Mined and ranked task cards.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Citation verifier</td><td><span class="tier wow">Wow</span></td><td>Reopens lines, checks support, removes unsupported claims.</td><td>"You can check every sentence."</td><td>M</td></tr>
+<tr><td>Grounding score and abstention</td><td><span class="tier wow">Wow</span></td><td>Verified over total claims; "I do not know".</td><td>Honesty as a feature.</td><td>S</td></tr>
+<tr><td>"Why" from git history</td><td><span class="tier wow">Wow</span></td><td>Blame, commit and PR mining.</td><td>Captures senior knowledge.</td><td>M</td></tr>
+<tr><td>Predict-then-reveal tours</td><td><span class="tier wow">Wow</span></td><td>Questions embedded in the walkthrough.</td><td>Active learning.</td><td>S</td></tr>
+<tr><td>Hot spots and dark corners</td><td><span class="tier wow">Wow</span></td><td>Churn, complexity, tests overlay.</td><td>Insight in one picture.</td><td>S</td></tr>
+<tr><td>Living docs with anchors</td><td><span class="tier wow">Wow</span></td><td>Change detection and update PR.</td><td>Solves doc rot.</td><td>L</td></tr>
+<tr><td>Who to ask</td><td><span class="tier wow">Wow</span></td><td>CODEOWNERS and blame.</td><td>Practical.</td><td>S</td></tr>
+<tr><td>Tribal knowledge capture</td><td><span class="tier stretch">Stretch</span></td><td>Ask maintainer; anchored notes.</td><td>Institutional memory.</td><td>M</td></tr>
+<tr><td>First PR coach</td><td><span class="tier stretch">Stretch</span></td><td>Review diff against conventions.</td><td>Closes the onboarding loop.</td><td>M</td></tr>
+<tr><td>IDE or GitHub extension</td><td><span class="tier stretch">Stretch</span></td><td>Panel in the editor or repo.</td><td>Scalability.</td><td>L</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Repo connect.</b> Paste a GitHub URL; indexing progress with counts of symbols, files and commits.</li>
+<li><b>Overview.</b> Architecture diagram; click a component for summary, key files, flows, owners, "start here"; hot spot overlay.</li>
+<li><b>Ask.</b> Chat with answers showing citation chips; clicking a chip opens the code viewer at those lines; grounding score; "why" answers show commit cards.</li>
+<li><b>Tours.</b> Tour list; step-by-step player with highlighted code, path diagram and quiz.</li>
+<li><b>Starter tasks.</b> Cards sorted by difficulty and value; task detail with reading list and verification steps.</li>
+<li><b>Docs.</b> Living documentation with freshness badges and a "what changed" view.</li>
+<li><b>Admin.</b> Maintainer inbox for tribal-knowledge questions.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<ul>
+<li><b>Repositories.</b> One or two real open-source projects of moderate size that you can run and whose maintainers' public discussions exist. Pick one in Python or JavaScript for the main demo.</li>
+<li><b>Golden set.</b> 30 to 40 questions: some from the repository's closed issues and discussions, some written by teammates, across question types.</li>
+<li><b>Metrics.</b> Answer correctness (human rating 0, 1 or 2), citation precision (cited ranges that truly support the claim), citation recall (files a correct answer needs that were cited), unsupported-claim rate (target 0 after verification), abstention appropriateness, latency.</li>
+<li><b>Doc drift test.</b> Make 10 commits that change documented code; measure precision and recall of stale-section detection.</li>
+<li><b>Peer user test.</b> Eight to ten newcomers split into with-mentor and without-mentor groups; five questions plus one locate-where-to-change task; measure time and correctness; report effect sizes and a short satisfaction survey. The PDF asks for this.</li>
+</ul>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Clone a small repo, parse symbols, index them.</li><li>Answer five questions with line citations and a naive verifier.</li><li>One screenshot of an answer with chips.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Ingest, code model, hybrid index.</li>
+<li><b>Day 2.</b> Q&amp;A with structured claims and verifier; question router.</li>
+<li><b>Day 3.</b> Architecture overview, code viewer, history-based why.</li>
+<li><b>Day 4.</b> Evaluation harness, golden set results, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 5 h: guided tours.</li>
+<li>5 to 10: starter tasks.</li>
+<li>10 to 15: living docs and drift detection.</li>
+<li>15 to 20: peer user test and write-up.</li>
+<li>20 to 24: polish, rehearse, record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Code analysis lead:</b> parsing, graphs, history.</li><li><b>Retrieval and LLM lead:</b> index, router, answers, verifier.</li><li><b>Frontend:</b> viewer, diagram, tours.</li><li><b>Evaluation and pitch:</b> golden set, user test, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Large repositories</td><td>Slow indexing and retrieval.</td><td>Index incrementally; cache summaries; start with a mid-size repo.</td></tr>
+<tr><td>Language coverage</td><td>Parser gaps.</td><td>Python and JavaScript first; generic text fallback for others.</td></tr>
+<tr><td>Call graph inaccuracy</td><td>Wrong tours.</td><td>Mark uncertain edges; use entry-point retrieval and verification.</td></tr>
+<tr><td>Verifier too strict or too lax</td><td>Missing or false answers.</td><td>Tune on the golden set; show grounding score.</td></tr>
+<tr><td>User test too small</td><td>Weak evidence.</td><td>Report honestly with effect sizes and limits.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Joining a new codebase takes weeks because the real knowledge is in people's heads. CodeSherpa reads the repository and its history and becomes a mentor. Every answer cites exact files and lines and is checked against the code, so it cannot make things up. It gives an architecture map, guided tours of key flows, starter tasks with a reading list, and documentation that refreshes when the code changes. In our peer test, newcomers got to correct answers faster with it.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> A large unfamiliar repository; "where do I even start?"</li>
+<li><b>0:30 Connect.</b> Paste the URL; indexing counts.</li>
+<li><b>1:00 Overview.</b> Architecture diagram; click a component.</li>
+<li><b>1:45 Ask.</b> "What happens when a user signs up?" Answer with chips and a grounding score 7 of 7; click a chip to see the lines.</li>
+<li><b>2:30 Why.</b> "Why does auth use X?" Commit cards explain the decision.</li>
+<li><b>3:10 Tour.</b> Step through the sign-up flow with a predict-then-reveal question.</li>
+<li><b>3:50 Starter task.</b> A task card with reading list and verification steps.</li>
+<li><b>4:20 Living docs and results.</b> Show a code change flagging a stale doc section; show the user test chart.</li>
+<li><b>4:50 Close.</b></li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> interns, new developers, open-source contributors, engineering teams.</p><p><b>Gap:</b> weeks to understand a codebase; knowledge sits in people's heads; docs go stale.</p><p><b>Why now:</b> LLMs can explain code, but only grounding makes them trustworthy.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> verified citations, history-based why, living docs with anchors, tours and starter tasks.</p><p><b>Mechanism:</b> index, retrieve, claim with citations, verify.</p><p><b>Feasible:</b> answers with verified citations on one real repo; citation precision X% (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Python, tree-sitter, GitPython, networkx, embeddings and BM25, FAISS or Chroma, LLM API, FastAPI, React, CodeMirror, GitHub Action.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Ask with citations, architecture map, tours, starter tasks, living docs.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> index and cited Q&amp;A. <b>In progress:</b> overview, verifier. <b>Next:</b> tours, tasks, living docs, user test.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Faster ramp-up, fewer interruptions for seniors, retained team knowledge, easier open-source contribution.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How do you guarantee answers are grounded?</summary><p>Answers are structured as claims with citations, each checked against the repository at that commit; unsupported claims are removed and low-evidence answers abstain.</p></details>
+<details class="qa"><summary>How do you answer "why" questions?</summary><p>We retrieve the code, then read blame, commit messages and pull request text for those lines and answer from them.</p></details>
+<details class="qa"><summary>How do you keep docs fresh?</summary><p>Docs carry anchors to symbols and content hashes; when anchored code changes, only those sections are regenerated and proposed as a pull request.</p></details>
+<details class="qa"><summary>How do you know it helps?</summary><p>A small peer study with and without the mentor, measuring time and correctness, plus citation precision on a golden question set.</p></details>
+<details class="qa"><summary>What about other languages and huge repositories?</summary><p>Python and JavaScript first with a text fallback elsewhere; indexing is incremental and summaries are cached.</p></details>
+<details class="qa"><summary>What does it do when it does not know?</summary><p>It says so and points to the closest files, and offers to ask a maintainer.</p></details>
+</article>

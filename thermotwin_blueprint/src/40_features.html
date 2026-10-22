@@ -1,0 +1,123 @@
+<h2 id="features"><small>Product</small>Feature catalogue, by the person who uses it</h2>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td colspan="3" class="lbl" style="font-weight:600">Facility staff (ANM, vaccine handler, pharmacist)</td></tr>
+<tr><td>Live status with Virtual Vial temperature</td><td><span class="tier core">Core</span></td><td>Green, amber, red ring showing product temperature, not jumpy air temperature.</td></tr>
+<tr><td>Breach clock and WHO clock</td><td><span class="tier core">Core</span></td><td>"34 min to leave the safe band (18 to 61)" and "WHO freeze alarm in about 1 h 40 min".</td></tr>
+<tr><td>Freeze-first alerts</td><td><span class="tier core">Core</span></td><td>Freeze risk is fast-tracked to SMS and voice.</td></tr>
+<tr><td>Cause Card in the local language</td><td><span class="tier core">Core</span></td><td>"Thermostat is likely set too cold. The compressor has run 52 minutes without stopping." With the numbers behind it.</td></tr>
+<tr><td>Holdover clock during power cuts</td><td><span class="tier wow">Wow</span></td><td>"Power off for 2 h. Vaccines stay below +8 °C for about 3 h 20 min more if the door stays shut."</td></tr>
+<tr><td>SOP Guide</td><td><span class="tier wow">Wow</span></td><td>WhatsApp checklist during a critical event, step by step, with confirmations.</td></tr>
+<tr><td>Door-left-open nudge</td><td><span class="tier core">Core</span></td><td>Buzzer at 5 minutes (WHO DS01.2 door default), SMS if it continues.</td></tr>
+<tr><td>Vaccine Life Meter</td><td><span class="tier wow">Wow</span></td><td>Rolling 24-hour MKT, vial-monitor-equivalent heat used, and a separate freeze-exposure counter.</td></tr>
+<tr><td>One-tap or missed-call acknowledgement with a reason tag</td><td><span class="tier core">Core</span></td><td>Reply 1 to the SMS, press 1 on the voice call, or tap in the app; tags feed learning.</td></tr>
+<tr><td colspan="3" class="lbl" style="font-weight:600">Technician</td></tr>
+<tr><td>Twin Vitals</td><td><span class="tier wow">Wow</span></td><td>Cooling Strength, Seal Health, Thermostat Margin, Holdover, Door Load, with trends.</td></tr>
+<tr><td>Diagnosis ticket before the visit</td><td><span class="tier core">Core</span></td><td>Likely fault, evidence chart, checks to bring tools for.</td></tr>
+<tr><td>Repair verified</td><td><span class="tier wow">Wow</span></td><td>The twin confirms the fix 24 hours later or reopens the ticket.</td></tr>
+<tr><td colspan="3" class="lbl" style="font-weight:600">District cold-chain officer</td></tr>
+<tr><td>Fleet triage map</td><td><span class="tier wow">Wow</span></td><td>Every fridge on a map, coloured by 30-day failure risk, filter by block.</td></tr>
+<tr><td>Maintenance queue</td><td><span class="tier core">Core</span></td><td>Tickets ranked by risk and number of freeze-sensitive doses stored.</td></tr>
+<tr><td>Response-time analytics</td><td><span class="tier core">Core</span></td><td>Time to acknowledge and resolve by facility; who needs support.</td></tr>
+<tr><td>DS01.2 indicator reports</td><td><span class="tier core">Core</span></td><td>Uptime score, alarm counts, non-functional flags in WHO's own format.</td></tr>
+<tr><td>Weekly digest and Ask ThermoTwin</td><td><span class="tier wow">Wow</span></td><td>Plain-language weekly report; questions answered from the data.</td></tr>
+<tr><td colspan="3" class="lbl" style="font-weight:600">Engineers and judges</td></tr>
+<tr><td>Replay Benchmark</td><td><span class="tier wow">Wow</span></td><td>Four policies on the same traces with published metrics.</td></tr>
+<tr><td>What-if simulator</td><td><span class="tier wow">Wow</span></td><td>"Door stays open 5 more minutes", "power cut now", "cooling drops 30%": the forecast cone redraws.</td></tr>
+<tr><td>Alarm budget meter</td><td><span class="tier wow">Wow</span></td><td>Live false-alerts-per-fridge-month against the budget, next to a naive threshold alarm.</td></tr>
+<tr><td>ColdChain Gym console</td><td><span class="tier wow">Wow</span></td><td>Inject any fault into any fridge live during the demo.</td></tr>
+<tr><td>Model card and limitations</td><td><span class="tier core">Core</span></td><td>Assumptions, data, failure modes; Track 4 scores clarity of limitations.</td></tr>
+<tr><td colspan="3" class="lbl" style="font-weight:600">Platform</td></tr>
+<tr><td>DS01.2 JSON and eVIN-style log ingestion</td><td><span class="tier core">Core</span></td><td>Works on telemetry that already exists; vendor-neutral.</td></tr>
+<tr><td>Predict API and webhooks</td><td><span class="tier core">Core</span></td><td>Track 4 asks for a dashboard or API; we ship both.</td></tr>
+<tr><td>Offline-first edge node</td><td><span class="tier stretch">Stretch</span></td><td>Local model and buzzer keep working with no network; data forwarded later.</td></tr>
+<tr><td>Equipment profiles</td><td><span class="tier stretch">Stretch</span></td><td>Ice-lined refrigerator, PQS fridge, deep freezer, walk-in cold room, pharmacy fridge, food cold room.</td></tr>
+<tr><td>Privacy by design</td><td><span class="tier core">Core</span></td><td>Only role, phone and facility stored; only telemetry features sent to any LLM.</td></tr>
+</tbody></table></div>
+
+<h3>Screens to mock up for slide 5</h3>
+<div class="g3">
+<div class="card"><h4>Facility status (phone)</h4><p>Status ring, Virtual Vial temperature, breach and WHO clocks, Cause Card, one big "Acknowledge" button, SOP steps.</p></div>
+<div class="card"><h4>Unit detail (web)</h4><p>Chart with the 2 to 8 °C band, observed line, the twin's healthy expectation, forecast cone, door and power markers; Twin Vitals; life meter; what-if sliders.</p></div>
+<div class="card"><h4>District command</h4><p>Map of fridges coloured by risk, maintenance queue, response-time leaderboard, weekly digest.</p></div>
+<div class="card"><h4>Alert previews</h4><p>The SMS, the voice-call script and the WhatsApp Cause Card side by side.</p></div>
+<div class="card"><h4>Technician ticket</h4><p>Diagnosis, evidence chart, checks; after repair, the "Repair verified" badge.</p></div>
+<div class="card"><h4>Benchmark lab</h4><p>Lead time versus false alerts for four policies; reliability curve; ablations.</p></div>
+</div>
+<pre class="code">SMS (registered template, 160 characters max)
+ThermoTwin ALERT PHC Wagholi ILR-2: FREEZE RISK. Now +1.6C, below 0C in ~35 min. Cause: THERMOSTAT. Check setting, keep door shut. Reply 1 to ack
+
+Voice call script (Hindi, read by text-to-speech)
+"Namaste. ThermoTwin chetavani. PHC Wagholi ka ILR number 2 bahut thanda ho raha hai. Lagbhag 35 minute mein vaccine jam sakti hai.
+ Kripya thermostat ki setting dekhein aur darwaza band rakhein. Suchna mil gayi ho to 1 dabayein."</pre>
+
+<h2 id="gym"><small>Data</small>ColdChain Gym: the simulator that trains and tests everything</h2>
+<p class="sub">Track 4 is designed for simulated data with a hidden test set of unseen fault combinations. So we build a realistic generator, train on part of it, and test on conditions the model never saw, including a second, independent generator.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Dimension</th><th>What we vary</th></tr></thead>
+<tbody>
+<tr><td>Equipment</td><td>PQS compression fridge, ice-lined refrigerator (ice node, cold zone near the base), domestic fridge, deep freezer, walk-in cold room, solar direct-drive with battery</td></tr>
+<tr><td>Environment</td><td>Indian seasonal ambient (cool winters to 45 °C heat waves), day and night cycles, room heat load</td></tr>
+<tr><td>Power</td><td>Outage frequency and duration by setting (urban, rural), voltage fluctuation effects, solar battery decline</td></tr>
+<tr><td>Use</td><td>Immunisation session days, morning withdrawals, restocking with warm stock, door left ajar</td></tr>
+<tr><td>Faults</td><td>Thermostat drift to freezing, refrigerant leak, compressor wear, gasket leak, condenser fouling, evaporator icing or missed defrost, sudden failure, overload</td></tr>
+<tr><td>Sensors</td><td>Spikes, stuck values, drift, dropouts, missing data, noise levels</td></tr>
+<tr><td>Labels</td><td>Breach and freeze onset, WHO FRZE and HEAT events, cause labels, non-functional windows, Virtual Vial ground truth</td></tr>
+</tbody></table></div>
+<div class="g2">
+<div class="card"><h4>Splits that mimic the hidden test</h4><ul><li>Split by unit, never by random rows.</li><li>Leave-one-fault-family-out.</li><li>Unseen fault combinations, doubled noise, 20% missing data.</li><li>External test on a second generator: the synthetic fridge dataset and generator of Benamirouche et al. (2026), if its code is usable.</li></ul></div>
+<div class="card"><h4>Real-data sanity checks (licences to confirm)</h4><ul><li>Bangkok in-fridge temperature data, 123 households at 5-minute intervals.</li><li>REFIT appliance power data for realistic compressor cycling.</li><li>ORNL display-case fault data (door-open and icing faults).</li></ul></div>
+</div>
+
+<h2 id="eval"><small>Proof</small>Evaluation and the Replay Benchmark</h2>
+<div class="tw"><table class="t">
+<thead><tr><th>Policy</th><th>Rule</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>P0 Naive threshold</td><td>Air temperature below +2 or above +8 °C, instantly</td><td>Shows false-alarm flood</td></tr>
+<tr><td>P1 WHO default</td><td>DS01.2: ≤ −0.5 °C for 60 min, ≥ +8 °C for 10 h</td><td>Shows lateness</td></tr>
+<tr><td>P2 Nexleaf-style early alerts</td><td>Below +2 °C for 30 min, above +8 °C for 60 min</td><td><b>The honest bar to beat</b></td></tr>
+<tr><td>P3 ThermoTwin</td><td>Two-key forecasts plus rule tiers</td><td>Ours</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>Definition</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Recall on WHO-grade events</td><td>Share of FRZE and HEAT events preceded by an alert</td><td>About 100%</td></tr>
+<tr><td>Lead time</td><td>Median and 10th percentile, to breach onset and to the WHO alarm, versus P2</td><td>Freeze: 30 min or more over P2</td></tr>
+<tr><td>False alerts</td><td>SMS-tier alerts per fridge-month with no breach in the horizon</td><td>1 or fewer</td></tr>
+<tr><td>True-alarm suppression</td><td>Real events we held back</td><td>Below 1%</td></tr>
+<tr><td>Alert precision</td><td>Alerts followed by a breach in their horizon</td><td>Report</td></tr>
+<tr><td>Calibration</td><td>Brier score, reliability curve</td><td>Report</td></tr>
+<tr><td>Cause accuracy</td><td>Top-1 and top-2 against simulator labels</td><td>Report per cause</td></tr>
+<tr><td>Repair verification</td><td>Correct "verified" versus "not fixed" calls</td><td>Report</td></tr>
+<tr><td>Edge cost</td><td>Latency and memory on ESP32 and laptop CPU</td><td>Microseconds to milliseconds</td></tr>
+</tbody></table></div>
+<p class="sub">Scoring rules: merge consecutive alerts into episodes before counting; event-level and range-based precision and recall; no point-adjusted F1, which inflates scores. Ablations: without the twin, without the Virtual Vial, without two-key, without the trust gate, without calibration. All targets are goals until measured.</p>
+
+<h2 id="edge"><small>Deployment</small>Edge, connectivity and hardware</h2>
+<p class="sub">Track 4 needs no hardware, so the hackathon build is software-only on simulated data. The edge node is the deployment story and an optional finale demo.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Part</th><th>Purpose</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>ESP32-S3</td><td>Node controller, runs rules and the compiled tree model</td><td>Low cost; Wi-Fi; pairs with GSM or LoRa</td></tr>
+<tr><td>Probe in a 20 ml glycol vial</td><td>Product-like temperature</td><td>SHT31 (about ±0.2 °C typical, 0 to 90 °C) or a calibrated probe; DS18B20 has no accuracy margin; RTD for freezers</td></tr>
+<tr><td>Ambient sensor</td><td>Room temperature for the twin</td><td>Second SHT31</td></tr>
+<tr><td>Door reed switch</td><td>Door state</td><td>Makes door causes rule-based</td></tr>
+<tr><td>SCT-013 current clamp (5 to 20 A)</td><td>Compressor running, power draw</td><td>Clamps on the supply cable, no rewiring</td></tr>
+<tr><td>Mains detector</td><td>Power present</td><td>Distinguishes power cut from compressor failure</td></tr>
+<tr><td>Buzzer and LED</td><td>Local alarm</td><td>Works with no network</td></tr>
+<tr><td>GSM module (dual SIM) or LoRa at 865 to 867 MHz</td><td>Upload and SMS fallback</td><td>eVIN's design: 10-min readings, hourly upload, dual SIM, battery backup</td></tr>
+<tr><td>Battery and flash ring buffer</td><td>24 h backup, 30 days of data</td><td>Store-and-forward</td></tr>
+</tbody></table></div>
+<div class="co warn"><span class="lbl">Positioning</span><p>This node is not WHO-prequalified. Pitch it as a predictive add-on beside the certified PQS or eVIN logger, never a replacement. The certified logger remains the official record, and humans decide what happens to any stock.</p></div>
+
+<h2 id="stack"><small>Slide 4</small>Tech stack</h2>
+<div class="tw"><table class="t">
+<thead><tr><th>Template box</th><th>Choice</th></tr></thead>
+<tbody>
+<tr><td>Frontend</td><td>React with Vite, ECharts or Recharts, Leaflet map, installable mobile web app for facility staff (Streamlit for the first prototype)</td></tr>
+<tr><td>Backend</td><td>Python FastAPI, MQTT broker (Mosquitto), scheduled workers, Guardian state machine in Python</td></tr>
+<tr><td>Database</td><td>TimescaleDB (PostgreSQL) for telemetry; SQLite for the prototype</td></tr>
+<tr><td>AI and APIs</td><td>NumPy, SciPy, filterpy (EKF), PyTorch (differentiable RC and TCN baseline), LightGBM, scikit-learn, SHAP, MAPIE (conformal), change-point detection, Chronos-Bolt (baseline), emlearn or m2cgen; an LLM API with structured output (declare the model); Bhashini or cloud text-to-speech for Indian languages; SMS and voice through Exotel or Twilio; WhatsApp Cloud API</td></tr>
+<tr><td>Hosting and DevOps</td><td>Docker Compose, GitHub Actions with tests (including data-leakage tests), a cloud host (Render, Railway, Azure or AWS), over-the-air updates for edge nodes</td></tr>
+</tbody></table></div>

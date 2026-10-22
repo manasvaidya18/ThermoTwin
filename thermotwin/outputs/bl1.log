@@ -1,0 +1,15 @@
+[freeze] done; LSTM 30,433 parameters, threshold 0.05
+[heat] done; LSTM 30,433 parameters, threshold 0.20
+
+=== Model comparison: held-out fridges (simulated data, seed 1) ===
+  kind                              model caught  lead_median_min  false_per_fridge_month  train_s  infer_s  size_kb
+freeze     P1 WHO (<= -0.5 °C for 60 min)  38/41            -30.0                    0.03      NaN      NaN      NaN
+freeze P2 early rule (<= 2 °C for 30 min)  40/41            210.0                    5.68      NaN      NaN      NaN
+freeze         LSTM (raw air, no physics)  39/41             90.0                    0.15    22.61     4.80   122.68
+freeze       ThermoTwin (twin + LightGBM)  41/41            110.0                    0.27    33.34    10.17  1373.21
+  heat           P1 WHO (> 8 °C for 10 h)   0/10              NaN                    0.00      NaN      NaN      NaN
+  heat  P2 early rule (> 8 °C for 30 min)   9/10              0.0                    0.42      NaN      NaN      NaN
+  heat         LSTM (raw air, no physics)   7/10             30.0                    0.39    19.34     5.29   122.68
+  heat       ThermoTwin (twin + LightGBM)   7/10             40.0                    0.24    33.77     8.99  1371.24
+
+Saved outputs/baselines_seed1.csv

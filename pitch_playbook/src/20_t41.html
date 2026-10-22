@@ -1,0 +1,310 @@
+<article class="view" id="v-t41" data-track="t4" data-title="ThermoTwin">
+<header class="phead">
+  <div class="kicker"><span class="chip t4">Track 4 · UST</span><span class="chip">T4-1</span></div>
+  <h2>ThermoTwin</h2>
+  <p class="sub">Predict a cold-storage temperature excursion before it happens, explain why, say how much product damage it is causing, and stay quiet when nothing is wrong.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●●</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●●●○</b></div><div>Demo impact<b>●●●○○</b></div><div>Provable<b>●●●●●</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Vaccines, insulin, blood products and some foods must stay inside a temperature band. Vaccines are usually kept at 2 to 8 °C. Today's monitoring is a thermometer with a threshold: it sounds the alarm once the limit is already crossed, so the stock is already at risk. The task is to look at the sensor history and predict, minutes ahead, that a breach is coming, so a person can move the stock or fix the fridge in time. The prediction must also be trusted. A system that cries wolf gets ignored, so the PDF repeatedly says "keep false alarms under control".</p>
+<div class="co warn"><span class="lbl">PDF error to be aware of</span><p>In the Track 4 PDF, the "Problem Statement" box under the cold-storage title contains the indoor-positioning paragraph by mistake. The real task is the bullet list on the next page. Mention the real task in your slides and ask the organisers to confirm.</p></div>
+
+<h4>What the PDF requires</h4>
+<ul>
+<li>Analyse temperature and related time series; identify gradual degradation, abnormal rate of change and sudden failure patterns.</li>
+<li>Predict the <b>probability of an excursion within a defined future window</b>.</li>
+<li>Tell normal recovery (for example after a door opening) apart from conditions that need intervention.</li>
+<li>Name likely contributing factors (door events, ambient change, loss of cooling effectiveness) where those fields exist.</li>
+<li>Give <b>explainable warnings</b> with a confidence or risk level, and a simple dashboard or API with current state, prediction and reason.</li>
+<li>Data fields suggested: timestamp, storage temperature, ambient temperature, door state, cooling state, rate of change, sensor noise, event or failure labels. Scenarios: normal operation, door opening, slow cooling degradation, sudden cooling failure, sensor spikes, recovery. A <b>hidden</b> synthetic set with unseen combinations of faults and noise is used for scoring.</li>
+<li>Scoring dimensions (common to Track 4): hidden-test performance, robustness to noise, missing data and unseen conditions, explainability, deployability as API, app or edge component, visualisation and demo, clarity of assumptions, limitations and validation.</li>
+</ul>
+
+<h4>Six situations that look alike on a chart</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Situation</th><th>Signature in the data</th><th>Right response</th></tr></thead>
+<tbody>
+<tr><td>Door opened briefly</td><td>Quick rise (1 to 3 °C), door flag on, then exponential recovery once closed, compressor kicks in.</td><td>No alert. This is the "normal recovery" the PDF wants separated out.</td></tr>
+<tr><td>Door left open</td><td>Rise keeps going while the door flag stays on.</td><td>Immediate alert: "close the door".</td></tr>
+<tr><td>Defrost cycle</td><td>Scheduled, periodic, small and predictable warm-up.</td><td>Suppress. A model that has not seen defrost will flag it falsely.</td></tr>
+<tr><td>Slow cooling degradation</td><td>Compressor duty cycle creeping up over days, recovery getting slower, peaks drifting higher.</td><td>Maintenance ticket this week. Not urgent tonight.</td></tr>
+<tr><td>Sudden cooling failure or power cut</td><td>Compressor "on" but no cooling, or no cycling at all; steady warming toward ambient.</td><td>Critical alert with time to breach. Move stock now.</td></tr>
+<tr><td>Sensor spike or dropout</td><td>One-sample jumps, flat lines, gaps, with no physical story behind them.</td><td>"Possible sensor fault, verify", not a product-risk alarm.</td></tr>
+</tbody></table></div>
+
+<h4>Domain terms your team should know</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Excursion</td><td>Storage temperature outside its allowed band for long enough to matter. We define it as below 2 °C or above 8 °C for at least 5 minutes, configurable.</td></tr>
+<tr><td>Thermostat hysteresis</td><td>The compressor switches on at an upper set point and off at a lower one, so a healthy fridge saw-tooths between, for example, 3 and 5.5 °C.</td></tr>
+<tr><td>Thermal mass</td><td>Stored product holds temperature far longer than the air. A 5-minute air spike barely moves the product core.</td></tr>
+<tr><td>Duty cycle</td><td>Fraction of time the compressor is running. Rising duty cycle at constant load means falling cooling effectiveness.</td></tr>
+<tr><td>Mean kinetic temperature (MKT)</td><td>A single temperature that represents the damage of a whole fluctuating history, weighting warm periods more using the Arrhenius equation. Defined in the WHO vaccine vial monitor specification.</td></tr>
+<tr><td>Freeze excursion</td><td>Too cold, not too warm. Some vaccines are damaged by freezing, so the band is two-sided.</td></tr>
+</tbody></table></div>
+
+<h3>Our concept: ThermoTwin</h3>
+<p>Instead of one anomaly detector, build a small <b>digital twin of each fridge</b> that learns the unit's own physics, then forecast from how the unit deviates from its healthy self. Three ideas carry the pitch.</p>
+<div class="g3">
+<div class="card"><h4>1. The twin sees what a threshold cannot</h4><p>Each unit's cooling strength and insulation are estimated online. After a door closes, a healthy unit follows a known recovery curve. A failing one does not. The residual between the two is the strongest early signal and is physically explainable.</p></div>
+<div class="card"><h4>2. The Spoilage Clock</h4><p>An alert says "7.4 °C" but a 6 minute blip and a 3 hour excursion are not the same harm. We track cumulative heat exposure with the Arrhenius weighting behind MKT and vaccine vial monitors, so severity scales with real damage.</p></div>
+<div class="card"><h4>3. Alerts with a false-alarm budget</h4><p>The alert threshold is not a guess. It is chosen to hit a stated budget (for example one false alarm per unit per month) and shown live against a classic threshold alarm on the same data.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>ThermoTwin</th></tr></thead>
+<tbody>
+<tr><td>Fixed threshold alarm</td><td>Fires after the damage starts; fires on harmless door openings.</td><td>Forecasts the breach; recognises recovery.</td></tr>
+<tr><td>Anomaly detector (isolation forest, autoencoder)</td><td>Flags "weird", not "will breach"; cannot say why; high false alarms.</td><td>Supervised multi-horizon risk plus physics residuals plus reason codes.</td></tr>
+<tr><td>One big LSTM</td><td>Black box; overfits the simulator; weak on unseen fault combinations.</td><td>Physics features feed a small calibrated model; deep model kept only as a baseline.</td></tr>
+<tr><td>Binary excursion label</td><td>Treats a blip like a disaster.</td><td>Spoilage budget gives graded severity.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>Every judging dimension has a visible answer: hidden-test performance (leave-one-fault-out numbers), robustness (noise and missing-data grid), explainability (reason codes), deployability (API plus edge model), demo (fleet dashboard with what-if), validation clarity (stated assumptions). Fully synthetic, so no data risk.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>Many ML teams will pick this track, so a plain "XGBoost plus dashboard" would not stand out. The twin, the Spoilage Clock and the alert-budget curve are what separate us. Realism of the simulator will be questioned, so document assumptions openly.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Simulate</b><span>Two-node thermal model with faults, doors, defrost, noise. Labelled episodes for hundreds of units.</span></div>
+<div class="st"><b>Clean and trust-check</b><span>Spike, flatline and gap detection. Sensor trust score gates the alarms.</span></div>
+<div class="st"><b>Twin and features</b><span>Online estimate of cooling strength and leakage; residuals; duty cycle; door and ambient features.</span></div>
+<div class="st"><b>Forecast</b><span>Calibrated excursion probability at 15, 30, 60 minutes plus time to breach.</span></div>
+<div class="st"><b>Diagnose</b><span>Cause classifier and SHAP, mapped to plain-language reason codes.</span></div>
+<div class="st"><b>Decide</b><span>Alert policy with persistence, cooldown and a false-alarm budget; Spoilage Clock severity.</span></div>
+<div class="st"><b>Serve</b><span>FastAPI endpoint, fleet dashboard, what-if simulator, SMS-style alert preview.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th><th>Owner</th></tr></thead>
+<tbody>
+<tr><td>sim/</td><td>Physics simulator, scenario scripts, noise injectors, hidden-split generator</td><td>NumPy, SciPy, Pydantic configs</td><td>Data engineer</td></tr>
+<tr><td>features/</td><td>Windowed features, twin estimator, trust pre-filter</td><td>pandas, NumPy, statsmodels</td><td>ML lead</td></tr>
+<tr><td>models/</td><td>Forecaster, quantile time-to-breach, cause classifier, calibration, SHAP</td><td>LightGBM, scikit-learn, shap, optional PyTorch TCN baseline</td><td>ML lead</td></tr>
+<tr><td>policy/</td><td>Alert state machine, cost-based threshold search, Spoilage Clock</td><td>Python</td><td>ML lead, integration</td></tr>
+<tr><td>api/</td><td>Predict, units, alerts, simulator control, streaming</td><td>FastAPI, WebSocket, SQLite</td><td>Integration lead</td></tr>
+<tr><td>ui/</td><td>Fleet view, unit detail, what-if, alert inbox, benchmark page</td><td>React with a chart library, or Streamlit if short on time</td><td>Frontend lead</td></tr>
+<tr><td>bench/</td><td>Episode-level metrics, baselines, robustness grid, plots</td><td>pandas, matplotlib</td><td>Data engineer</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. The simulator</h4>
+<p>A two-node thermal model: one node for the air where the sensor sits, one for the stored product. A thermostat with hysteresis drives the compressor. Parameters are randomised per unit so no two fridges are identical.</p>
+<pre class="code">Air node      C_a * dT_a/dt = UA*(T_amb - T_a) - Q_c*s(t) - h_p*(T_a - T_p) + Q_door(t) + Q_defrost(t)
+Product node  C_p * dT_p/dt = h_p*(T_a - T_p)
+Thermostat    s(t)=1 when T_a &gt; T_hi ; s(t)=0 when T_a &lt; T_lo        (hysteresis)
+Door          Q_door = k_door * (T_amb - T_a) * 1[door open]
+Degradation   Q_c(t) = Q_c0 * (1 - d(t)),  d ramps over days   |   leak: UA(t) = UA0 * (1 + e(t))
+Sudden fail   Q_c -> 0 at t_f   |   Power cut: s(t)=0 and fans off for a window
+Sensor        y = T_a + bias + noise;  spikes w.p. p_s;  dropout w.p. p_d;  stuck-at episodes</pre>
+<p>Use one reading per minute. Calibrate the constants so a closed healthy unit saw-tooths between about 3 and 5.5 °C, warms 0.5 to 1.5 °C in ten minutes with the compressor off, and recovers about 1 to 2 °C within 5 to 10 minutes of a short door opening. These are illustrative; state that on the slide.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Scenario</th><th>How it is generated</th><th>Label</th></tr></thead>
+<tbody>
+<tr><td>Normal operation</td><td>Healthy unit, random ambient swing, occasional short door events.</td><td>none</td></tr>
+<tr><td>Door events</td><td>Short (20 to 90 s), long (3 to 15 min), and "left open".</td><td>cause = door</td></tr>
+<tr><td>Defrost</td><td>Periodic heater pulse, 8 to 12 hour interval.</td><td>benign</td></tr>
+<tr><td>Slow degradation</td><td>d(t) ramps 0 to 40% over 3 to 10 days or gasket leak e(t) grows.</td><td>cause = degradation</td></tr>
+<tr><td>Sudden failure / power cut</td><td>Q_c drops to 0, or compressor and fans off, at a random time.</td><td>cause = failure</td></tr>
+<tr><td>Sensor artefacts</td><td>Spikes, noise burst, dropout, stuck value.</td><td>cause = sensor</td></tr>
+<tr><td>Combinations</td><td>Any two or three of the above overlapping. Reserved for the hidden split.</td><td>multi</td></tr>
+</tbody></table></div>
+<p><b>Excursion label.</b> For horizon H in {15, 30, 60} minutes, y_H(t) = 1 if the true storage temperature leaves the band for at least 5 consecutive minutes inside (t, t+H]. Generate labels from the noise-free air temperature so sensor artefacts cannot create false positives in the labels.</p>
+
+<h4>2. Features (all computed over trailing windows, no future leakage)</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Group</th><th>Features</th><th>What it tells the model</th></tr></thead>
+<tbody>
+<tr><td>Level</td><td>T, T minus set point, rolling mean and std (5, 15, 60 min)</td><td>Where we are and how noisy.</td></tr>
+<tr><td>Dynamics</td><td>Slope over 5 and 15 min, curvature, time above the thermostat upper limit</td><td>How fast we are heading for the band edge.</td></tr>
+<tr><td>Compressor</td><td>Duty cycle (1 h, 6 h, 24 h), on-run and off-run length, cycle period, <b>on but warming flag</b></td><td>Cooling failing: compressor on and temperature still rising.</td></tr>
+<tr><td>Door</td><td>Open count and total duration (1 h), current open time, time since close</td><td>Door-driven risk.</td></tr>
+<tr><td>Ambient</td><td>T_amb, T_amb minus T, ambient slope</td><td>Environmental load.</td></tr>
+<tr><td>Twin residuals</td><td>Recovery ratio (actual time to recover divided by healthy expectation), cooling health index, leakage index</td><td>Unit is not behaving like its healthy self.</td></tr>
+<tr><td>Long-term</td><td>Theil-Sen slope of cooling health over 3 to 7 days, duty-cycle trend</td><td>Slow degradation.</td></tr>
+<tr><td>Data quality</td><td>Missing fraction, spike indicator, flatline length</td><td>Hand-off to the trust layer.</td></tr>
+</tbody></table></div>
+
+<h4>3. The twin: learning each unit's physics online</h4>
+<p>During compressor-off windows the air warms toward ambient: dT/dt ≈ (UA / C_a) (T_amb minus T). A regression of the observed slope on (T_amb minus T) gives the <b>leakage index</b>. During compressor-on windows the cooling rate is dT/dt ≈ minus (Q_c / C_a) plus the leak term, so a regression gives the <b>cooling health index</b>, normalised by the unit's own first-week baseline (1.0 means healthy). Use recursive least squares with a forgetting factor so the estimate tracks change but is stable. After each door close, replay the healthy model from the pre-opening state and compare predicted and actual recovery. The ratio becomes the <b>recovery ratio</b> feature. A door-open recovery gives a ratio near 1; a failing compressor gives a ratio that keeps growing.</p>
+
+<h4>4. Forecaster and time to breach</h4>
+<ul>
+<li>One LightGBM binary classifier per horizon (15, 30, 60). Train on episodes, never on shuffled rows. Class weights or focal-style weighting for the rare positives.</li>
+<li>Probability calibration with isotonic regression on the validation episodes so "0.8" means about 80%. Report reliability curves and expected calibration error.</li>
+<li>Time to breach: LightGBM quantile regression (10th, 50th, 90th percentile) on the positives. This gives the countdown with a confidence range, for example "34 min (18 to 61)".</li>
+<li>Baselines to show: threshold alarm, rate-of-change rule, isolation forest, and a small TCN or GRU. The point is that the hybrid wins on lead time at equal false-alarm rate and on unseen fault combinations.</li>
+</ul>
+
+<h4>5. Diagnosis and reason codes</h4>
+<p>A multi-class model labels the dominant cause (door, ambient, cooling degradation, sudden failure or power loss, sensor artefact, benign recovery). TreeSHAP gives the top contributing features, which map to a fixed vocabulary of reason codes. A language model may reword the text for readability, but only from these codes, never inventing causes.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Reason code</th><th>Triggered by</th><th>Message</th><th>Suggested action</th></tr></thead>
+<tbody>
+<tr><td>COOLING_DEGRADED</td><td>Cooling health index trending down, duty cycle up</td><td>Cooling effectiveness is down 23% over 6 days.</td><td>Book a technician; move critical stock to the backup unit.</td></tr>
+<tr><td>COMPRESSOR_ON_WARMING</td><td>On-but-warming flag persisting</td><td>Compressor is running but the unit is still warming.</td><td>Move stock now; check compressor and condenser.</td></tr>
+<tr><td>DOOR_OPEN_LONG</td><td>Open time above the unit's 95th percentile</td><td>Door has been open 9 minutes.</td><td>Close the door; check the gasket.</td></tr>
+<tr><td>DOOR_FREQUENT</td><td>Open count in the last hour above normal</td><td>Door opened 14 times in an hour.</td><td>Restrict access; consolidate withdrawals.</td></tr>
+<tr><td>AMBIENT_HIGH</td><td>Ambient above a threshold or rising fast</td><td>Room is 6 °C hotter than usual.</td><td>Improve ventilation; check room cooling.</td></tr>
+<tr><td>POWER_LOSS_SUSPECTED</td><td>No cycling plus smooth drift toward ambient</td><td>Unit appears to have lost power.</td><td>Check mains and breaker; switch to backup power or move stock.</td></tr>
+<tr><td>SENSOR_UNTRUSTED</td><td>Trust score below threshold</td><td>Readings look unreliable; temperature risk unverified.</td><td>Check the probe; confirm with a handheld thermometer.</td></tr>
+<tr><td>BENIGN_RECOVERY</td><td>Recovery follows the twin curve</td><td>Recovering normally after door close.</td><td>None.</td></tr>
+</tbody></table></div>
+
+<h4>6. Alert policy</h4>
+<ul>
+<li><b>Levels:</b> Watch (p30 at least 0.3), Warning (p30 at least 0.6 or median time to breach at most 45 min), Critical (p15 at least 0.7 or breach in progress).</li>
+<li><b>Stability rules:</b> require 3 consecutive evaluations above the level (persistence), a 30 minute cooldown per unit and level, and auto-clear with hysteresis.</li>
+<li><b>Threshold search:</b> pick the thresholds that maximise recall subject to the stated false-alarm budget on validation episodes, or minimise expected cost = C_miss × misses + C_alert × false alarms. Publish the budget and the resulting operating point.</li>
+<li><b>Sensor gate:</b> if sensor trust is below its threshold, downgrade to "verify sensor" instead of a product-risk alert.</li>
+</ul>
+
+<h4>7. The Spoilage Clock</h4>
+<p>Each minute at temperature T consumes stability budget in proportion to an Arrhenius factor relative to a 5 °C reference: factor = exp( (ΔH/R) × (1/T_ref minus 1/T) ), with ΔH/R of about 10,000 K, the standard value used in mean kinetic temperature calculations. Illustrative values: 8 °C costs about 1.5 minutes of budget per minute, 25 °C about 11, 40 °C about 56. Integrate over time and compare with a configurable allowance (for example the equivalent of 2 hours at 25 °C). Show a progress bar and a clear label: this is a planning proxy built on a standard assumption, not a regulatory decision rule. Real go or no-go decisions use the manufacturer's stability data and vial monitors.</p>
+
+<h4>8. Sensor-trust pre-filter</h4>
+<p>Before forecasting, run cheap forensic checks (Hampel filter for spikes, flatline run length, variance ratio, gaps). If a spike has no physical story (the compressor state, door and ambient do not explain it), mark the sample untrusted and carry forward the twin's predicted value. This borrows the best idea from T4-3 and is a visible differentiator. Details of the full version are on the SensorCourt page.</p>
+
+<h4>9. Edge and API</h4>
+<p>The forecaster is a small tree ensemble and the twin is a few regressions, so the whole pipeline runs on a Raspberry Pi class device. Export the trees with ONNX or keep LightGBM's native model; report model size and per-prediction latency as the deployability evidence the PDF asks for.</p>
+<pre class="code">POST /v1/predict
+{ "unit_id": "PHC-14-F2",
+  "window": [ {"t":"2026-10-24T09:01:00","temp":4.9,"amb":29.5,"door":0,"cool":1}, ... ] }
+
+200 OK
+{ "risk": {"15":0.12, "30":0.41, "60":0.77},
+  "time_to_breach_min": {"p10":18, "p50":34, "p90":61},
+  "level": "warning",
+  "cause": "COOLING_DEGRADED",
+  "reasons": [ {"code":"COOLING_DEGRADED","weight":0.42,"text":"Cooling effectiveness down 23% over 6 days"},
+               {"code":"DOOR_FREQUENT","weight":0.18,"text":"Door opened 14 times in the last hour"} ],
+  "spoilage_budget_used": 0.37,
+  "sensor_trust": 0.93,
+  "actions": ["Book technician", "Move critical stock to backup unit"] }</pre>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Multi-horizon excursion probability</td><td><span class="tier core">Core</span></td><td>Calibrated classifiers at 15, 30, 60 min.</td><td>Direct answer to the task.</td><td>M</td></tr>
+<tr><td>Time-to-breach countdown with range</td><td><span class="tier core">Core</span></td><td>Quantile regression.</td><td>People act on a countdown.</td><td>M</td></tr>
+<tr><td>Reason-coded alerts</td><td><span class="tier core">Core</span></td><td>SHAP mapped to a fixed vocabulary.</td><td>Explainability criterion.</td><td>M</td></tr>
+<tr><td>Fleet dashboard</td><td><span class="tier core">Core</span></td><td>Tiles sorted by time to breach.</td><td>First screen of the demo.</td><td>M</td></tr>
+<tr><td>Predict API</td><td><span class="tier core">Core</span></td><td>FastAPI, JSON in and out.</td><td>Deployability criterion.</td><td>S</td></tr>
+<tr><td>Digital twin and cooling health index</td><td><span class="tier wow">Wow</span></td><td>Online regression of the unit's own physics.</td><td>"Fridges get a health score" is simple to remember.</td><td>M</td></tr>
+<tr><td>Spoilage Clock</td><td><span class="tier wow">Wow</span></td><td>Arrhenius-weighted exposure budget.</td><td>Turns a temperature into product harm.</td><td>S</td></tr>
+<tr><td>Product versus air temperature</td><td><span class="tier wow">Wow</span></td><td>Second thermal node with its own lag.</td><td>Removes false alarms from harmless air spikes.</td><td>S</td></tr>
+<tr><td>What-if slider</td><td><span class="tier wow">Wow</span></td><td>Re-run the twin forward: "door stays open 5 more minutes".</td><td>Judges can play with it.</td><td>M</td></tr>
+<tr><td>Alert-fatigue meter</td><td><span class="tier wow">Wow</span></td><td>Live count of our alerts versus a threshold alarm on the same data.</td><td>Shows the false-alarm claim, not just states it.</td><td>S</td></tr>
+<tr><td>Recommended action per alert</td><td><span class="tier wow">Wow</span></td><td>Reason code to action table.</td><td>Closes the loop for a health worker.</td><td>S</td></tr>
+<tr><td>Fault replay and simulator console</td><td><span class="tier wow">Wow</span></td><td>Inject door-left-open, failure, spike at will.</td><td>Live, controllable demo.</td><td>M</td></tr>
+<tr><td>SMS-style alert preview</td><td><span class="tier stretch">Stretch</span></td><td>Short text with unit, level, countdown, action.</td><td>Low-connectivity story.</td><td>S</td></tr>
+<tr><td>Edge package</td><td><span class="tier stretch">Stretch</span></td><td>Model plus twin in one small container or script.</td><td>Deployability evidence.</td><td>M</td></tr>
+<tr><td>Cost-curve explorer</td><td><span class="tier stretch">Stretch</span></td><td>Slider for the false-alarm budget updates recall.</td><td>Judges see the trade-off.</td><td>S</td></tr>
+<tr><td>Federated or multi-site rollup</td><td><span class="tier stretch">Stretch</span></td><td>District-level health ranking.</td><td>Scalability story.</td><td>M</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Fleet overview.</b> Grid of unit tiles (green, amber, red), each with temperature sparkline, risk, time to breach. Filters by site and level. Top-right alert-fatigue meter.</li>
+<li><b>Unit detail.</b> Large chart with the observed line, the twin's healthy expectation, a forecast cone, and the 2 to 8 °C band. Beside it: risk gauge, countdown, reason chips, recommended actions, cooling health trend, Spoilage Clock bar.</li>
+<li><b>What-if panel.</b> Sliders for "door open minutes", "ambient shift", "cooling loss %". The forecast cone redraws.</li>
+<li><b>Alert inbox.</b> Alerts with level, reason codes and acknowledgement; suppressed benign events listed separately so judges see what we did not alarm on.</li>
+<li><b>Simulator console.</b> Pick a unit, inject a fault, speed up time, watch detection and lead time.</li>
+<li><b>Benchmark page.</b> Lead time versus false alarms (ours against threshold alarm), reliability curve, robustness grid, ablations.</li>
+<li><b>API explorer.</b> Paste a window, get the JSON.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Split</th><th>Contents</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>Train</td><td>About 70 units, 14 to 30 days each, single and double faults.</td><td>Fit models.</td></tr>
+<tr><td>Validation</td><td>About 15 other units.</td><td>Calibration, thresholds, early stopping.</td></tr>
+<tr><td>Test</td><td>About 15 other units.</td><td>Headline numbers.</td></tr>
+<tr><td>OOD test</td><td>Unseen fault combinations, noise doubled, 20% missing data, different thermostat set points.</td><td>Mirrors the hidden evaluation.</td></tr>
+<tr><td>Leave-one-fault-out</td><td>Train without one fault family, test on it.</td><td>Honest generalisation estimate.</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>Definition</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Event recall at lead</td><td>Share of true excursions with an alert at least 15 (and 30) minutes before breach.</td><td>90% in distribution, 80% on OOD</td></tr>
+<tr><td>False alarms</td><td>Alerts per unit per month with no excursion within the horizon.</td><td>At most 1</td></tr>
+<tr><td>Median lead time</td><td>Alert time to breach time for detected events.</td><td>20 minutes or more</td></tr>
+<tr><td>PR-AUC (30 min)</td><td>Sample-level ranking quality.</td><td>Report with baselines</td></tr>
+<tr><td>Calibration</td><td>Expected calibration error and Brier score.</td><td>ECE 0.05 or less</td></tr>
+<tr><td>Robustness grid</td><td>Metric versus noise level and missing-data rate.</td><td>Graceful decline, no cliff</td></tr>
+<tr><td>Ablation</td><td>Remove twin features, door features, trust filter.</td><td>Each should visibly help</td></tr>
+<tr><td>Deployability</td><td>Model size, latency per prediction, CPU only.</td><td>Under 50 ms on a laptop CPU</td></tr>
+</tbody></table></div>
+<p>These are targets, not results. Replace them with measured numbers on slide 6 once tonight's run finishes. State the simulator's assumptions, what it cannot represent (door gasket ageing curves, product loading patterns, real sensor drift), and that real deployments would calibrate the twin on site data.</p>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight (Round 1 proof, about 4 hours)</h4>
+<ul class="tight"><li>Simulator v0 with door, degradation, failure, noise.</li><li>Ten rolling features, LightGBM at 30 min.</li><li>One chart: recall versus false alarms against a plain threshold alarm.</li><li>One screenshot of a unit page (even a matplotlib mock) for slide 5.</li></ul></div>
+<div class="card"><h4>Round 2 (15 to 18 Oct)</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Simulator v2 (defrost, power cut, product node, hidden-split generator). Feature pipeline.</li>
+<li><b>Day 2.</b> Twin estimator, multi-horizon models, calibration, quantile time to breach, SHAP reason codes.</li>
+<li><b>Day 3.</b> Alert policy, Spoilage Clock, API, fleet and unit pages, what-if.</li>
+<li><b>Day 4.</b> Benchmarks and ablations, README, recorded demo, buffer.</li></ul></div>
+<div class="card"><h4>Finale (24 hours)</h4>
+<ul class="tight">
+<li>Hours 0 to 2: ingest the organisers' dataset through a schema adapter; run the existing pipeline unchanged.</li>
+<li>2 to 8: retrain, recalibrate, fix any distribution gaps; log numbers.</li>
+<li>8 to 14: add the sensor-trust layer, polish dashboard, expand what-if.</li>
+<li>14 to 20: stress tests, limitations page, edge package, README.</li>
+<li>20 to 24: rehearse, record, freeze.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>ML lead:</b> twin, forecaster, calibration, SHAP.</li><li><b>Data engineer:</b> simulator, splits, baselines, metrics.</li><li><b>Backend and integration:</b> API, alert policy, packaging.</li><li><b>Frontend and pitch:</b> dashboard, what-if, slides, demo script.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Hidden dataset schema differs</td><td>Pipeline will not ingest.</td><td>Schema adapter with column mapping config; test with renamed columns tonight.</td></tr>
+<tr><td>Simulator too easy or too unrealistic</td><td>Judges doubt the numbers.</td><td>Randomise parameters widely, inject noise and missing data, run leave-one-fault-out, state limits.</td></tr>
+<tr><td>Window leakage</td><td>Inflated scores.</td><td>Split by unit and episode; features use only past data; unit tests for causality.</td></tr>
+<tr><td>Too many alerts in the demo</td><td>Undermines the story.</td><td>Persistence and cooldown; the alert-fatigue meter.</td></tr>
+<tr><td>Over-claiming the Spoilage Clock</td><td>Domain experts push back.</td><td>Label as a planning proxy using the standard MKT assumption; point to vial monitors for decisions.</td></tr>
+<tr><td>Scope creep (twin, trust layer, edge)</td><td>Nothing finishes.</td><td>Freeze core by Day 3; wow items are independent modules.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Cold-storage alarms ring after the vaccines are already warm. ThermoTwin gives every fridge a digital twin that learns its own physics, so it can tell a harmless door opening from a failing compressor and warn about 30 minutes before a breach. It explains the cause in plain words, shows how much stability budget the product has used, and keeps false alarms to a stated limit. It runs from a simple API on low-cost hardware.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> One slide: a threshold alarm firing late. State the budget we promise (about one false alarm per unit per month).</li>
+<li><b>0:45 Fleet view.</b> Twelve units, mostly green. Open the amber one.</li>
+<li><b>1:30 Unit detail.</b> Show the twin's healthy curve against the real one, the forecast cone and "34 min to breach (18 to 61)". Read the reason: "cooling effectiveness down 23%".</li>
+<li><b>2:15 What-if.</b> Drag "door open 5 more minutes". Cone rises. Drag back.</li>
+<li><b>2:45 Harmless door event.</b> Inject a short door opening on another unit. The air spikes, no alert fires. Open the suppressed list: "recovering normally".</li>
+<li><b>3:15 Sudden failure.</b> Inject a compressor failure. Alert appears with lead time; Spoilage Clock starts moving.</li>
+<li><b>4:00 Proof.</b> Benchmark page: lead time versus false alarms against a threshold alarm; leave-one-fault-out results.</li>
+<li><b>4:40 Close.</b> API call and edge package size; limitations; next step is calibration on a real site.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> immunisation programmes, rural health centres, blood banks, pharmacies, food distributors.</p><p><b>Gap:</b> threshold alarms fire after the limit is crossed and also on harmless door events, so staff learn to ignore them.</p><p><b>Why now:</b> more temperature-sensitive biologics, and cheap connected loggers already exist but only record.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution and innovation</span><p><b>Different:</b> per-unit digital twin; Spoilage Clock; false-alarm budget with live comparison.</p><p><b>Mechanism:</b> simulate, trust-check, twin residuals, calibrated multi-horizon forecast, reason codes, alert policy.</p><p><b>Feasible:</b> built tonight on synthetic data: recall X% at Y min lead with Z false alarms (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture and stack</span><p>Python, NumPy, LightGBM, scikit-learn, SHAP. FastAPI. React or Streamlit. SQLite. Docker. Name any LLM used for phrasing and say it only rewords reason codes.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features and UX</span><p>Fleet view, unit detail with forecast cone, what-if, alert inbox, simulator console, benchmark page.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> simulator, features, baseline model, first chart. <b>In progress:</b> twin, calibration, API. <b>Next:</b> sensor-trust layer, edge package, pilot calibration with real logger data.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact and scale</span><p>Fewer spoiled doses and fewer false callouts. Scales from one fridge to a district because the model is small and each unit learns itself. Extends to blood banks, pharmacies and food cold chain.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How is this different from a threshold alarm or a normal anomaly detector?</summary><p>It predicts a breach with a lead time, separates harmless recovery from failure using the unit's own physics, explains the cause, and is tuned to a false-alarm budget. We show the comparison live on the same data.</p></details>
+<details class="qa"><summary>Your data is simulated. Why trust the numbers?</summary><p>We randomise unit parameters, noise and fault combinations, evaluate on unseen fault types and doubled noise, and state what the simulator cannot represent. The twin learns each unit's physics online, so real deployment starts with a short calibration period on site data.</p></details>
+<details class="qa"><summary>How do you avoid data leakage?</summary><p>Splits are by unit and episode, features use only past samples, and a unit test checks that shifting future values does not change a feature.</p></details>
+<details class="qa"><summary>Why gradient boosting and not deep learning?</summary><p>Small data per unit, need for calibration and explanations, and edge deployment. A TCN is kept as a baseline and loses on unseen faults or matches with far higher cost.</p></details>
+<details class="qa"><summary>Is the Spoilage Clock valid?</summary><p>It is a planning proxy using the Arrhenius weighting that underlies mean kinetic temperature and vaccine vial monitors, with a standard activation energy. Decisions about discarding stock still follow manufacturer data and vial monitors.</p></details>
+<details class="qa"><summary>What happens when the sensor itself is faulty?</summary><p>A trust pre-filter flags spikes and flat lines that have no physical explanation and downgrades the alert to "verify sensor". The SensorCourt design extends this.</p></details>
+<details class="qa"><summary>Can it run without internet?</summary><p>Yes. The model and twin are small, run on a Raspberry Pi class device, and alerts can be sent as short text messages.</p></details>
+<details class="qa"><summary>How did you pick the alert thresholds?</summary><p>By maximising recall subject to the false-alarm budget on validation episodes, and we publish the operating point and cost curve.</p></details>
+<details class="qa"><summary>What would you do with real data?</summary><p>Fit the twin per unit, replace synthetic labels with logged excursions, recalibrate probabilities, and run in shadow mode before issuing alerts.</p></details>
+<details class="qa"><summary>Which parts were AI-assisted?</summary><p>Answer with your decision log: libraries, any LLM for coding help or message rewording, and what the team wrote and changed.</p></details>
+</article>

@@ -1,0 +1,9 @@
+kind,policy,events,caught,recall,lead_median_min,lead_p25_min,warned_before_share,false_alerts_per_fridge_month
+freeze,P0 threshold <= 0 °C,41,41,1.0,70.0,50.0,1.0,0.5059523809523809
+freeze,P1 WHO (<= -0.5 °C for 60 min),41,41,1.0,-30.0,-40.0,0.14634146341463414,0.05952380952380952
+freeze,P2 early rule (<= 2 °C for 30 min),41,39,0.9512195121951219,180.0,100.0,1.0,3.1845238095238093
+freeze,P3 ThermoTwin,41,41,1.0,90.0,60.0,1.0,0.4464285714285714
+heat,P0 threshold > 8 °C,31,30,0.967741935483871,65.0,50.0,1.0,10.327380952380953
+heat,P1 WHO (> 8 °C for 10 h),31,0,0.0,,,,0.0
+heat,P2 early rule (> 8 °C for 30 min),31,30,0.967741935483871,30.0,10.0,0.8,0.9523809523809523
+heat,P3 ThermoTwin,31,28,0.9032258064516129,40.0,7.5,0.75,0.7738095238095237

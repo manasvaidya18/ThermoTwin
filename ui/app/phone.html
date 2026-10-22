@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin Phone App</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 40px;
+         background: #0b1410; font-family: Inter, system-ui, sans-serif; color: #e6f2ea; }
+  .phone { height: min(844px, 94vh); aspect-ratio: 390 / 844; border: 12px solid #1d2a23; border-radius: 48px; overflow: hidden;
+           box-shadow: 0 20px 60px rgba(0,0,0,.5); background: #fff; }
+  iframe { width: 100%; height: 100%; border: 0; }
+  .side { max-width: 260px; }
+  .side h1 { font-size: 22px; margin: 0 0 8px; color: #4af66d; }
+  .side p { color: #b9c7bd; line-height: 1.5; font-size: 14px; }
+  .side a { display: block; color: #e6f2ea; margin: 6px 0; }
+  @media (max-width: 760px) { .side { display: none; } .phone { border: 0; border-radius: 0; width: 100vw; height: 100vh; } }
+</style>
+</head>
+<body>
+  <div class="phone"><iframe name="app" src="mobile/home.html" title="ThermoTwin phone app"></iframe></div>
+  <div class="side">
+    <h1>Clinic phone app</h1>
+    <p>For the cold-chain handler at PHC Wagholi. Tap the ILR-1 card to open its Cause Card.</p>
+    <a href="mobile/home.html" target="app">Home</a>
+    <a href="mobile/alerts.html" target="app">Alerts</a>
+    <a href="mobile/alert-ilr1.html" target="app">ILR-1 Cause Card</a>
+    <a href="mobile/help.html" target="app">Help</a>
+    <p><a href="index.html">Back to launcher</a></p>
+  </div>
+</body>
+</html>

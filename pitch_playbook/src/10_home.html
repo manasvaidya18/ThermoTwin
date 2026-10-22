@@ -1,0 +1,136 @@
+<article class="view" id="v-home" data-title="Overview">
+<header class="phead">
+  <div class="kicker"><span class="chip">VIT Code Apex 3.0</span><span class="chip">Round 1 PPT due 11 Oct 2026</span></div>
+  <h2>Pitch Playbook</h2>
+  <p class="sub">A detailed design for every one of the 11 problem statements, written so you can walk your team through the options, choose one, and start building tonight.</p>
+</header>
+
+<h3>How to use this</h3>
+<p>The five PDFs contain three problem packs (11 problems), the participant handbook and the PPT template. Each problem has its own page in the left menu. Every page follows the same order so you can compare them: what the problem really is, our concept, architecture, internal working, a feature catalogue, screens, data and evaluation, an execution plan, risks, and a pitch kit with a demo script, slide text and likely judge questions.</p>
+<div class="g3">
+  <div class="card"><h4>Read first</h4><p>This overview, then the decision helper below. Pick two or three candidates and read only those pages in full.</p></div>
+  <div class="card"><h4>Argue second</h4><p>Use the "Why we win / why we might lose" box and the risk table on each page when the team debates.</p></div>
+  <div class="card"><h4>Build third</h4><p>Each page ends with tonight's build, a four-day Round 2 plan and a 24-hour finale plan.</p></div>
+</div>
+
+<h3>The 11 problems at a glance</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Pack</th><th>Problem</th><th>Our concept</th><th>Signature idea</th><th class="nw">4-day fit</th></tr></thead>
+<tbody>
+<tr><td>Track 4 (UST)</td><td><a href="#t41" data-v="t41">T4-1 Cold-chain early warning</a></td><td>ThermoTwin</td><td>Physics twin of each fridge plus a Spoilage Clock that tracks heat damage instead of a yes/no alarm</td><td>●●●●●</td></tr>
+<tr><td>Track 4 (UST)</td><td><a href="#t42" data-v="t42">T4-2 Indoor positioning</a></td><td>LocusNet</td><td>One model for any number of beacons, calibrated uncertainty ellipse, anchor placement advisor</td><td>●●●●○</td></tr>
+<tr><td>Track 4 (UST)</td><td><a href="#t43" data-v="t43">T4-3 Sensor trust and drift</a></td><td>SensorCourt</td><td>Events live in the sensors' shared pattern, faults break it; virtual sensors keep monitoring alive</td><td>●●●●○</td></tr>
+<tr><td>DeltaV pack</td><td><a href="#dv2" data-v="dv2">#02 IO Signal Sudoku</a></td><td>Sudoku Engine</td><td>Declarative rules, constraint solver, independent referee that certifies zero violations, minimal-move revisions</td><td>●●●●○</td></tr>
+<tr><td>DeltaV pack</td><td><a href="#dv1" data-v="dv1">#01 P&amp;ID to simple sketch</a></td><td>Untangle Graph</td><td>Drawing becomes a graph; series-parallel detection draws duty and standby pumps as parallel lines</td><td>●●○○○</td></tr>
+<tr><td>DeltaV pack</td><td><a href="#dv3" data-v="dv3">#03 Cabinet photo QC</a></td><td>Eagle Eye</td><td>The drawing tells the vision model what to look for; low-confidence items go to a verify lane instead of a false FAIL</td><td>●●○○○</td></tr>
+<tr><td>iMocha</td><td><a href="#im1" data-v="im1">IM-01 Vibe Coding assessment</a></td><td>VibeLens</td><td>Whole-session replay, AI reliance map, comprehension checks, fairness parity tests, practice mode</td><td>●●●○○</td></tr>
+<tr><td>iMocha</td><td><a href="#im2" data-v="im2">IM-02 Autonomous QA engineer</a></td><td>ScoutQA</td><td>Repro verifier replays every bug three times; self-built planted-bug benchmark with real recall numbers</td><td>●●●○○</td></tr>
+<tr><td>iMocha</td><td><a href="#im3" data-v="im3">IM-03 Skill Passport</a></td><td>ProofPass</td><td>Evidence graph, fail-closed citation checker, planted-lie test, understanding quiz built from the candidate's own code</td><td>●●●●○</td></tr>
+<tr><td>iMocha</td><td><a href="#im4" data-v="im4">IM-04 AI Job Simulator</a></td><td>DayOne</td><td>Director, actors and assessor; verbatim-quote debriefs; rewind and retry; scenarios auto-tested by simulated candidates</td><td>●●●●○</td></tr>
+<tr><td>iMocha</td><td><a href="#im5" data-v="im5">IM-05 Codebase Mentor</a></td><td>CodeSherpa</td><td>Every claim carries a verified file and line citation; "why" answered from git history; living docs with code anchors</td><td>●●●●○</td></tr>
+</tbody></table></div>
+
+<h3>Timeline and what each stage needs</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Stage</th><th>Dates</th><th>What you deliver</th><th>What wins it</th></tr></thead>
+<tbody>
+<tr><td>Round 1</td><td>10 to 11 Oct (results 12 Oct)</td><td>PPT in the 7-slide template. Assumed to be the Round 1 submission; check your email for slide limits.</td><td>A specific user, a sharp gap, two or three distinctive ideas, and one real result from tonight's prototype on slide 6.</td></tr>
+<tr><td>Round 2</td><td>15 to 18 Oct (results 19 Oct)</td><td>Online prototype. Details are sent to registered teams.</td><td>A working core flow, a number you measured, and a recorded demo as backup.</td></tr>
+<tr><td>Grand Finale</td><td>24 Oct, 8:30 AM, VIT Bibwewadi, 24 hours</td><td>Live demo and technical explanation, probably on hidden data.</td><td>A pipeline already built so the 24 hours go into adapting, hardening and rehearsing.</td></tr>
+</tbody></table></div>
+<div class="co"><span class="lbl">Rules that shape every decision</span>
+<ul>
+<li>AI tools, APIs and open source are allowed. Every member must be able to explain every component, so keep a log of what you used and why.</li>
+<li>Pre-built work is allowed. Whatever you build tonight counts.</li>
+<li>Judging weights are not published. The handbook's demo story is the best guide: Problem, Approach, Proof, Engineering, Impact.</li>
+<li>Use public, sample or synthetic data only, use your own API keys, never commit keys, credit everything you reuse. The DeltaV sample data is for hackathon use only and must not be shared.</li>
+</ul></div>
+
+<h3>Decision helper</h3>
+<p>Tick what your team is genuinely strong at. The page scores each problem on two things. <b>Skill coverage</b> is the share of that problem's skill demand your team covers. <b>Strategic value</b> is my fixed score for the problem itself: how doable in four days, whether it needs data you do not have yet, how crowded it will be (counted double), demo impact, whether you can prove it with numbers, and whether the hidden test is objective. The ranking weights coverage 60% and value 40%. It is a rough guide for a conversation, not a verdict.</p>
+<fieldset style="border:0;padding:0;margin:0"><legend class="lbl">Team strengths</legend>
+<div class="skills" id="skills">
+  <label><input type="checkbox" value="0"> Algorithms and backend (solvers, APIs, data structures)</label>
+  <label><input type="checkbox" value="1"> Machine learning and time series</label>
+  <label><input type="checkbox" value="2"> Computer vision and OCR</label>
+  <label><input type="checkbox" value="3"> Frontend, visualisation and design</label>
+  <label><input type="checkbox" value="4"> LLM apps, prompting and agents</label>
+  <label><input type="checkbox" value="5"> Web automation and testing</label>
+  <label><input type="checkbox" value="6"> Maths and signal processing</label>
+</div></fieldset>
+<div class="lbl" id="rankhint">Nothing ticked yet: showing strategic value only</div>
+<div class="rank" id="rank"></div>
+<div class="co tint"><span class="lbl">My default if I knew nothing about your team</span>
+<p><b>IO Signal Sudoku.</b> Few teams will attempt it, the hidden test is pass or fail on rules (zero violations, everything allocated, fewest moves), and you can show a working 10,000-signal run before tomorrow's deadline. Its "AI" story is honest: AI maps columns and drafts rules and queries, a solver does the placing, a separate referee proves the result. If the team leans machine learning, take <b>Cold-chain with the sensor-trust layer</b>. If you want the best live demo, take <b>Indoor positioning</b>. Take <b>#01 or #03</b> only with strong computer-vision people and the organisers' sample files in hand.</p></div>
+
+<h3>How to work as a team of four</h3>
+<div class="g2">
+<div class="card"><h4>Roles</h4>
+<ul class="tight">
+<li><b>Algorithm or ML lead</b> owns the core engine and the benchmark numbers.</li>
+<li><b>Data and simulation engineer</b> owns the generator, test sets and the planted-fault suites.</li>
+<li><b>Product and frontend lead</b> owns screens, the demo flow and the report visuals.</li>
+<li><b>Integration and pitch lead</b> owns the API, packaging, the PPT, the recorded demo and the viva preparation. Everyone else rotates into this role for the last six hours.</li>
+</ul></div>
+<div class="card"><h4>Rhythm</h4>
+<ul class="tight">
+<li>Two vertical slices first (input to output, ugly), then deepen. Never build modules in isolation for more than half a day.</li>
+<li>One shared repository with a <code>main</code> branch that always runs. A <code>make demo</code> or <code>run_demo.py</code> command that produces the demo from sample inputs.</li>
+<li>A decision log file: every model, library and AI tool used, with one line on why. The handbook says you will be asked.</li>
+<li>Freeze features 6 hours before every deadline and spend the time on reliability and rehearsal.</li>
+</ul></div>
+<div class="card"><h4>Definition of done for each stage</h4>
+<ul class="tight">
+<li>Round 1: PPT plus one real chart or screenshot from a running prototype.</li>
+<li>Round 2: someone outside the team can run it from a README in under 10 minutes; a 3-minute recorded demo exists.</li>
+<li>Finale: the demo works offline from local files; a backup video and sample inputs sit on the laptop.</li>
+</ul></div>
+<div class="card"><h4>Viva readiness</h4>
+<ul class="tight">
+<li>Each person can explain the whole pipeline in one minute and their own module in five.</li>
+<li>Each person can state two limitations and what you did about them.</li>
+<li>Every number on a slide can be reproduced by a command.</li>
+</ul></div>
+</div>
+
+<h3>Seven patterns that apply to every problem</h3>
+<ol>
+<li><b>Evidence on every output.</b> The packs keep asking for proof: cited code, linked evidence, expected versus found, a reason code, a TQ with a reason. Treat "show your work" as a core feature.</li>
+<li><b>Abstain rather than bluff.</b> A verify lane, an "I could not ground this" answer, a low-confidence flag. Judges forgive honest gaps and punish confident errors.</li>
+<li><b>Declarative over hard-coded.</b> Rules in YAML, checks as plug-ins, hardware as a profile. Hidden tests reward this because new inputs need no code change.</li>
+<li><b>Build your own benchmark.</b> Planted bugs, planted lies, planted faults, synthetic hidden splits. One chart of measured results beats three slides of claims.</li>
+<li><b>Facts by code, judgement by LLM, evidence by pointer.</b> Anything computable or checkable is done deterministically. The model only interprets, and every sentence it writes must point at evidence that code can verify.</li>
+<li><b>Fairness and limits as visible features.</b> State assumptions, failure modes and what you did about them. Track 4 scores this explicitly.</li>
+<li><b>Demo discipline.</b> A rehearsed 5-minute flow, a recorded backup, local sample inputs and a 30-second explanation before the deep dive.</li>
+</ol>
+
+<h3>Master pitch structure (maps to the 7-slide template)</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Slide</th><th>Template heading</th><th>What to put there</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Cover</td><td>Problem statement, team name, leader.</td></tr>
+<tr><td>2</td><td>Problem and Target Need</td><td>Who is affected (a named persona), the current gap (one concrete scenario or number), why it matters now.</td></tr>
+<tr><td>3</td><td>Proposed Solution and Innovation</td><td>The two or three signature ideas, the core mechanism as a 4 or 5 step diagram, why it is feasible (tonight's result).</td></tr>
+<tr><td>4</td><td>System Architecture and Tech Stack</td><td>Pipeline diagram plus frontend, backend, database, AI and APIs, hosting. Name every model and tool.</td></tr>
+<tr><td>5</td><td>Key Features and UI/UX</td><td>Three or four real screenshots or mock-ups, each captioned with the job it does.</td></tr>
+<tr><td>6</td><td>Implementation Roadmap and Scope</td><td>Built today, in progress, planned. "Built today" must name something you can run.</td></tr>
+<tr><td>7</td><td>Expected Impact and Scalability</td><td>Who benefits, how it grows past the demo, what it would take to deploy.</td></tr>
+</tbody></table></div>
+
+<h3>Questions to settle with the organisers</h3>
+<div class="g3">
+<div class="card"><h4>All packs</h4><ul class="tight"><li>Is the PPT the Round 1 submission, and is there a slide or format limit?</li><li>Can any team pick any track?</li><li>What exactly is the Round 2 submission format?</li></ul></div>
+<div class="card"><h4>Track 4</h4><ul class="tight"><li>Will a development dataset and data dictionary be released, and when?</li><li>Is the hidden test scored automatically on a fixed schema?</li><li>Is the cold-storage "Problem Statement" box a typo? (It contains the indoor-positioning text.)</li></ul></div>
+<div class="card"><h4>DeltaV pack</h4><ul class="tight"><li>When do teams receive the sample IO MDB, template, P&amp;IDs or cabinet photos?</li><li>Details in the Sudoku page: baseplate mixing, spare reserve scope, group cohesion hard or soft.</li><li>Is the sponsor happy for outputs to use an open-source solver?</li></ul></div>
+</div>
+<div class="co warn"><span class="lbl">Things I could not verify</span>
+<ul>
+<li>The widely repeated "up to 50% of vaccines are wasted" figure. I could not trace it to a primary WHO source, and one detailed public report I found showed expired stock, not cold-chain failure, as the largest cause. Do not put a headline percentage on a slide without a primary source.</li>
+<li>Anything about the DeltaV sample data. I have not seen it.</li>
+<li>iMocha's product details come from their public help pages as read today; they may change.</li>
+</ul></div>
+<p class="links"><span class="lbl">Sources</span><br>
+<a href="https://help.imocha.io/kb/article/360/how-can-a-candidate-take-ai-assisted-coding-assessment" target="_blank" rel="noopener">iMocha candidate view</a>
+<a href="https://help.imocha.io/kb/article/361/how-to-configure-ai-assisted-coding---admin-view" target="_blank" rel="noopener">iMocha admin view</a>
+<a href="https://extranet.who.int/prequal/sites/default/files/document_files/who_pqs_e006_in05_vp.4.pdf" target="_blank" rel="noopener">WHO PQS vaccine vial monitor specification</a></p>
+</article>

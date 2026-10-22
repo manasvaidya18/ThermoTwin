@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Benchmark</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="benchmark" data-title="Replay Benchmark" data-sub="Four alert policies on the same fridge traces">
+<main>
+  <div class="banner" style="background:var(--warn-soft);color:var(--warn)">⚠ Simulated data. Illustrative until the validation checks pass; not field results.</div>
+  <div class="grid g2">
+    <div class="card">
+      <h2>Warning before a freeze</h2>
+      <p class="hint">Minutes before (+) or after (−) the estimated vaccine temperature reaches 0 °C · median</p>
+      <svg viewBox="0 0 420 220" style="width:100%;height:auto" role="img" aria-label="Lead time by policy">
+        <line x1="40" x2="410" y1="120" y2="120" stroke="#14211c"/>
+        <g font-size="11" fill="#5d6f68" text-anchor="middle">
+          <rect x="60" y="120" width="60" height="0.1" fill="#94a3b8"/><text x="90" y="112" fill="#14211c" font-weight="700">0</text><text x="90" y="212">P0 threshold</text>
+          <rect x="150" y="120" width="60" height="77" fill="#b91c1c" opacity=".8"/><text x="180" y="190" fill="#fff" font-weight="700">−77</text><text x="180" y="212">P1 WHO rules</text>
+          <rect x="240" y="104" width="60" height="16" fill="#b45309" opacity=".8"/><text x="270" y="98" fill="#14211c" font-weight="700">+16</text><text x="270" y="212">P2 Nexleaf-style</text>
+          <rect x="330" y="59" width="60" height="61" fill="#0f766e"/><text x="360" y="53" fill="#14211c" font-weight="700">+61</text><text x="360" y="212">P3 ThermoTwin</text>
+        </g>
+      </svg>
+    </div>
+    <div class="card">
+      <h2>False SMS per fridge-month</h2>
+      <p class="hint">Budget: 1.0 · lower is better</p>
+      <svg viewBox="0 0 420 220" style="width:100%;height:auto" role="img" aria-label="False SMS by policy">
+        <line x1="40" x2="410" y1="190" y2="190" stroke="#14211c"/>
+        <line x1="40" x2="410" y1="140" y2="140" stroke="#b45309" stroke-dasharray="5 4"/><text x="406" y="134" font-size="10" fill="#b45309" text-anchor="end">budget 1.0</text>
+        <g font-size="11" fill="#5d6f68" text-anchor="middle">
+          <rect x="60" y="50" width="60" height="140" fill="#94a3b8"/><text x="90" y="44" fill="#14211c" font-weight="700">2.8</text><text x="90" y="210">P0</text>
+          <rect x="150" y="180" width="60" height="10" fill="#94a3b8"/><text x="180" y="174" fill="#14211c" font-weight="700">0.2</text><text x="180" y="210">P1</text>
+          <rect x="240" y="120" width="60" height="70" fill="#94a3b8"/><text x="270" y="114" fill="#14211c" font-weight="700">1.4</text><text x="270" y="210">P2</text>
+          <rect x="330" y="160" width="60" height="30" fill="#0f766e"/><text x="360" y="154" fill="#14211c" font-weight="700">0.6</text><text x="360" y="210">P3</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="card section">
+    <h2>Scorecard</h2>
+    <table>
+      <thead><tr><th>Policy</th><th>Freeze lead time (median)</th><th>Freeze events caught</th><th>False SMS / fridge-month</th><th>True alarms suppressed</th></tr></thead>
+      <tbody>
+        <tr><td><b>P0</b> Simple threshold (air ≤ 0 °C)</td><td>0 min</td><td>97%</td><td>2.8</td><td>0%</td></tr>
+        <tr><td><b>P1</b> WHO PQS rules</td><td>77 min after</td><td>100% (late)</td><td>0.2</td><td>0%</td></tr>
+        <tr><td><b>P2</b> Nexleaf-style early rules</td><td>16 min before</td><td>94%</td><td>1.4</td><td>0%</td></tr>
+        <tr><td><b>P3</b> ThermoTwin</td><td><b>61 min before</b></td><td>96%</td><td><b>0.6</b></td><td>&lt; 1%</td></tr>
+      </tbody>
+    </table>
+    <p class="muted small" style="margin:12px 0 0">Planned additions: LSTM/TCN and Chronos/TimesFM baselines on the same traces, at least 200 held-out freeze events per fridge type, realistic event rates.</p>
+  </div>
+</main>
+<script src="web.js"></script>
+</body>
+</html>

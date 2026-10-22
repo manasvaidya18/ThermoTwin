@@ -1,0 +1,149 @@
+{
+  "fridges": 240,
+  "days": 21,
+  "virtual_vial_mae": 0.07094217559422723,
+  "raw_air_mae": 0.37824950111910216,
+  "vial_2sigma_coverage": 0.9272900132275133,
+  "cause_accuracy": 0.9081559729325324,
+  "sensor_rule_recall": 0.31317829457364343,
+  "sensor_rule_false_rate": 0.00012738158062344186,
+  "thresholds": {
+    "freeze": 0.05,
+    "heat": 0.3
+  },
+  "events": {
+    "freeze": 197,
+    "heat": 119
+  },
+  "test_events": {
+    "freeze": 41,
+    "heat": 10
+  },
+  "benchmark": [
+    {
+      "kind": "freeze",
+      "policy": "P0 threshold <= 0 \u00b0C",
+      "events": 41,
+      "caught": 41,
+      "recall": 1.0,
+      "lead_median_min": 60.0,
+      "lead_p25_min": 50.0,
+      "warned_before_share": 1.0,
+      "false_alerts_per_fridge_month": 0.26785714285714285
+    },
+    {
+      "kind": "freeze",
+      "policy": "P1 WHO (<= -0.5 \u00b0C for 60 min)",
+      "events": 41,
+      "caught": 38,
+      "recall": 0.926829268292683,
+      "lead_median_min": -30.0,
+      "lead_p25_min": -50.0,
+      "warned_before_share": 0.10526315789473684,
+      "false_alerts_per_fridge_month": 0.02976190476190476
+    },
+    {
+      "kind": "freeze",
+      "policy": "P2 early rule (<= 2 \u00b0C for 30 min)",
+      "events": 41,
+      "caught": 40,
+      "recall": 0.975609756097561,
+      "lead_median_min": 210.0,
+      "lead_p25_min": 180.0,
+      "warned_before_share": 1.0,
+      "false_alerts_per_fridge_month": 5.684523809523809
+    },
+    {
+      "kind": "freeze",
+      "policy": "P3 ThermoTwin",
+      "events": 41,
+      "caught": 39,
+      "recall": 0.9512195121951219,
+      "lead_median_min": 90.0,
+      "lead_p25_min": 80.0,
+      "warned_before_share": 1.0,
+      "false_alerts_per_fridge_month": 0.38690476190476186
+    },
+    {
+      "kind": "heat",
+      "policy": "P0 threshold > 8 \u00b0C",
+      "events": 10,
+      "caught": 10,
+      "recall": 1.0,
+      "lead_median_min": 90.0,
+      "lead_p25_min": 70.0,
+      "warned_before_share": 1.0,
+      "false_alerts_per_fridge_month": 7.827380952380952
+    },
+    {
+      "kind": "heat",
+      "policy": "P1 WHO (> 8 \u00b0C for 10 h)",
+      "events": 10,
+      "caught": 0,
+      "recall": 0.0,
+      "lead_median_min": NaN,
+      "lead_p25_min": NaN,
+      "warned_before_share": NaN,
+      "false_alerts_per_fridge_month": 0.0
+    },
+    {
+      "kind": "heat",
+      "policy": "P2 early rule (> 8 \u00b0C for 30 min)",
+      "events": 10,
+      "caught": 9,
+      "recall": 0.9,
+      "lead_median_min": 0.0,
+      "lead_p25_min": -10.0,
+      "warned_before_share": 0.4444444444444444,
+      "false_alerts_per_fridge_month": 0.41666666666666663
+    },
+    {
+      "kind": "heat",
+      "policy": "P3 ThermoTwin",
+      "events": 10,
+      "caught": 7,
+      "recall": 0.7,
+      "lead_median_min": 30.0,
+      "lead_p25_min": -15.0,
+      "warned_before_share": 0.5714285714285714,
+      "false_alerts_per_fridge_month": 0.17857142857142858
+    }
+  ],
+  "cause_confusion": {
+    "cooling_too_hard": {
+      "cooling_too_hard": 0.87,
+      "power_cut": 0.058,
+      "weak_cooling": 0.059,
+      "sensor_fault": 0.077,
+      "none": 0.001
+    },
+    "power_cut": {
+      "cooling_too_hard": 0.0,
+      "power_cut": 0.647,
+      "weak_cooling": 0.041,
+      "sensor_fault": 0.02,
+      "none": 0.001
+    },
+    "weak_cooling": {
+      "cooling_too_hard": 0.117,
+      "power_cut": 0.172,
+      "weak_cooling": 0.753,
+      "sensor_fault": 0.099,
+      "none": 0.056
+    },
+    "sensor_fault": {
+      "cooling_too_hard": 0.008,
+      "power_cut": 0.098,
+      "weak_cooling": 0.095,
+      "sensor_fault": 0.633,
+      "none": 0.006
+    },
+    "none": {
+      "cooling_too_hard": 0.004,
+      "power_cut": 0.025,
+      "weak_cooling": 0.052,
+      "sensor_fault": 0.171,
+      "none": 0.937
+    }
+  }
+}

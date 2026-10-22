@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Alerts</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="alerts" data-title="Alerts" data-sub="3 open · 4 advisories · 2 sensor checks">
+<main>
+  <div class="card">
+    <div class="chips" data-filter="al">
+      <button class="on" data-f="all">All</button><button data-f="open">Open</button><button data-f="crit">Critical</button>
+      <button data-f="warn">Early warning</button><button data-f="info">Advisory</button><button data-f="sensor">Sensor check</button><button data-f="closed">Resolved</button>
+    </div>
+    <table data-group="al" style="margin-top:12px">
+      <thead><tr><th>When</th><th>Facility · fridge</th><th>Tier</th><th>Message</th><th>State</th><th>Escalation</th></tr></thead>
+      <tbody>
+        <tr data-tags="open crit"><td>10:51</td><td><b>Junnar PHC-2 · ILR-01</b></td><td><span class="pill crit">Critical</span></td><td>Air 8.6 °C for 40 min (measured)</td><td>Acknowledged by Ravi</td><td>Officer called at 11:05</td></tr>
+        <tr data-tags="open warn" data-href="fridge-ilr1.html"><td>10:42</td><td><b>PHC Wagholi · ILR-1</b></td><td><span class="pill warn">Early warning</span></td><td>May go below 0 °C in ~60 min · thermostat too cold</td><td>Open</td><td>SMS sent · call in 10 min if no reply</td></tr>
+        <tr data-tags="open warn"><td>10:20</td><td><b>Baramati SDH · DF-01</b></td><td><span class="pill warn">Early warning</span></td><td>Above −15 °C in ~1 h 45 min · grid cut</td><td>Watching recovery</td><td>—</td></tr>
+        <tr data-tags="sensor"><td>08:02</td><td><b>Khed PHC · ILR-03</b></td><td><span class="pill sensor">Sensor check</span></td><td>Probe reading unchanged for 3 h</td><td>Technician asked</td><td>—</td></tr>
+        <tr data-tags="info"><td>09:30</td><td><b>Shirur RH · ILR-01</b></td><td><span class="pill info">Advisory</span></td><td>Door opened 12 times in an hour</td><td>Noted</td><td>—</td></tr>
+        <tr data-tags="info"><td>Yesterday</td><td><b>Daund SDH · DF-02</b></td><td><span class="pill info">Advisory</span></td><td>Defrost recovery 14 min slower</td><td>Maintenance scheduled</td><td>—</td></tr>
+        <tr data-tags="closed"><td>08:15</td><td><b>Haveli RH · ILR-2</b></td><td><span class="pill grey">Resolved</span></td><td>Door left open 6 min; vaccine stayed ~4.8 °C</td><td>Closed</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card section">
+    <h2>How escalation works</h2>
+    <p class="hint">Fixed rules, never an AI decision. Measured alarms are never silenced by a forecast.</p>
+    <ol class="steps small">
+      <li>Buzzer at the fridge and an SMS to the facility in-charge</li>
+      <li>No reply in 10 min: voice call in the local language</li>
+      <li>No reply in 20 min: medical officer is called</li>
+      <li>Critical and no reply in 30 min: district cold-chain officer is alerted</li>
+    </ol>
+  </div>
+</main>
+<script src="web.js"></script>
+</body>
+</html>

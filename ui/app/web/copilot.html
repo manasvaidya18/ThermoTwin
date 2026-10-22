@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Ask ThermoTwin</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="copilot" data-title="Ask ThermoTwin" data-sub="Answers come only from ThermoTwin data; check before acting">
+<main>
+  <div class="row between" style="margin-bottom:12px">
+    <div class="chips" id="scope"><button class="on" data-s="fac">PHC Wagholi</button><button data-s="dist">Whole district</button></div>
+    <span class="muted small">The copilot explains. It never decides alerts or whether stock is safe.</span>
+  </div>
+
+  <div class="card">
+    <div class="chat" id="chat"></div>
+    <div class="chips" id="sugg" style="margin-top:14px"></div>
+    <form class="composer" id="form"><input type="text" id="q" placeholder="Ask about a fridge, an alert or the district…" aria-label="Question"><button class="btn primary">Send</button></form>
+  </div>
+</main>
+<script src="web.js"></script>
+<script>
+  var answers = {
+    why: { q: 'Why did ILR-1 at PHC Wagholi raise an early warning?', a:
+      '<b>ILR-1 is cooling too hard and may go below 0 °C in about 60 min</b> (likely 40–85).' +
+      '<ul style="margin:8px 0;padding-left:18px"><li>Falling steadily for 2 hours, with no recovery cycles</li><li>Air falling 0.4 °C every 10 min</li><li>No door-opening spikes since 8:15 AM</li></ul>' +
+      'Likely cause: <b>thermostat set too cold</b> (high confidence). Suggested steps: turn the knob one step warmer, move freeze-sensitive stock away from the walls, check again in 20 min.' +
+      '<p class="muted small" style="margin:8px 0 0">Sources: ILR-1 readings 06:00–10:42 · Cause Card #TT-2291</p>' },
+    similar: { q: 'Show similar fridges', a: '<b>2 other ILRs show the same steady falling pattern:</b><ul style="margin:8px 0;padding-left:18px"><li>Baramati SDH · ILR-2 (froze for 35 min last week)</li><li>Maval RH · ILR-1 (thermostat margin low)</li></ul><p class="muted small" style="margin:0">Sources: twin health, last 30 days</p>' },
+    ticket: { q: 'Draft a service request', a: '<b>Draft service request</b><br>Facility: PHC Wagholi · ILR-1 (Vestfrost, 140 L)<br>Issue: thermostat holding too cold; steady fall for 2 h with no recovery cycles<br>Evidence: Cause Card #TT-2291, chart attached<br>Priority: high (freeze risk)<br><button class="btn sm primary" style="margin-top:8px" onclick="ttToast(\'Demo: ticket sent to Meena P.\')">Send to technician</button>' },
+    hindi: { q: 'Explain in Hindi', a: '<b>ILR-1 लगभग 60 मिनट में 0 °C से नीचे जा सकता है।</b><br>संभावित कारण: थर्मोस्टैट बहुत ठंडा सेट है। नॉब को एक स्टेप गर्म की ओर घुमाएँ और 20 मिनट बाद फिर जाँचें।' },
+    district: { q: 'Which fridges need help first today?', a: '<b>3 fridges need action now:</b><ol style="margin:8px 0;padding-left:18px"><li>Junnar PHC-2 · ILR-01 · Critical: 8.6 °C for 40 min, power cut</li><li>PHC Wagholi · ILR-1 · freeze risk in ~60 min</li><li>Baramati SDH · DF-01 · warming, grid cut</li></ol>Also: 4 advisories and 2 sensor checks, none urgent.<p class="muted small" style="margin:8px 0 0">Sources: district alert queue 11:10</p>' },
+    worst: { q: 'Which talukas respond slowest to alerts?', a: '<b>Junnar is slowest</b>: 81% of alerts answered within 15 min (district average 93%). Khed is next at 88%.<p class="muted small" style="margin:8px 0 0">Sources: alert acknowledgements, last 30 days</p>' }
+  };
+  var sets = { fac: ['similar', 'ticket', 'hindi'], dist: ['worst', 'similar'] };
+  var chat = document.getElementById('chat'), sugg = document.getElementById('sugg');
+  function say(key) {
+    var x = answers[key];
+    chat.insertAdjacentHTML('beforeend', '<div class="msg-user">' + x.q + '</div><div class="msg-bot">' + x.a + '</div>');
+    chat.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  function setScope(s) {
+    chat.innerHTML = '';
+    say(s === 'fac' ? 'why' : 'district');
+    sugg.innerHTML = sets[s].map(function (k) { return '<button data-k="' + k + '">' + answers[k].q + '</button>'; }).join('');
+  }
+  sugg.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) say(b.dataset.k); });
+  document.getElementById('scope').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    setScope(b.dataset.s);
+  });
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = document.getElementById('q'), t = q.value.trim().toLowerCase();
+    if (!t) return;
+    var key = /hindi|हिं/.test(t) ? 'hindi' : /ticket|service|repair/.test(t) ? 'ticket' : /similar|other/.test(t) ? 'similar'
+      : /taluka|slow|respond/.test(t) ? 'worst' : /district|today|first|priorit/.test(t) ? 'district' : 'why';
+    answers.custom = { q: q.value, a: answers[key].a };
+    say('custom'); q.value = '';
+  });
+  var start = new URLSearchParams(location.search).get('scope') === 'district' ? 'dist' : 'fac';
+  if (start === 'dist') document.querySelector('#scope [data-s=dist]').click(); else setScope('fac');
+</script>
+</body>
+</html>

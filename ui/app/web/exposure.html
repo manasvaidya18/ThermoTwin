@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Exposure Ledger</title>
+<link rel="stylesheet" href="web.css">
+</head>
+<body data-page="exposure" data-title="Exposure Ledger" data-sub="What the vaccines in each fridge have been through · October">
+<main>
+  <div class="banner">ⓘ This ledger records exposure only. It never says a vaccine is safe or unsafe; that decision stays with the officer, using the vial monitor and WHO guidance.</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Facility · fridge</th><th>Time above +8 °C</th><th>Time below 0 °C</th><th>Excursions</th><th>Mean kinetic temp.</th><th>Review needed?</th></tr></thead>
+      <tbody>
+        <tr><td><b>Junnar PHC-2 · ILR-01</b></td><td>2 h 10 min</td><td>0 min</td><td>2</td><td>6.1 °C</td><td><span class="pill warn">Yes · heat</span></td></tr>
+        <tr data-href="fridge-ilr1.html"><td><b>PHC Wagholi · ILR-1</b></td><td>40 min</td><td>0 min</td><td>1</td><td>4.9 °C</td><td><span class="pill grey">No</span></td></tr>
+        <tr><td><b>Baramati SDH · ILR-2</b></td><td>0 min</td><td>35 min</td><td>1</td><td>3.8 °C</td><td><span class="pill warn">Yes · freeze-sensitive stock</span></td></tr>
+        <tr><td><b>Shirur RH · ILR-01</b></td><td>25 min</td><td>0 min</td><td>3</td><td>5.2 °C</td><td><span class="pill grey">No</span></td></tr>
+        <tr><td><b>Maval RH · ILR-2</b></td><td>0 min</td><td>0 min</td><td>0</td><td>4.6 °C</td><td><span class="pill grey">No</span></td></tr>
+      </tbody>
+    </table>
+    <p class="muted small" style="margin:12px 0 0">Mean kinetic temperature uses the standard Arrhenius formula with ΔH/R = 10,000 K. Freeze time counts estimated product temperature at or below −0.5 °C.</p>
+  </div>
+</main>
+<script src="web.js"></script>
+</body>
+</html>

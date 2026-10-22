@@ -1,0 +1,252 @@
+<article class="view" id="v-im2" data-track="im" data-title="ScoutQA">
+<header class="phead">
+  <div class="kicker"><span class="chip im">iMocha track</span><span class="chip">IM-02 Autonomous AI QA engineer</span></div>
+  <h2>ScoutQA</h2>
+  <p class="sub">An AI tester that explores a web app like a careful human, files only bugs it has reproduced, minimises the steps, and turns what worked into automated tests the team keeps.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●○○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●●○○</b></div><div>Demo impact<b>●●●●●</b></div><div>Provable<b>●●●●○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Software ships faster than it can be tested. Manual testing is slow and repetitive, automated suites lag behind new features, and bug reports often arrive without clear steps to reproduce. Small teams often have no tester at all. Build an AI agent that tests a web application the way a careful tester would: explore it, decide what to test, run the tests in a browser, and report real bugs with evidence.</p>
+<h4>What the PDF requires</h4>
+<ul>
+<li>Given a web app address and a short description, the agent explores the app like a real user.</li>
+<li>It generates test cases for the main user journeys and edge cases, and runs them in a browser.</li>
+<li>It files clear bug reports: steps to reproduce, expected versus actual behaviour, screenshots.</li>
+<li>It turns successful journeys into reusable automated tests the team can keep running.</li>
+<li>Optional: several cooperating agents, for example an explorer, a tester and a reporter.</li>
+<li>Outcomes: on a sample app with deliberately planted bugs, the agent finds and correctly reports a measurable share; generated tests run on their own and can be repeated; every report can be reproduced by a person following its steps.</li>
+<li>Stages: Stage 1 the testing problem, agent design, target sample app, and how accuracy and coverage will be measured. Stage 2 one key journey (for example sign-up and login), a generated test and at least one evidence-backed bug report. Stage 3 several journeys, cooperating agents, results on a planted-bug benchmark, a simple findings dashboard.</li>
+</ul>
+<h4>The hard parts</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Challenge</th><th>Why it is hard</th><th>Our answer</th></tr></thead>
+<tbody>
+<tr><td>The oracle problem</td><td>How does an agent know something is a bug rather than intended behaviour?</td><td>A zoo of oracles: crashes, console and network errors, accessibility, visual geometry, spec-derived assertions, metamorphic invariants.</td></tr>
+<tr><td>Trustworthy reports</td><td>LLM agents invent bugs or report flaky ones.</td><td>Repro verifier replays each bug three times in a clean browser; only reproducible ones are filed.</td></tr>
+<tr><td>Exploration without getting lost</td><td>Infinite states; loops; destructive actions.</td><td>State graph with fingerprints; novelty and risk-driven policy; budgets; action filters.</td></tr>
+<tr><td>Reusable tests</td><td>Generated scripts break on every UI change.</td><td>Role-based locators, self-healing fallbacks, stability checks before saving.</td></tr>
+<tr><td>Proving it works</td><td>No ground truth on real apps.</td><td>Our own app with planted bugs and a scoring harness.</td></tr>
+</tbody></table></div>
+
+<h3>Our concept: ScoutQA</h3>
+<div class="g3">
+<div class="card"><h4>1. Only reproducible bugs reach the report</h4><p>Before filing, a verifier agent replays the steps three times in fresh browser contexts. A delta-debugging step shrinks the steps to the minimum. This enforces the PDF's "reproduced by a person following its steps" automatically and lifts precision.</p></div>
+<div class="card"><h4>2. A benchmark we built ourselves</h4><p>BugBench: a sample shop app with 20 to 30 planted bugs in categories. We report recall, precision, reproduction rate, duplicates and cost per bug, and compare against a random clicker and an agent without the verifier.</p></div>
+<div class="card"><h4>3. Oracle zoo, not one opinion</h4><p>Many cheap, independent signals decide if something is wrong, and an LLM only judges what code cannot. Every finding says which oracle fired.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>ScoutQA</th></tr></thead>
+<tbody>
+<tr><td>LLM clicks around and writes bugs</td><td>Hallucinated and irreproducible reports.</td><td>Verified, minimised, evidence-attached reports.</td></tr>
+<tr><td>Record and replay tool</td><td>No exploration; no bug finding.</td><td>Autonomous exploration and oracles.</td></tr>
+<tr><td>Fuzz the UI randomly</td><td>Low coverage of meaningful journeys.</td><td>Journey planning from the app description plus novelty search.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>An agent filling a form and catching a bug is exciting to watch. Our measured planted-bug results and the repro verifier make it credible, which is exactly where most agent demos are weak.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>Many teams will build "LLM plus Playwright". Reliability, cost and generality will be questioned. Show numbers on a second, unseen app, keep the agent loop tight, and cache runs so the live demo is stable.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Plan</b><span>Turn the app description into journeys and test charters; set budgets.</span></div>
+<div class="st"><b>Explore</b><span>Drive a browser; build a state graph; pick next actions by novelty and risk.</span></div>
+<div class="st"><b>Test</b><span>Run planned journeys with positive, negative, boundary and repeat variants.</span></div>
+<div class="st"><b>Judge</b><span>Apply oracles to every step; raise candidate findings.</span></div>
+<div class="st"><b>Verify</b><span>Replay candidates three times in fresh contexts; discard flaky or unreproducible ones.</span></div>
+<div class="st"><b>Minimise and report</b><span>Shrink steps; dedupe; severity; evidence; export.</span></div>
+<div class="st"><b>Codify</b><span>Emit stable Playwright tests from successful journeys.</span></div>
+<div class="st"><b>Dashboard</b><span>App map, findings, tests, benchmark, cost.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Agent or module</th><th>Role</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>Planner</td><td>Journeys, charters, priorities, budgets</td><td>LLM with structured output</td></tr>
+<tr><td>Explorer</td><td>Observation, action choice, state graph</td><td>Playwright, accessibility snapshots, LLM function calling</td></tr>
+<tr><td>Tester</td><td>Executes journeys with generated data</td><td>Playwright</td></tr>
+<tr><td>Judge</td><td>Runs oracles, classifies findings</td><td>Python oracles plus LLM for semantic checks</td></tr>
+<tr><td>Verifier</td><td>Replay and flake filter</td><td>Playwright fresh contexts</td></tr>
+<tr><td>Reporter</td><td>Dedupe, minimise, severity, evidence packaging</td><td>Python, ddmin</td></tr>
+<tr><td>Codifier</td><td>Playwright test generation, stability check</td><td>Python or TypeScript templates</td></tr>
+<tr><td>Memory</td><td>App model shared by agents: states, forms, routes, learned invariants, known bugs</td><td>SQLite or JSON</td></tr>
+<tr><td>Dashboard</td><td>Runs, map, bugs, tests, benchmark</td><td>FastAPI, React</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Observation and state fingerprint</h4>
+<ul>
+<li>Each step observes: URL, title, <b>accessibility tree</b> (roles, names, states), list of interactive elements with stable ids, visible text summary, network log (requests, status, timings), console log, and optionally a screenshot. The accessibility tree is cheaper and more reliable for the model than raw HTML.</li>
+<li><b>State fingerprint</b> = hash of the normalised URL path, the sorted signatures of interactive elements, and key text. States with the same fingerprint are the same node, so loops are detected and coverage is measurable.</li>
+</ul>
+<h4>2. Exploration policy</h4>
+<ul>
+<li>Graph G of states and actions (click, type, select, navigate, submit). The agent keeps a frontier of unexplored actions.</li>
+<li>Score each candidate action by <b>novelty</b> (leads to an unseen state), <b>risk</b> (forms, payments, authentication, data mutations), and <b>goal relevance</b> from the app description. An LLM chooses among the top candidates with a one-line reason; code enforces budgets (steps, time, tokens) and filters destructive actions (log out, delete account) unless a charter says so.</li>
+<li><b>Generated inputs.</b> Valid, boundary (empty, very long, maximum), invalid, unicode and emoji, whitespace, injection-style strings (for our own sample app and only where authorised).</li>
+</ul>
+<h4>3. Planned journeys and test types</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Type</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td>Positive paths</td><td>Sign up, log in, search, add to cart, check out.</td></tr>
+<tr><td>Negative and boundary</td><td>Wrong password, empty required fields, quantity 0 and 9999, duplicate email.</td></tr>
+<tr><td>State and persistence</td><td>Refresh keeps cart; back button; logout and login restores data.</td></tr>
+<tr><td>Idempotency and concurrency</td><td>Double-click submit; two tabs.</td></tr>
+<tr><td>Responsive</td><td>Mobile viewport layout and menus.</td></tr>
+<tr><td>Accessibility</td><td>Labels, focus order, contrast through axe-core.</td></tr>
+<tr><td>Basic security (sample app only)</td><td>Reflected input unescaped, missing auth on routes, object ids that can be changed.</td></tr>
+</tbody></table></div>
+<h4>4. The oracle zoo</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Oracle</th><th>Detects</th><th>Cost and reliability</th></tr></thead>
+<tbody>
+<tr><td>Crash</td><td>Uncaught JavaScript exceptions, unhandled promise rejections, console errors.</td><td>Free; high precision.</td></tr>
+<tr><td>Network</td><td>HTTP 4xx or 5xx on user actions, failed resources, very slow responses.</td><td>Free; high precision with allow-lists for expected 404s.</td></tr>
+<tr><td>Accessibility</td><td>Missing labels, contrast, ARIA errors.</td><td>Library based (axe-core); moderate precision.</td></tr>
+<tr><td>Visual geometry</td><td>Elements off screen, overlap, clipped text, horizontal scroll.</td><td>Computed from DOM geometry; good precision.</td></tr>
+<tr><td>Spec-derived</td><td>"After adding an item the cart count should increase by one" turned into assertions.</td><td>LLM generated, evidence checked by code; medium precision.</td></tr>
+<tr><td>Metamorphic invariants</td><td>Add then remove returns the original total; filters narrow results; sort order stable; sum of line items equals total.</td><td>Code; high precision where applicable.</td></tr>
+<tr><td>Differential</td><td>Different behaviour across browsers or viewports for the same flow.</td><td>Moderate; flag only large differences.</td></tr>
+</tbody></table></div>
+<h4>5. Repro verifier and minimiser</h4>
+<pre class="code">candidate = (steps[], oracle, signature)
+for run in 1..3:
+    fresh browser context, clean storage
+    replay steps with the same data
+    record whether the oracle fires with the same signature
+repro_rate = hits / 3
+if repro_rate == 0:            discard                          (hallucination or one-off)
+elif repro_rate &lt; 1:           label FLAKY, lower priority, keep evidence
+else:                          minimise steps with ddmin (remove steps while the bug still reproduces)
+                               attach: before and after screenshots, DOM snippet, network excerpt, console excerpt,
+                                       Playwright trace, expected vs actual, environment (viewport, browser)
+dedupe key = (oracle, state fingerprint, error signature)
+severity  = f(blocks core journey?, data loss?, security?, frequency, repro_rate)</pre>
+<h4>6. The Codifier</h4>
+<ul>
+<li>Convert a successful journey (action list plus assertions) into a Playwright test (TypeScript or Python) using role-based locators (<code>getByRole</code>, <code>getByLabel</code>, test ids), page objects for repeated flows, explicit waits for conditions, not sleeps.</li>
+<li>Run the new test twice; save only if it passes both times. Record locator alternatives so a failing locator can fall back to the best match by similarity (self-healing).</li>
+<li>Export a suite plus a GitHub Actions workflow so the team can keep running it.</li>
+</ul>
+<h4>7. BugBench: our planted-bug benchmark</h4>
+<ul>
+<li><b>Sample apps.</b> (1) ShopLite: sign-up, login, catalogue, search, cart, checkout. (2) A small notes or to-do app as a second, unseen app for generalisation. Build in React or plain HTML with a small Express or Flask backend.</li>
+<li><b>Planted bugs.</b> 25 to 30, each toggled by a flag or branch: functional (wrong total, discount applied twice), validation (accepts invalid email), state (cart lost on refresh), UI (button hidden on mobile), security (XSS reflection, IDOR), performance (slow search). Each has an id, trigger steps and the oracle that should catch it. Keep a hidden subset not used during development.</li>
+<li><b>Metrics.</b> Recall (found divided by planted), precision (true bugs divided by reports), reproduction rate, duplicate rate, steps minimised, mean steps to find, tokens and dollars per found bug, state coverage.</li>
+<li><b>Baselines.</b> Random monkey tester; the agent without the verifier; the agent without oracles other than crashes.</li>
+</ul>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Explore from a URL and description</td><td><span class="tier core">Core</span></td><td>Planner plus explorer.</td><td>The task.</td><td>L</td></tr>
+<tr><td>Test generation and execution</td><td><span class="tier core">Core</span></td><td>Journeys and variants in Playwright.</td><td>The task.</td><td>M</td></tr>
+<tr><td>Evidence-backed bug reports</td><td><span class="tier core">Core</span></td><td>Steps, expected versus actual, screenshots.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Reusable generated tests</td><td><span class="tier core">Core</span></td><td>Codifier with stability check.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Findings dashboard</td><td><span class="tier core">Core</span></td><td>Bug list, severity, run history.</td><td>Stage 3 requirement.</td><td>M</td></tr>
+<tr><td>Repro verifier</td><td><span class="tier wow">Wow</span></td><td>Three fresh replays; flake filter.</td><td>Only trustworthy bugs.</td><td>M</td></tr>
+<tr><td>Step minimiser</td><td><span class="tier wow">Wow</span></td><td>Delta debugging.</td><td>"Bug in 3 steps."</td><td>M</td></tr>
+<tr><td>App map with coverage</td><td><span class="tier wow">Wow</span></td><td>State graph, visited versus unseen, bug pins.</td><td>A picture of what was tested.</td><td>M</td></tr>
+<tr><td>Oracle zoo</td><td><span class="tier wow">Wow</span></td><td>Seven oracle families.</td><td>Explains how bugs are recognised.</td><td>L</td></tr>
+<tr><td>BugBench scoreboard</td><td><span class="tier wow">Wow</span></td><td>Recall, precision, cost per bug versus baselines.</td><td>Hard numbers.</td><td>M</td></tr>
+<tr><td>Live trace viewer</td><td><span class="tier wow">Wow</span></td><td>Agent's actions with reasons and screenshots.</td><td>Watching it think.</td><td>M</td></tr>
+<tr><td>GitHub Actions export</td><td><span class="tier stretch">Stretch</span></td><td>Workflow YAML with the generated suite.</td><td>Immediate team value.</td><td>S</td></tr>
+<tr><td>Issue export</td><td><span class="tier stretch">Stretch</span></td><td>GitHub or Jira format.</td><td>Fits workflow.</td><td>S</td></tr>
+<tr><td>Cost controller</td><td><span class="tier stretch">Stretch</span></td><td>Token and time budgets with reports.</td><td>Practicality.</td><td>S</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>New run.</b> App URL, description, credentials for a test account (our sample only), budgets.</li>
+<li><b>Live run.</b> Left: browser view or screenshot stream; right: agent's reasoning and actions; bottom: state graph growing.</li>
+<li><b>Findings.</b> Table with severity, oracle, repro rate, minimised steps; click for the full report with screenshots, trace and expected versus actual.</li>
+<li><b>App map.</b> Graph of states; colour by visit count; red pins for bugs.</li>
+<li><b>Tests.</b> Generated tests with last result, stability, export button.</li>
+<li><b>Benchmark.</b> Planted-bug table with found and missed, scoreboard against baselines.</li>
+</ul>
+<pre class="code">Bug report (generated)
+Title:     Cart total ignores quantity after changing it from the cart page
+Severity:  Major     Oracle: metamorphic (sum of line items = total)     Repro: 3/3
+Steps:     1. Open /catalog   2. Add "Notebook" to cart   3. Open /cart   4. Change quantity to 3
+Expected:  Total = 3 x 4.00 = 12.00        Actual: Total stays 4.00
+Evidence:  before.png  after.png  cart-dom.html  network.har  trace.zip
+Env:       Chromium 1280x720, clean profile
+Test:      tests/cart_quantity.spec.ts (generated, stable on 2 runs)</pre>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Recall on planted bugs (development subset)</td><td>60% or higher; report per category</td></tr>
+<tr><td>Recall on hidden subset and on the second app</td><td>40% or higher; shows generalisation</td></tr>
+<tr><td>Precision of filed reports</td><td>85% or higher</td></tr>
+<tr><td>Reproduction rate of filed reports</td><td>100% by construction; verified by a person on a sample</td></tr>
+<tr><td>Duplicate rate</td><td>Under 10%</td></tr>
+<tr><td>Generated tests passing twice in a row</td><td>90% or higher</td></tr>
+<tr><td>Cost per found bug</td><td>Report tokens, dollars and minutes</td></tr>
+<tr><td>Versus baselines</td><td>Clear improvement over random clicker and over no-verifier agent</td></tr>
+</tbody></table></div>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Small sample app with 5 planted bugs.</li><li>Playwright script plus a basic LLM loop that explores sign-up and login.</li><li>One reproduced bug report with screenshots.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> ShopLite with 25 bugs; observation and state fingerprinting.</li>
+<li><b>Day 2.</b> Explorer, planner and oracles.</li>
+<li><b>Day 3.</b> Verifier, minimiser, reporter, codifier.</li>
+<li><b>Day 4.</b> Dashboard, BugBench scoreboard, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 4 h: run on any provided sample app; compare to our benchmark.</li>
+<li>4 to 12: fix reliability issues; extend oracles; second app.</li>
+<li>12 to 18: dashboard polish; cost controls.</li>
+<li>18 to 24: rehearsal with cached runs; recording.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Agent lead:</b> planner, explorer, policies.</li><li><b>Testing lead:</b> oracles, verifier, minimiser, codifier.</li><li><b>App and benchmark:</b> BugBench apps and scoreboard.</li><li><b>Frontend and pitch:</b> dashboard, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Agent gets stuck or loops</td><td>No coverage.</td><td>State fingerprints, budgets, backtracking, deterministic fallback to unexplored links.</td></tr>
+<tr><td>Cost and latency</td><td>Slow demo.</td><td>Accessibility-tree observations, small models for routine choices, caching, run budgets.</td></tr>
+<tr><td>Flaky apps</td><td>Spurious bugs.</td><td>Verifier and flake labels.</td></tr>
+<tr><td>Safety of testing real sites</td><td>Ethics and legality.</td><td>Only our own or authorised apps; rate limits; no destructive actions by default.</td></tr>
+<tr><td>Benchmark bias (we wrote the bugs)</td><td>Overstated results.</td><td>Hidden subset, a second app, and have a teammate plant extra bugs we do not see.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Small teams ship fast and test late. ScoutQA is an AI tester: give it a URL and a description and it explores like a user, plans journeys, runs them in a browser and files bug reports. Every report has been replayed three times in clean browsers and shrunk to the fewest steps, with screenshots and evidence. Successful journeys become Playwright tests you can keep. We measure it on an app with planted bugs: here is how many it finds and how many reports are real.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> "No tester, new features every week."</li>
+<li><b>0:40 Start a run.</b> URL plus description. The live view shows the agent signing up.</li>
+<li><b>1:30 App map.</b> States appear; coverage grows.</li>
+<li><b>2:15 A finding.</b> Oracle fires; the verifier replays; the report appears with steps reduced from 9 to 4.</li>
+<li><b>3:00 The test.</b> Open the generated Playwright test; run it green; show it failing on the buggy build.</li>
+<li><b>3:40 Benchmark.</b> Scoreboard: recall, precision, repro, versus baselines.</li>
+<li><b>4:20 Second app.</b> Short run on the unseen app.</li>
+<li><b>4:50 Close.</b> Limits and roadmap.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> developers and QA teams, especially small teams with little test capacity.</p><p><b>Gap:</b> manual tests are slow, automated suites lag, bug reports lack reproducible steps.</p><p><b>Why now:</b> LLM agents plus browser automation can finally act like a user.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> reproduction verifier, minimised steps, oracle zoo, self-built benchmark.</p><p><b>Mechanism:</b> plan, explore, test, judge, verify, report, codify.</p><p><b>Feasible:</b> prototype on sample app: found X of Y planted bugs (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Playwright, Python, LLM with function calling, axe-core, FastAPI, React, SQLite, Docker. State which models.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Live run view, app map, findings with evidence, generated tests, benchmark page.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> sample app, sign-up journey, first report. <b>In progress:</b> verifier, codifier. <b>Next:</b> CI integration, more oracles.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Testing coverage for teams that have none; fewer escaped bugs; faster, clearer bug reports.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How do you know something is a bug?</summary><p>Through oracles: crashes, network errors, accessibility and visual checks, invariants, and spec-derived assertions. Every finding names its oracle.</p></details>
+<details class="qa"><summary>How do you stop the agent from hallucinating bugs?</summary><p>Each candidate is replayed three times in clean contexts; if it does not reproduce it is dropped.</p></details>
+<details class="qa"><summary>Does it work on apps other than your sample?</summary><p>We test on a second, unseen app and report recall separately.</p></details>
+<details class="qa"><summary>Are the generated tests stable?</summary><p>They use role-based locators and must pass twice before being saved; we report the pass rate.</p></details>
+<details class="qa"><summary>What does a run cost?</summary><p>We track tokens, dollars and minutes per found bug and show the number.</p></details>
+<details class="qa"><summary>Is it safe?</summary><p>It only runs against authorised apps, rate-limited, with destructive actions blocked unless configured.</p></details>
+</article>

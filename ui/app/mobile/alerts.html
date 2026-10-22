@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · Alerts</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-page="alerts">
+<main>
+  <h1>Alerts</h1>
+  <p class="sub">1 open · 2 resolved this week</p>
+
+  <div class="chips" id="chips">
+    <button class="on" data-f="all">All</button>
+    <button data-f="open">Open</button>
+    <button data-f="resolved">Resolved</button>
+  </div>
+
+  <div class="day" data-group>Today</div>
+  <a class="card warn" href="alert-ilr1.html" data-state="open">
+    <div class="row"><span class="pill warn" data-i18n="st.early">Early warning</span><span class="kind">10:42 AM</span></div>
+    <div class="name" style="margin-top:8px">ILR-1 · Freeze risk</div>
+    <div class="range">Air 2.4 °C, falling. May go below 0 °C in about 60 min.</div>
+    <div class="cta" data-i18n="cta.see">See what to do →</div>
+  </a>
+  <div class="card" data-state="resolved">
+    <div class="row"><span class="pill ok">Resolved</span><span class="kind">8:15 AM</span></div>
+    <div class="name" style="margin-top:8px">ILR-2 · Door left open</div>
+    <div class="range">Air reached 9.1 °C for 6 min. Vaccine stayed about 4.8 °C. Closed by Sunita.</div>
+  </div>
+
+  <div class="day" data-group>Yesterday</div>
+  <div class="card" data-state="resolved">
+    <div class="row"><span class="pill info">Advisory</span><span class="kind">7:05 PM</span></div>
+    <div class="name" style="margin-top:8px">DF-1 · Power cut</div>
+    <div class="range">Power off for 1 h 40 min. Stayed in range; holdover had 3 h left.</div>
+  </div>
+</main>
+<script src="app.js"></script>
+<script>
+  document.querySelectorAll('#chips button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('#chips button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      var f = b.dataset.f;
+      document.querySelectorAll('[data-state]').forEach(function (c) {
+        c.style.display = f === 'all' || c.dataset.state === f ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

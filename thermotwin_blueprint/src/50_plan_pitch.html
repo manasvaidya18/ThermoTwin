@@ -1,0 +1,207 @@
+<h2 id="roadmap"><small>Execution</small>Roadmap and team</h2>
+<div class="tw"><table class="t">
+<thead><tr><th>When</th><th>What gets built</th><th>Done means</th></tr></thead>
+<tbody>
+<tr><td>Today, 11 Oct (Round 1)</td><td>PPT. If time allows: ColdChain Gym v0 (one fridge, thermostat-drift and door faults), a LightGBM 30-minute model, and the "lead time versus false alerts" chart against Nexleaf-style rules.</td><td>PPT submitted; one real chart for the "built today" slide if possible</td></tr>
+<tr><td>15 Oct (Round 2, day 1)</td><td>Gym v1: fridge and ILR profiles, power cuts, door habits, faults, sensor errors, labels; data contract; baselines P0 to P2</td><td>10,000 labelled unit-days; baseline scorecard</td></tr>
+<tr><td>16 Oct (day 2)</td><td>Twin with EKF and Virtual Vial; hazard model; calibration; Replay Benchmark harness</td><td>First P3 numbers versus P2</td></tr>
+<tr><td>17 Oct (day 3)</td><td>Cause classifier and SHAP; Guardian (two-key, tiers, suppression, budget); FastAPI; facility and unit screens</td><td>End-to-end alert from simulated fridge to screen</td></tr>
+<tr><td>18 Oct (day 4)</td><td>Copilot (Cause Card, SOP Guide, ticket) with guardrails; SMS and WhatsApp previews; README; recorded demo</td><td>Round 2 submission</td></tr>
+<tr><td>19 to 23 Oct</td><td>Slow-fault engine and Repair verified; district map; test on the second generator; optional ESP32 node; peer feedback on the Hindi and Marathi cards</td><td>Feature-complete before the finale</td></tr>
+<tr><td>24 Oct finale, hours 0 to 2</td><td>Ingest the organisers' dataset through the adapter; run the benchmark unchanged</td><td>Baseline numbers on their data</td></tr>
+<tr><td>Hours 2 to 8</td><td>Retrain, recalibrate, error analysis by fault family</td><td>Improved numbers, logged</td></tr>
+<tr><td>Hours 8 to 14</td><td>Polish Fix loop, what-if, copilot languages</td><td>Demo flow complete</td></tr>
+<tr><td>Hours 14 to 20</td><td>Stress tests (noise, missing data), limitations page, live node demo if built</td><td>Robustness evidence</td></tr>
+<tr><td>Hours 20 to 24</td><td>Rehearse, record backup video, freeze</td><td>Calm demo</td></tr>
+<tr><td>Beyond the hackathon</td><td>Pilot with one PHC or pharmacy alongside its certified logger; ingest real eVIN or DS01.2 data; partner with a monitoring vendor or state programme; check CDSCO and DPDP obligations</td><td>Field-calibrated twin</td></tr>
+</tbody></table></div>
+<div class="g2">
+<div class="card"><h4>Physics and simulation lead</h4><p>ColdChain Gym, RC twin, EKF, Twin Vitals, holdover, Repair verified.</p></div>
+<div class="card"><h4>ML lead</h4><p>Features, hazard and quantile models, cause classifier, calibration, Replay Benchmark, ablations.</p></div>
+<div class="card"><h4>Backend and alerts lead</h4><p>FastAPI, data contract and adapters, Guardian state machine, escalation ladder, SMS, voice and WhatsApp, edge node.</p></div>
+<div class="card"><h4>Frontend, copilot and pitch lead</h4><p>Screens, copilot with guardrails, PPT, demo script, recorded video. Everyone joins rehearsal in the last 6 hours.</p></div>
+</div>
+
+<h2 id="ppt"><small>Due today</small>PPT kit: text for every slide in the template</h2>
+<p class="sub">Each block maps to one slide of the CODE APEX template. Copy, paste, then replace anything in [brackets].</p>
+
+<div class="slide"><header><h4>Slide 1 · Cover</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<p><b>Problem Statement (Domain):</b> Track 4, Technology for Social Cause · T4-1 AI-Based Predictive Cold-Storage Excursion and Early-Warning System</p>
+<p><b>Product:</b> ThermoTwin. Warns before the vaccines freeze.</p>
+<p><b>Team name:</b> [team] · <b>Team leader:</b> [name]</p>
+</div></div>
+
+<div class="slide"><header><h4>Slide 2 · Problem Statement and Target Need</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<p><b>Who is affected</b></p>
+<ul><li>Vaccine handlers and ANMs at about 29,000 cold-chain points in India's immunisation programme, district cold-chain officers, technicians, and the children who receive the doses.</li><li>Also pharmacies, blood banks and food cold rooms.</li></ul>
+<p><b>The current gap</b></p>
+<ul><li>WHO-standard alarms fire only after 10 h at or above +8 °C or 60 min at or below −0.5 °C. Damage starts first.</li><li>Freezing is the silent killer: Indian logger studies found vaccine below 0 °C for 10.5 to 14.8% of storage time, and two-thirds of tested DTP vials showed freezing. Vial monitors cannot show freezing.</li><li>Paper logbooks flagged deviations at only 5.6% of devices.</li></ul>
+<p><b>Why it matters now</b></p>
+<ul><li>From 2026 WHO requires equipment monitoring on every vaccine fridge and names predictive failure response as the goal.</li><li>India's 25,000 connected loggers already stream data, used today for stock, not prediction.</li></ul>
+</div>
+<div class="notes"><b>Visual:</b> the "unalarmed window" chart from this page. <b>Say:</b> "The alarm the world uses for vaccine fridges waits an hour in freezing conditions before it rings. By then the vaccine is gone, and nobody can tell by looking."</div></div>
+
+<div class="slide"><header><h4>Slide 3 · Proposed Solution and Innovation</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<p><b>What makes it different</b></p>
+<ul><li>Freeze-first, two-sided forecasting with three clocks: breach, WHO alarm, power-cut holdover.</li><li>A physics digital twin of every fridge, with ML learning what the physics misses.</li><li>Two-key alerts: ML and physics must agree before a phone rings, within a false-alert budget of 1 per fridge per month.</li><li>From alarm to verified repair: Cause Card, technician ticket, and the twin confirms the fix.</li><li>A bounded AI copilot that explains in Hindi or Marathi and drafts tickets, but never decides.</li></ul>
+<p><b>Core mechanism</b></p>
+<p>Sense → Twin → Sentinel (risk) → Guardian (alert policy) → Copilot (explain and act) → Command (apps).</p>
+<p><b>Why it is feasible in this timeframe</b></p>
+<ul><li>Software-only on simulated data, as Track 4 allows.</li><li>Proven, light models: RC grey-box plus LightGBM, which runs in microseconds on an ESP32.</li><li>Built on the WHO DS01.2 data format. [Built today: add your first result here.]</li></ul>
+</div>
+<div class="notes"><b>Visual:</b> the eight ideas as icons, or the mini pipeline. <b>Say:</b> "We do not replace the certified logger. We add lead time, a cause and a repair loop on top of the data it already produces."</div></div>
+
+<div class="slide"><header><h4>Slide 4 · System Architecture and Tech Stack</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<p><b>Architecture:</b> Layer 0 Sense and ingest (add-on node or eVIN and DS01.2 data) → Layer 1 Twin (Virtual Vial, RC model, EKF, Twin Vitals, rollouts) → Layer 2 Sentinel (trust gate, hazard model, time-to-breach, cause classifier, slow-fault engine, calibration) → Layer 3 Guardian (two-key rule, tiers, suppression, budget, escalation) → Layer 4 Copilot (bounded LLM) → Layer 5 Command (facility app, technician view, district map). Side: ColdChain Gym simulator and Replay Benchmark.</p>
+<p><b>Frontend:</b> React, ECharts, Leaflet, mobile web app</p>
+<p><b>Backend:</b> Python FastAPI, MQTT, state machine</p>
+<p><b>Database:</b> TimescaleDB (PostgreSQL)</p>
+<p><b>AI / APIs:</b> LightGBM, PyTorch, filterpy (EKF), SHAP, conformal prediction, LLM with structured output [model], Bhashini or cloud TTS, SMS and voice API, WhatsApp Cloud API</p>
+<p><b>Hosting / DevOps:</b> Docker, GitHub Actions, cloud host, edge OTA</p>
+</div>
+<div class="notes"><b>Visual:</b> redraw the six-layer diagram from this page; colour the Guardian layer to show "deterministic, never an LLM".</div></div>
+
+<div class="slide"><header><h4>Slide 5 · Key Features and UI/UX</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<ul><li><b>Breach clock and WHO clock:</b> countdowns with a range, not raw temperatures.</li><li><b>Cause Card:</b> what is wrong and what to do, in the local language, by SMS, voice call and WhatsApp.</li><li><b>Holdover clock:</b> during power cuts, hours left before vaccines warm.</li><li><b>Twin Vitals:</b> Cooling Strength, Seal Health, Thermostat Margin for every fridge.</li><li><b>Vaccine Life Meter:</b> 24-hour MKT, heat used, freeze exposure.</li><li><b>Fleet triage map:</b> which fridges will fail in the next 30 days.</li><li><b>Repair verified:</b> the twin confirms the fix.</li><li><b>What-if simulator and Replay Benchmark</b> for transparency.</li></ul>
+</div>
+<div class="notes"><b>Visual:</b> three mock screens (phone status, unit detail chart, district map) plus the SMS and voice-call previews.</div></div>
+
+<div class="slide"><header><h4>Slide 6 · Implementation Roadmap and Scope</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<p><b>Built today:</b> research base (WHO standards, Indian field studies, market scan), architecture, ColdChain Gym v0 [and first model result, if done].</p>
+<p><b>Round 2 (15 to 18 Oct):</b> full simulator, twin and hazard model, Replay Benchmark against WHO and Nexleaf-style alerts, alert policy, API, facility and unit screens, copilot with guardrails.</p>
+<p><b>Grand finale (24 Oct):</b> organisers' hidden dataset through our adapter, Fix loop, district map, live fault injection, optional edge node.</p>
+<p><b>Beyond:</b> pilot beside a certified logger at a PHC or pharmacy, real eVIN or DS01.2 data, vendor or state-programme partnership.</p>
+</div></div>
+
+<div class="slide"><header><h4>Slide 7 · Expected Impact and Scalability</h4><button type="button" class="copybtn">Copy</button></header>
+<div class="body" data-copy>
+<p><b>Impact</b></p>
+<ul><li>Fewer frozen or heat-damaged doses, with warnings that come before the damage.</li><li>Fewer false callouts, measured as false alerts per fridge-month and published.</li><li>Faster repairs: diagnosis before the technician travels, verification after.</li></ul>
+<p><b>Scale</b></p>
+<ul><li>A software layer on telemetry that already exists: about 29,000 cold-chain points and roughly 85,000 to 107,000 pieces of cold-chain equipment (mostly ice-lined refrigerators and deep freezers) in India's public programme.</li><li>Small models run on a microcontroller, so it works offline and costs little per fridge.</li><li>Same engine for pharmacies, blood banks and food cold rooms; lack of refrigeration loses an estimated 12% of global food production (UNEP and FAO).</li><li>Model: per-facility subscription, or bundled with monitoring vendors and state programmes.</li></ul>
+</div></div>
+
+<h2 id="qa"><small>Viva preparation</small>Questions judges will ask</h2>
+<details class="qa"><summary>Why not just lower the alarm threshold?</summary><p>That is what vendors' "warnings" do, and it adds noise. Lower thresholds still fire after the trend starts and fire on every door opening. We forecast, use product temperature instead of air, and require ML and physics to agree, under a stated false-alert budget.</p></details>
+<details class="qa"><summary>Why focus on freezing?</summary><p>Indian logger studies measured vaccine below 0 °C for 10.5 to 14.8% of storage time, and vial monitors cannot show freezing. WHO's own rules already treat freezing as more urgent (60 minutes versus 10 hours).</p></details>
+<details class="qa"><summary>Your data is simulated. Why should we trust it?</summary><p>We randomise equipment, seasons, power and faults, test on unseen fault combinations and on a second, independent generator, and state the simulator's limits. The twin learns each real fridge's physics online, so field use starts with a short calibration period.</p></details>
+<details class="qa"><summary>What is new here? Monitoring already exists.</summary><p>Monitoring exists; forecasting with cause and a measured false-alarm rate does not, in any product we found for stationary vaccine storage. The closest analogue (Emanate, 2017) targeted hospital fridges and its status is unknown. We publish our numbers; no vendor does.</p></details>
+<details class="qa"><summary>Where is the AI, and why not a big deep-learning model?</summary><p>The AI is the hybrid twin plus calibrated gradient boosting, chosen because the evidence favours it at a 15 to 60 minute horizon and because it runs on a microcontroller and explains itself. A TCN and a time-series foundation model are included as baselines.</p></details>
+<details class="qa"><summary>Can an LLM hallucinate a wrong diagnosis to a health worker?</summary><p>The LLM picks a cause from a fixed list, every number comes from a tool, a verifier checks each output, and if any check fails we send a template. It never decides whether to alert, and never advises using or discarding vaccine.</p></details>
+<details class="qa"><summary>How do you avoid false alarms from door openings and defrost?</summary><p>Product temperature instead of air, door and current signals, logged suppression windows with automatic re-arm after the unit's own recovery time, and the two-key rule.</p></details>
+<details class="qa"><summary>What if the network is down?</summary><p>The node keeps a local model and buzzer and stores 30 days of data; alerts fall back to SMS; data is forwarded when the link returns.</p></details>
+<details class="qa"><summary>Is it a medical device? Is it WHO-certified?</summary><p>It is an advisory layer beside the certified logger, which stays the official record. Humans decide on stock, following national guidelines. Regulatory status (CDSCO) is part of our next steps.</p></details>
+<details class="qa"><summary>How will you measure success?</summary><p>Recall on WHO-grade events, lead time over Nexleaf-style alerts, false alerts per fridge-month, true-alarm suppression below 1%, calibration, cause accuracy, and repair-verification accuracy.</p></details>
+<details class="qa"><summary>How does it scale and make money?</summary><p>It reads existing DS01.2 or eVIN data, so scale is software. Per-facility subscription, or bundled with monitoring vendors and state programmes.</p></details>
+
+<h2 id="claims"><small>Credibility</small>Claims to use, and claims to avoid</h2>
+<div class="g2">
+<div class="card"><h4>Use (with the source on the slide)</h4><ul>
+<li>WHO alarms: 10 h at or above +8 °C, 60 min at or below −0.5 °C (WHO DS01.2).</li>
+<li>10.5 to 14.8% of storage time below 0 °C in Indian studies; two-thirds of tested DTP vials frozen (Murhekar 2013, Das 2020).</li>
+<li>Logbooks flagged deviations at 5.6% of devices (Das 2020).</li>
+<li>One in 20 facilities lost vaccine to temperature damage in a year (WHO EVM).</li>
+<li>From 2026, monitoring required on all vaccine fridges (WHO EMS FAQ).</li>
+<li>About 25,000 eVIN loggers at about 29,000 points (UNDP).</li>
+<li>Twice-daily manual readings catch about 5 to 6% of excursions (CDC-associated simulation).</li>
+<li>Root-cause agents solve 11 to 21% of benchmark cases, so detection stays deterministic.</li>
+</ul></div>
+<div class="card"><h4>Avoid</h4><ul>
+<li>"Up to 50% of vaccines are wasted by cold-chain failure": an unreferenced 2005 sentence about total wastage.</li>
+<li>"$35 billion lost by biopharma (IQVIA)": no IQVIA source found.</li>
+<li>"75% of vaccines in India frozen": the study says two-thirds of tested vials.</li>
+<li>"85 to 99% of cold-chain alarms are false": that is clinical bedside data; use only as an analogy.</li>
+<li>"First AI cold-chain system", "WHO-certified", "99% accurate", "AI decides if vaccine is safe".</li>
+<li>"Multi-agent AI runs your cold chain".</li>
+</ul></div>
+</div>
+
+<h2 id="sources"><small>References</small>Key sources</h2>
+<ul class="src-list">
+<li><a href="https://extranet.who.int/prequal/sites/default/files/document_files/PQS%20E006%20DS01.2.pdf" target="_blank" rel="noopener">WHO PQS E006/DS01.2 data standard</a></li>
+<li><a href="https://extranet.who.int/prequal/sites/default/files/document_files/PQS_E006_TR06.3.pdf" target="_blank" rel="noopener">WHO PQS E006/TR06.3 30-day recorder</a></li>
+<li><a href="https://extranet.who.int/prequal/sites/default/files/media_document/e006_0.pdf" target="_blank" rel="noopener">WHO PQS E006 catalogue</a></li>
+<li><a href="https://extranet.who.int/prequal/sites/default/files/document_files/ems-frequently-asked-questions-v2.0.pdf" target="_blank" rel="noopener">WHO EMS FAQ</a></li>
+<li><a href="https://extranet.who.int/prequal/sites/default/files/media_document/e003_0.pdf" target="_blank" rel="noopener">WHO PQS E003 refrigerators</a></li>
+<li><a href="https://cdn.who.int/media/docs/default-source/immunization/supply-chain/evm-global-data-analysis-2009-2020.pdf" target="_blank" rel="noopener">WHO EVM global analysis 2009–2020</a></li>
+<li><a href="https://www.who.int/publications-detail-redirect/WHO-IVB-15.04" target="_blank" rel="noopener">WHO/IVB/15.04 vaccine management handbook</a></li>
+<li><a href="https://pubmed.ncbi.nlm.nih.gov/24347729/" target="_blank" rel="noopener">Murhekar et al. 2013</a></li>
+<li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7268609/" target="_blank" rel="noopener">Das et al. 2020</a></li>
+<li><a href="https://pubmed.ncbi.nlm.nih.gov/28364920/" target="_blank" rel="noopener">Hanson et al. 2017</a></li>
+<li><a href="https://www.undp.org/india/projects/improving-vaccination-systems-evin" target="_blank" rel="noopener">UNDP eVIN</a></li>
+<li><a href="https://pubmed.ncbi.nlm.nih.gov/33151951/" target="_blank" rel="noopener">Gurnani et al. 2020 (eVIN outcomes)</a></li>
+<li><a href="https://www.nexleaf.org/wp-content/uploads/2021/05/Nexleaf-RTM-RCT-Report.pdf" target="_blank" rel="noopener">Nexleaf Mozambique trial</a></li>
+<li><a href="https://www.cdc.gov/vaccines/hcp/downloads/storage-handling-toolkit.pdf" target="_blank" rel="noopener">CDC Storage and Handling Toolkit</a></li>
+<li><a href="https://arxiv.org/abs/1510.06855" target="_blank" rel="noopener">Sossan et al. (RC freezer model)</a></li>
+<li><a href="https://arxiv.org/abs/2507.17526v1" target="_blank" rel="noopener">EPFL hybrid residual learning</a></li>
+<li><a href="https://arxiv.org/abs/2403.12818" target="_blank" rel="noopener">Yèche et al. dynamic survival analysis</a></li>
+<li><a href="https://arxiv.org/abs/2609.22229" target="_blank" rel="noopener">Benamirouche et al. synthetic fridges</a></li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11324578/" target="_blank" rel="noopener">Harrabi et al. 2024 (ESP32 fridge faults)</a></li>
+<li><a href="https://arxiv.org/pdf/2510.26557" target="_blank" rel="noopener">Boosted trees on ESP32</a></li>
+<li><a href="https://arxiv.org/html/2506.03828v1" target="_blank" rel="noopener">AssetOpsBench</a></li>
+<li><a href="https://proceedings.iclr.cc/paper_files/paper/2025/file/d29b8d53678015079e1d245c023e49d2-Paper-Conference.pdf" target="_blank" rel="noopener">OpenRCA (ICLR 2025)</a></li>
+<li><a href="https://digitalassets.jointcommission.org/api/public/content/f65e5c9df2b94000a99445e0a7877007" target="_blank" rel="noopener">Joint Commission alarm fatigue alert</a></li>
+<li><a href="https://arxiv.org/pdf/2311.07139" target="_blank" rel="noopener">Kilkari call analysis</a></li>
+<li><a href="https://www.unep.org/resources/report/sustainable-food-cold-chains-opportunities-challenges-and-way-forward" target="_blank" rel="noopener">UNEP-FAO food cold chains 2022</a></li>
+<li><a href="https://www.copeland.com/en-us/news/copeland-completes-acquisition-of-dickson-advancing-cold-chain-intelligence-for-healthcare-and-life-sciences" target="_blank" rel="noopener">Copeland acquires Dickson</a></li>
+</ul>
+<p class="sub">The full research report with every citation is in <code>D:\CodeApex\reports\ThermoTwin cold chain market research.md</code>. Some sources (official USP text, WHO TR06.4, ISA-18.2) were read only through summaries; check before quoting exact wording.</p>
+</div>
+
+<script>
+(function () {
+  var doc = document;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nav = doc.getElementById('snav');
+  var heads = [].slice.call(doc.querySelectorAll('h2[id]'));
+  var short = { problem: 'Problem', market: 'Market gap', ideas: 'Ideas', architecture: 'Architecture', logic: 'Internal logic',
+    models: 'ML stack', twin: 'Twin', agents: 'Agents', features: 'Features', gym: 'Simulator', eval: 'Evaluation',
+    edge: 'Edge', stack: 'Tech stack', roadmap: 'Roadmap', ppt: 'PPT kit', qa: 'Judge Q&A', claims: 'Claims', sources: 'Sources' };
+  heads.forEach(function (h) {
+    var b = doc.createElement('button');
+    b.type = 'button';
+    b.textContent = short[h.id] || h.textContent;
+    b.addEventListener('click', function () { h.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); });
+    nav.appendChild(b);
+  });
+
+  [].slice.call(doc.querySelectorAll('.slide')).forEach(function (s) {
+    var btn = s.querySelector('.copybtn');
+    var body = s.querySelector('[data-copy]');
+    if (!btn || !body) return;
+    btn.addEventListener('click', function () {
+      var text = body.innerText;
+      function done(ok) {
+        btn.textContent = ok ? 'Copied' : 'Select and copy';
+        if (!ok) { try { var r = doc.createRange(); r.selectNodeContents(body); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } catch (e) {} }
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        else done(false);
+      } catch (e) { done(false); }
+    });
+  });
+
+  var tb = doc.getElementById('themebtn');
+  var modes = ['auto', 'light', 'dark'];
+  var mode = 'auto';
+  try { mode = localStorage.getItem('tt-theme') || 'auto'; } catch (e) {}
+  function apply() {
+    if (mode === 'auto') doc.documentElement.removeAttribute('data-theme'); else doc.documentElement.setAttribute('data-theme', mode);
+    if (tb) tb.textContent = 'Theme: ' + mode;
+  }
+  if (tb) tb.addEventListener('click', function () {
+    mode = modes[(modes.indexOf(mode) + 1) % modes.length];
+    try { localStorage.setItem('tt-theme', mode); } catch (e) {}
+    apply();
+  });
+  apply();
+})();
+</script>

@@ -1,0 +1,98 @@
+<h2 id="models"><small>Machine learning</small>The model stack, and why each piece</h2>
+<p class="sub">At a 15 to 60 minute horizon, short-term physics dominates. The literature favours a physics model plus gradient boosting over deep sequence models, and no paper reports fridge excursion lead times, so we benchmark simple baselines first and publish the comparison.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Model</th><th>Job</th><th>Output</th><th>Why this one</th><th>Compared against</th></tr></thead>
+<tbody>
+<tr><td>Virtual Vial</td><td>Product temperature from air temperature</td><td>T<sub>product</sub> every 5 min</td><td>CDC requires buffered probes. In one study, air swung 1.7 to 6.2 °C while a glycol bottle stayed 3.6 to 4.3 °C; an algorithm tracked the glycol within 0.08 °C.</td><td>Raw air temperature</td></tr>
+<tr><td>3-node RC twin with EKF parameter tracking</td><td>Physics forecast, residuals, Twin Vitals, holdover</td><td>States, parameters, rollouts</td><td>A third-order RC model of a real 333-litre freezer predicted 20 minutes ahead with 0.29 °C residual spread (Sossan et al.). Physics extrapolates to unseen conditions.</td><td>1-node RC; differentiable RC fitted in PyTorch</td></tr>
+<tr><td>Sensor Trust Gate</td><td>Spot bad data before it causes alarms</td><td>Trust score, sensor fault type</td><td>A spike or stuck probe should produce "check the probe", not a product alarm.</td><td>No gate</td></tr>
+<tr><td>LightGBM discrete-time hazard model</td><td>Probability of breach in each of the next twelve 5-minute steps</td><td>Survival curve; P(breach in 15, 30, 60 min); also P(WHO alarm in 6 h, 12 h)</td><td>Small data per unit, fast, explainable with SHAP, compiles to C for microcontrollers. Hazard framing gives probability and time together (dynamic survival analysis template, Yèche et al. 2024).</td><td>Persistence; Nexleaf-style rules; logistic regression; TCN or GRU; Chronos-Bolt zero-shot</td></tr>
+<tr><td>LightGBM quantile regression</td><td>Time-to-breach with a range</td><td>P10, P50, P90 minutes</td><td>A countdown with honest bounds ("34 min, 18 to 61").</td><td>Read from the survival curve</td></tr>
+<tr><td>Cause classifier (rules plus LightGBM plus SHAP)</td><td>Why it is happening</td><td>Ranked causes from a fixed list of 10</td><td>Door, mains and current evidence make several causes nearly rule-based; the classifier handles latent ones using Twin Vital drift.</td><td>Rules only</td></tr>
+<tr><td>Slow-fault engine</td><td>Days-to-weeks degradation and maintenance triage</td><td>Change points, trend, 30-day risk of WHO "non-functional" status</td><td>Theil-Sen trends and Bayesian online change-point detection on daily Twin Vitals, then a gradient-boosted classifier on 30-day windows. The target is WHO DS01.2's own non-functional rule.</td><td>Duty-cycle threshold rules</td></tr>
+<tr><td>Calibration and conformal</td><td>Probabilities that mean what they say</td><td>Calibrated p; intervals that hold under drift</td><td>Boosted trees distort probabilities. Isotonic or Platt scaling; adaptive conformal inference keeps coverage when conditions drift.</td><td>Uncalibrated</td></tr>
+<tr><td>Edge compile (emlearn or m2cgen)</td><td>Run the tree model offline on the node</td><td>Plain C code</td><td>A 4-tree LightGBM ran in about 18 µs per prediction on an ESP32-S3.</td><td>TensorFlow Lite Micro</td></tr>
+<tr><td>LLM (bounded)</td><td>Language only</td><td>Schema-checked JSON and text</td><td>Explanations, translation, drafting. See the agent section.</td><td>Fixed templates</td></tr>
+</tbody></table></div>
+<div class="co crit"><span class="lbl">Deliberately not the core</span>
+<ul>
+<li><b>A deep LSTM as the main model.</b> No evidence of better lead time at this horizon, harder to explain, and a patent notes plain LSTMs lag during door disturbances. Kept as a baseline.</li>
+<li><b>Unsupervised anomaly detection as the alarm.</b> On a pharma cold-chain dataset the best detector reached F1 0.52; door openings and defrost cycles look anomalous. Used only as a secondary signal on twin residuals with doors and defrost masked.</li>
+<li><b>An LLM for detection.</b> LLMs reason about time series only slightly better than chance, and root-cause agents solve 11 to 21% of benchmark cases.</li>
+<li><b>Time-series foundation models as the engine.</b> None has been tested on fridge data or runs on a microcontroller. Chronos-Bolt is shown as a zero-shot baseline only.</li>
+</ul></div>
+
+<h3>Prediction targets</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Target</th><th>Definition</th><th>Used for</th></tr></thead>
+<tbody>
+<tr><td>Breach onset</td><td>Virtual Vial leaves +2 to +8 °C (either side) within 15, 30, 60 min</td><td>Breach clock, early warning</td></tr>
+<tr><td>Freeze onset</td><td>Virtual Vial below 0 °C within 15, 30 min</td><td>Freeze fast-track</td></tr>
+<tr><td>WHO-grade alarm</td><td>DS01.2 FRZE (≤ −0.5 °C for 60 min) or HEAT (≥ +8 °C for 10 h) within 6 h, 12 h</td><td>WHO clock</td></tr>
+<tr><td>Holdover</td><td>Hours from now to +8 °C if power stays off (twin rollout)</td><td>Holdover clock during outages</td></tr>
+<tr><td>30-day non-functional</td><td>DS01.2 rule: 5 or more heat alarms over 10 h, any freeze alarm over 1 h, or a heat alarm of 48 h or more, within 30 days</td><td>Fleet triage</td></tr>
+</tbody></table></div>
+
+<h2 id="twin"><small>Physics core</small>The twin, in detail</h2>
+<p class="sub">Three heat-storing nodes connected by heat paths. The air responds in minutes, the stored product in hours, which is exactly why air-temperature alarms are noisy.</p>
+<pre class="code">Air        C_a dT_a/dt = UA (T_amb - T_a) + G_door d(t) (T_amb - T_a) - h_ae (T_a - T_e) - h_ap (T_a - T_p) + Q_defrost(t)
+Evaporator C_e dT_e/dt = h_ae (T_a - T_e) - eta P_comp(t)        P_comp from the current clamp; eta = effective cooling efficiency
+Product    C_p dT_p/dt = h_ap (T_a - T_p)                          T_p is the Virtual Vial
+
+Ice-lined refrigerator variant: add an ice-lining node with latent heat (holds near 0 C until melted)
+   -&gt; long holdover during power cuts, and a cold zone near the base that explains freezing risk
+
+Estimation: state x = [T_a, T_e, T_p], parameters theta = [UA, G_door, eta, h_ap, ...] as slow random walks
+            augmented-state Extended Kalman Filter, Huber-robust updates, capacities fixed from equipment-class priors
+            parameter updates pause while the Sensor Trust Gate is in "check" state</pre>
+
+<h3>Twin Vitals: parameters become a health check</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Vital</th><th>Computed as</th><th>A falling value suggests</th><th>Warning horizon</th></tr></thead>
+<tbody>
+<tr><td>Cooling Strength</td><td>Current eta divided by the unit's 7-day baseline</td><td>Refrigerant leak, compressor wear, condenser fouling, evaporator icing (resets after defrost)</td><td>Days to weeks</td></tr>
+<tr><td>Seal Health</td><td>Baseline UA divided by current UA, measured while the door is closed</td><td>Damaged gasket (found on 23% of devices in one Indian study)</td><td>Days</td></tr>
+<tr><td>Thermostat Margin</td><td>Lowest product temperature in 24 h minus 0 °C</td><td>Thermostat drift toward freezing; vaccine placed in a cold zone</td><td>Hours to days</td></tr>
+<tr><td>Holdover</td><td>Rollout with no cooling until +8 °C</td><td>Less time to act in the next power cut</td><td>Live</td></tr>
+<tr><td>Door Load</td><td>Infiltration term times minutes open per day</td><td>Too many or too long openings; door left ajar</td><td>Live and daily</td></tr>
+<tr><td>Duty cycle at ambient</td><td>Compressor on-fraction normalised for ambient temperature</td><td>Same faults as Cooling Strength; cross-check</td><td>Days</td></tr>
+</tbody></table></div>
+<div class="g2">
+<div class="card"><h4>Cause list (fixed, so explanations stay honest)</h4><p>Door left open · power loss · compressor or refrigerant · gasket leak · evaporator icing or missed defrost · thermostat drift (freeze) · high ambient · overload or warm restock · condenser fouling · sensor fault.</p></div>
+<div class="card"><h4>Repair verified</h4><p>When a technician marks a repair done, the twin compares the relevant Vital over the next 24 hours with the unit's baseline band (90 to 110%). In band: "Repair verified" and the ticket closes. Out of band: the ticket reopens with the evidence. This turns Nexleaf's lesson (broken fridges keep failing) into a measurable loop.</p></div>
+</div>
+
+<h2 id="agents"><small>Agent components</small>The bounded AI copilot</h2>
+<p class="sub">We use agents where the evidence says they work, and nowhere else. IBM's AssetOpsBench found the best maintenance agent finished 46.5% of tasks and agents claimed success they had not achieved in 23.8% of analysed runs. On real root-cause analysis, the best models solve 11 to 21% of cases. So detection and escalation are deterministic, and the LLM explains, translates and drafts.</p>
+<div class="tw"><table class="t">
+<thead><tr><th>Agent job</th><th>Trigger</th><th>Tools it calls</th><th>Output</th><th>Human check</th></tr></thead>
+<tbody>
+<tr><td>Cause Card narrator</td><td>Early warning or critical alert</td><td><code>get_alert_evidence</code>, <code>get_twin_vitals</code>, <code>get_forecast</code></td><td>Three-line explanation in Hindi, Marathi or English plus a voice script; cause chosen from the fixed list with the numbers behind it</td><td>None needed (informational), but numbers are machine-verified</td></tr>
+<tr><td>SOP Guide</td><td>Critical alert</td><td><code>get_sop(cause, step)</code>, <code>get_unit_snapshot</code></td><td>Step-by-step WhatsApp checklist (keep the door shut, move freeze-sensitive vials, label suspect stock, record the excursion), steps retrieved from the SOP text, not invented</td><td>Staff confirm each step; humans decide on any stock</td></tr>
+<tr><td>Maintenance ticket drafter</td><td>Slow-fault change point, repeated alerts</td><td><code>get_vitals_trend</code>, <code>get_alert_history</code></td><td>Ticket with diagnosis, evidence chart, checks to perform, priority</td><td>Technician or district officer approves</td></tr>
+<tr><td>District digest</td><td>Weekly</td><td><code>fleet_query</code>, <code>kpi_report</code></td><td>Uptime, alarms, response times, 30-day risk list, DS01.2 indicators, in the officer's language</td><td>Read by the officer</td></tr>
+<tr><td>Ask ThermoTwin</td><td>On demand</td><td>Read-only <code>fleet_query</code> and the tools above</td><td>Answers such as "which fridges in my block are likely to fail this month and why", every number from a tool</td><td>Read-only</td></tr>
+</tbody></table></div>
+<pre class="code">Tools (typed, read-only unless marked)
+  get_unit_snapshot(unit_id)                 -&gt; temps, state, tier, trust, clocks
+  get_forecast(unit_id)                      -&gt; P(breach 15/30/60), time_to_breach {p10,p50,p90}, P(WHO alarm 6h/12h)
+  get_alert_evidence(alert_id)               -&gt; door_min, mains, compressor_A, ambient, slope, top SHAP features, rollout
+  get_twin_vitals(unit_id, days)             -&gt; cooling_strength, seal_health, thermostat_margin, holdover_h, door_load
+  get_vitals_trend(unit_id, days)            -&gt; series and change points
+  get_alert_history(unit_id | block | district, days)
+  get_sop(cause, step)                       -&gt; text from the official SOP library
+  fleet_query(filter)                        -&gt; read-only SQL view over metrics
+  kpi_report(scope, period)                  -&gt; DS01.2 indicators
+  create_ticket_draft(payload)   [write, needs human approval]
+  send_whatsapp(draft_id)        [write, only after the Guardian has decided to alert]
+
+Guardrail pipeline for every LLM output
+  1 JSON schema check            2 every number must equal a tool value (template insertion, never free typing)
+  3 cause must be in the fixed list                 4 banned advice filter: never "use" or "discard" vaccine
+  5 any claimed action must match a tool return     6 log prompt, evidence, output, human action
+  fail any step -&gt; send the deterministic template instead</pre>
+<div class="g2">
+<div class="card"><h4>Why one orchestrator, not a swarm</h4><p>AssetOpsBench found interleaving tool calls was more reliable than planning first and delegating to many agents. So ThermoTwin has one orchestrator with typed tools. The "agents" above are jobs, not autonomous actors.</p></div>
+<div class="card"><h4>Models and languages</h4><p>Any capable API model with structured output (declare which), or a small open model on the gateway for offline use. Indian-language translation and speech through Bhashini or a cloud text-to-speech service. Only telemetry features leave the facility; no personal data goes to the LLM.</p></div>
+</div>
+<p class="sub"><b>How we evaluate the copilot:</b> 100% of numbers match tool outputs on 100 test alerts; 100% of causes from the allowed list; native speakers rate the Hindi and Marathi Cause Cards; staff rate usefulness on a 1 to 5 scale.</p>

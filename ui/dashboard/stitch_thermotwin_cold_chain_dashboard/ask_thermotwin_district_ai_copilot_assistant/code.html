@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container-low":"#eff4ff","on-primary-container":"#a3faef","inverse-on-surface":"#eaf1ff","error-container":"#ffdad6","surface-container-high":"#dce9ff","primary-container":"#0f766e","secondary-container":"#316bf3","inverse-primary":"#80d5cb","primary-fixed-dim":"#80d5cb","on-primary-fixed":"#00201d","surface-container-highest":"#d3e4fe","tertiary-fixed":"#ffdcc3","surface-variant":"#d3e4fe","on-secondary-fixed-variant":"#003ea8","surface":"#f8f9ff","inverse-surface":"#213145","on-secondary-container":"#fefcff","error":"#ba1a1a","secondary-fixed-dim":"#b4c5ff","on-error":"#ffffff","surface-tint":"#006a63","tertiary-fixed-dim":"#ffb77d","on-tertiary-fixed":"#2f1500","on-tertiary-fixed-variant":"#6e3900","on-surface-variant":"#3e4947","on-background":"#0b1c30","primary":"#005c55","background":"#f8f9ff","on-error-container":"#93000a","secondary":"#0051d5","on-primary-fixed-variant":"#00504a","on-secondary":"#ffffff","surface-container-lowest":"#ffffff","outline":"#6e7977","on-tertiary-container":"#ffe6d5","tertiary":"#7d4200","surface-dim":"#cbdbf5","on-tertiary":"#ffffff","surface-bright":"#f8f9ff","tertiary-container":"#a15600","outline-variant":"#bdc9c6","on-primary":"#ffffff","primary-fixed":"#9cf2e8","on-surface":"#0b1c30","surface-container":"#e5eeff","on-secondary-fixed":"#00174b","secondary-fixed":"#dbe1ff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-xl":"2rem","margin-mobile":"1rem","space-md":"1rem","space-xs":"0.25rem","margin":"1rem","space-lg":"1.5rem","gutter-mobile":"0.75rem","margin-desktop":"2rem","gutter-desktop":"1.5rem","gutter":"1rem","space-sm":"0.5rem"},"fontFamily":{"headline-lg":["Inter"],"body-md":["Inter"],"metric-display":["Inter"],"label-sm":["Inter"],"label-lg":["Inter"],"label-md":["Inter"],"headline-xl-mobile":["Inter"],"body-sm":["Inter"],"headline-md":["Inter"],"headline-xl":["Inter"],"metric-display-mobile":["Inter"],"body-lg":["Inter"]},"fontSize":{"headline-lg":["24px",{"lineHeight":"32px","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"metric-display":["36px",{"lineHeight":"44px","fontWeight":"700"}],"label-sm":["11px",{"lineHeight":"14px","fontWeight":"700"}],"label-lg":["14px",{"lineHeight":"20px","fontWeight":"600"}],"label-md":["12px",{"lineHeight":"16px","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","fontWeight":"700"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","fontWeight":"700"}],"metric-display-mobile":["30px",{"lineHeight":"36px","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="p-space-lg flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><img alt="ThermoTwin Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VA-NVhIuKb2QA2UQjg-INb6gN5lbPny63Wkuo9idRfFy7KRUb1bdO5_3ESSpUN6ax9PqowBuVeSqAMAvxcKKvFjvo3A3Z3e9cnCMOXIioHxKuiAoDRVJJG_CEyLvIzVqWtU9iP83KqDUQnDvjK7-H-9JxmdW3EINFYYeADtHEl3DM8KGTiVEY8yzONob7GaFH1HYrjgPo_3zSWsMX_pOkkGBTSjLlG09kt59ecQetyr2818elbAxbJPNB3"/><span class="font-headline-md text-headline-md text-on-surface tracking-tight">ThermoTwin</span></div><div class="inline-flex items-center px-space-sm py-space-xs rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">Cold-Chain Intelligence • District Surveillance</div></div><div class="px-space-lg pb-space-sm"><div class="px-space-sm py-space-xs rounded bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">Pune District • 186 fridges • 64 facilities</div></div><nav class="flex flex-col gap-space-xs px-space-md mt-space-sm" data-active-classes="bg-primary-container text-on-primary-container font-label-lg"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Overview</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="facilities" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">apartment</span><span class="font-label-lg text-label-lg">Facilities</span></div><span class="px-space-sm py-space-xs rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">64</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="alerts" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">notifications_active</span><span class="font-label-lg text-label-lg">Alerts</span></div><span class="px-space-sm py-space-xs rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">3</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="maintenance" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">build</span><span class="font-label-lg text-label-lg">Maintenance</span></div><span class="px-space-sm py-space-xs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">7</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="exposure-ledger" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">description</span><span class="font-label-lg text-label-lg">Exposure Ledger</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="benchmark" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="font-label-lg text-label-lg">Benchmark</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-label-lg text-label-lg">Settings</span></div></a></nav></div><div class="p-space-md bg-surface-container-low mx-space-md mb-space-md rounded-xl flex flex-col gap-space-xs"><div class="flex items-center gap-space-xs text-primary font-label-sm text-label-sm"><span class="material-symbols-outlined text-[16px]">shield</span><span>MAHARASHTRA HEALTH</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">District Cold-Chain Node #PUN-SURV-01</p></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface-container-lowest/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 w-full px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex flex-col justify-center"><div class="flex items-center gap-space-sm"><h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Pune District Overview</h1><span class="flex h-2.5 w-2.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span></span><span class="font-label-sm text-label-sm text-on-surface-variant">Logger Sync: 99.4% Online • Last sync 42s ago</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Live surveillance of 186 fridges across 64 Primary Health Centres (PHCs) &amp; Rural Hospitals (RHs)</p></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-space-xs rounded bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px] text-primary">info</span><span>Advisory layer active. Official WHO PQS alarms operate independently.</span></div><div class="flex items-center gap-space-xs"><button class="h-10 px-space-md rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container hover:text-on-surface transition-colors flex items-center gap-space-xs"><span class="material-symbols-outlined text-[18px]">download</span><span>Export District Report</span></button><button class="h-10 px-space-md rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors flex items-center gap-space-xs"><span class="material-symbols-outlined text-[18px]">chat</span><span>SMS Broadcast</span></button></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="text-right hidden sm:block"><div class="font-label-md text-label-md text-on-surface">Dr. Anita Deshmukh</div><div class="font-body-sm text-body-sm text-on-surface-variant">DIO Pune</div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="relative pt-20 w-full min-h-screen bg-background px-margin-desktop py-space-lg"><div class="flex flex-col w-full">
+<!-- District Surveillance Context Breadcrumb & Quick Filter Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md bg-surface-container-lowest p-space-sm rounded-xl shadow-sm">
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-space-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">home_health</span>
+<span>Pune District</span>
+</span>
+<span class="material-symbols-outlined text-[16px] text-outline-variant">chevron_right</span>
+<span class="text-on-surface font-label-md text-label-md">PHC Hadapsar (Block Haveli)</span>
+<span class="material-symbols-outlined text-[16px] text-outline-variant">chevron_right</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-sm text-label-sm">ILR-2 (Godrej GVR-99)</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm">
+<span class="inline-block w-2 h-2 rounded-full bg-primary"></span>
+<span>Node PUN-HAD-ILR02</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span>Snapshot: 09:15 IST</span>
+</div>
+</div>
+</div>
+<!-- Primary Workspace: Split Layout (Underlying Dashboard Canvas 65% + AI Copilot Panel ~480px) -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+<!-- LEFT / UNDERLYING DASHBOARD CANVAS (7 columns on desktop) -->
+<div class="xl:col-span-7 flex flex-col gap-space-md">
+<!-- Facility & Refrigerator Live Context Banner -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-wrap items-start justify-between gap-space-sm">
+<div>
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-md text-headline-md text-on-surface">PHC Hadapsar · Unit ILR-02</h2>
+<span class="px-space-sm py-space-xs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+<span>EARLY WARNING RESOLVED</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">WHO PQS PQS/E003/041 · 105L Net Storage · Installed March 2022</p>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="h-8 px-space-sm rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Parameters</span>
+</button>
+<button class="h-8 px-space-sm rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Event Log</span>
+</button>
+</div>
+</div>
+<!-- Real-time Quick Sensor Barometers -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Current Air Temp</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-lg text-headline-lg text-on-surface">4.1°C</span>
+<span class="material-symbols-outlined text-[18px] text-primary">trending_flat</span>
+</div>
+<span class="font-body-sm text-body-sm text-primary mt-1">Within 2.0°C – 8.0°C</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Est. Vaccine Core</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-lg text-headline-lg text-on-surface">4.6°C</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">simulated</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">Damping Factor: 0.68</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Holdover Capacity</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-lg text-headline-lg text-tertiary">68%</span>
+<span class="material-symbols-outlined text-[18px] text-tertiary">trending_up</span>
+</div>
+<span class="font-body-sm text-body-sm text-tertiary mt-1">Recharging active</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Grid / Relay</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary">Normal</span>
+<span class="material-symbols-outlined text-[18px] text-primary">power</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-1">234V MSEDCL active</span>
+</div>
+</div>
+</div>
+<!-- Digital Twin Schematic & Thermal Heatmap Simulation Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">view_in_ar</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Digital Twin Thermal Profile &amp; Envelope</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Physics Engine: Validated lumped-capacitance model</span>
+</div>
+<div class="relative w-full h-44 rounded-xl bg-surface-container-low overflow-hidden p-space-md flex flex-col justify-between">
+<!-- Background Schematic Blueprint Effect -->
+<div class="absolute inset-0 opacity-15 pointer-events-none flex items-center justify-center">
+<svg class="w-full h-full" fill="none" viewbox="0 0 400 160">
+<rect class="text-primary" height="120" rx="8" stroke="currentColor" stroke-dasharray="4 4" width="360" x="20" y="20"></rect>
+<line class="text-primary" stroke="currentColor" stroke-dasharray="2 2" x1="80" x2="80" y1="20" y2="140"></line>
+<line class="text-primary" stroke="currentColor" stroke-dasharray="2 2" x1="200" x2="200" y1="20" y2="140"></line>
+<line class="text-primary" stroke="currentColor" stroke-dasharray="2 2" x1="320" x2="320" y1="20" y2="140"></line>
+</svg>
+</div>
+<div class="relative z-10 flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Chamber Compartment Stratification</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span>Top: 4.8°C</span>
+<span>•</span>
+<span>Mid: 4.1°C</span>
+<span>•</span>
+<span>Base (Ice Zone): 2.9°C</span>
+</div>
+</div>
+<!-- Stratification Visual Bar -->
+<div class="relative z-10 w-full flex flex-col gap-1">
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Lower Threshold (2.0°C)</span>
+<span class="text-primary font-semibold">Optimal Range (4.0°C)</span>
+<span>Upper Threshold (8.0°C)</span>
+</div>
+<div class="h-4 w-full bg-surface-container rounded-full overflow-hidden flex relative">
+<!-- Safe band background -->
+<div class="absolute inset-y-0 left-[20%] right-[20%] bg-primary-fixed/40"></div>
+<!-- Current indicator marker -->
+<div class="absolute top-0 bottom-0 left-[41%] w-2 bg-primary rounded-full shadow"></div>
+<!-- Previous Peak marker last night -->
+<div class="absolute top-0 bottom-0 left-[74%] w-1.5 bg-tertiary-fixed-variant rounded-full opacity-80" title="Night peak 7.4°C"></div>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Sensor Base (Chamber)</span>
+<span class="text-tertiary font-label-sm text-label-sm">Night Excursion Peak: 7.4°C at 01:45 IST</span>
+<span>Top Tray</span>
+</div>
+</div>
+<div class="relative z-10 flex items-center justify-between pt-1">
+<span class="font-body-sm text-body-sm text-on-surface-variant">WHO Target Envelope: 2.0°C – 8.0°C maintained across 98.4% of 30-day surveillance period.</span>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Telemetric Stream Active</span>
+</div>
+</div>
+</div>
+<!-- Facility Cold-Chain Fleet Status in Same Sub-District -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary">grid_view</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Haveli Sub-District Cluster Status</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">8 Refrigerators Monitored</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<!-- Neighbor 1 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">PHC Wagholi · ILR-1</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Vestfrost VLS 024 SDD</span>
+</div>
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-primary">3.9°C</span>
+<span class="block font-label-sm text-label-sm text-primary">Stable</span>
+</div>
+</div>
+<!-- Neighbor 2 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">PHC Uruli Kanchan · ILR-1</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Godrej GVR-75</span>
+</div>
+<div class="text-right">
+<span class="font-label-lg text-label-lg text-primary">4.4°C</span>
+<span class="block font-label-sm text-label-sm text-primary">Stable</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT / ASK THERMOTWIN AI COPILOT PANEL (~480px width: 5 desktop cols) -->
+<div class="xl:col-span-5 flex flex-col bg-surface-container-lowest rounded-xl shadow-md overflow-hidden relative">
+<!-- Panel Header -->
+<div class="p-space-md bg-surface-container-lowest flex items-center justify-between shadow-[0_1px_4px_rgba(0,0,0,0.05)] z-10">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">neurology</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-md text-headline-md text-on-surface">Ask ThermoTwin</h2>
+<span class="px-space-xs py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm uppercase font-semibold">AI Copilot</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cold-Chain Intelligence Assistant · District Node</span>
+</div>
+</div>
+<!-- Copilot Actions (Minimize, Clear, Close) -->
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<button class="p-1 rounded-lg hover:bg-surface-container-low transition-colors" title="Clear thread">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+</button>
+<button class="p-1 rounded-lg hover:bg-surface-container-low transition-colors" title="Expand panel">
+<span class="material-symbols-outlined text-[18px]">open_in_full</span>
+</button>
+<button class="p-1 rounded-lg hover:bg-surface-container-low transition-colors" title="Minimize">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Chat Conversation Stream -->
+<div class="p-space-md flex flex-col gap-space-md max-h-[calc(100vh-210px)] overflow-y-auto">
+<!-- 1. USER MESSAGE BUBBLE -->
+<div class="flex flex-col items-end gap-1 self-end max-w-[92%]">
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant mr-1">
+<span class="font-label-md text-label-md text-on-surface">Dr. Anita Deshmukh</span>
+<span>(DIO Pune)</span>
+<span>•</span>
+<span>Today, 09:14 AM</span>
+</div>
+<div class="p-space-md rounded-2xl rounded-tr-none bg-primary text-on-primary font-body-md text-body-md shadow-sm">
+            Why did ILR-2 at PHC Hadapsar alarm last night?
+          </div>
+</div>
+<!-- 2. ASSISTANT RESPONSE CARD (Structured Clinical AI UI) -->
+<div class="flex flex-col gap-space-sm self-start w-full">
+<!-- Assistant Meta Header -->
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">auto_awesome</span>
+<span class="font-label-md text-label-md text-primary font-semibold">Physics-informed Diagnostic Synthesis</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Confidence 94%</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">09:14 AM</span>
+</div>
+<!-- Highlighted Summary Callout Box -->
+<div class="p-space-md rounded-xl bg-surface-container-low text-on-surface shadow-sm flex items-start gap-space-sm">
+<div class="mt-0.5 text-primary">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-primary uppercase font-bold tracking-wider">Incident Summary</span>
+<p class="font-body-md text-body-md text-on-surface leading-snug">
+                ILR-2 triggered an <span class="font-semibold text-tertiary">Early Warning at 01:24 IST</span> (peaking at <span class="font-semibold text-on-surface">7.4°C</span>) due to prolonged grid failure coinciding with delayed inverter relay switchover and degraded ice-lining holdover.
+              </p>
+</div>
+</div>
+<!-- Mini Interactive Telemetry Incident Chart -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-wrap items-center justify-between gap-1">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Incident Window: 22:00 Yesterday → 04:00 Today</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ILR-2 · PHC Hadapsar · Telemetry Sampling 60s</span>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">6-Hour Window</span>
+</div>
+<!-- SVG Multi-line Graph Component -->
+<div class="w-full bg-surface-container-low rounded-lg p-space-sm overflow-hidden flex flex-col gap-2">
+<svg class="w-full h-48" fill="none" preserveaspectratio="none" viewbox="0 0 440 180">
+<defs>
+<!-- Safe Envelope Band (2.0°C to 8.0°C) -->
+<lineargradient id="safeZoneGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0F766E" stop-opacity="0.12"></stop>
+<stop offset="100%" stop-color="#0F766E" stop-opacity="0.04"></stop>
+</lineargradient>
+<!-- Outage Shading Pattern -->
+<pattern height="8" id="outageHatch" patterntransform="rotate(45 0 0)" patternunits="userSpaceOnUse" width="8">
+<line stroke="#7D4200" stroke-opacity="0.15" stroke-width="1.5" x1="0" x2="0" y1="0" y2="8"></line>
+</pattern>
+<lineargradient id="vaccineShade" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0051D5" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#0051D5" stop-opacity="0.02"></stop>
+</lineargradient>
+</defs>
+<!-- Safe Band (2.0°C - 8.0°C Envelope) | 8°C = Y:32, 2°C = Y:145 -->
+<rect fill="url(#safeZoneGrad)" height="113" rx="4" width="380" x="40" y="32"></rect>
+<!-- 8.0°C Upper Excursion Threshold Line -->
+<line stroke="#BA1A1A" stroke-dasharray="3 3" stroke-width="1.5" x1="40" x2="420" y1="32" y2="32"></line>
+<text fill="#BA1A1A" font-family="Inter" font-size="9" font-weight="600" x="44" y="26">8.0°C Upper Threshold</text>
+<!-- 2.0°C Lower Freezing Threshold Line -->
+<line opacity="0.6" stroke="#0051D5" stroke-dasharray="2 2" stroke-width="1" x1="40" x2="420" y1="145" y2="145"></line>
+<text fill="#0051D5" font-family="Inter" font-size="9" x="44" y="157">2.0°C Lower Threshold</text>
+<!-- Grid Outage Shaded Band (23:40 to 02:15) | X: 145 to 310 -->
+<rect fill="url(#outageHatch)" height="145" rx="2" width="165" x="145" y="15"></rect>
+<rect fill="#FFDCC3" height="16" rx="2" width="165" x="145" y="15"></rect>
+<text fill="#7D4200" font-family="Inter" font-size="9" font-weight="700" x="150" y="27">MSEDCL Grid Cut: 23:40 – 02:15 (2h 35m)</text>
+<!-- Time Grid Lines & Labels -->
+<!-- 22:00 -->
+<line stroke="#CBD5E1" stroke-opacity="0.5" stroke-width="1" x1="40" x2="40" y1="16" y2="160"></line>
+<text fill="#64748B" font-family="Inter" font-size="9" x="32" y="172">22:00</text>
+<!-- 00:00 -->
+<line stroke="#CBD5E1" stroke-opacity="0.5" stroke-width="1" x1="166" x2="166" y1="16" y2="160"></line>
+<text fill="#64748B" font-family="Inter" font-size="9" x="156" y="172">00:00</text>
+<!-- 02:00 -->
+<line stroke="#CBD5E1" stroke-opacity="0.5" stroke-width="1" x1="292" x2="292" y1="16" y2="160"></line>
+<text fill="#64748B" font-family="Inter" font-size="9" x="282" y="172">02:00</text>
+<!-- 04:00 -->
+<line stroke="#CBD5E1" stroke-opacity="0.5" stroke-width="1" x1="418" x2="418" y1="16" y2="160"></line>
+<text fill="#64748B" font-family="Inter" font-size="9" x="405" y="172">04:00</text>
+<!-- Estimated Vaccine Core Temp Area & Curve (dashed blue line) -->
+<!-- Peak at 5.6°C (approx Y: 78) -->
+<path d="M 40 115 
+                         C 120 115, 145 110, 180 102 
+                         C 220 92, 260 78, 290 82 
+                         C 330 92, 380 105, 420 110 
+                         L 420 145 L 40 145 Z" fill="url(#vaccineShade)"></path>
+<path d="M 40 115 
+                         C 120 115, 145 110, 180 102 
+                         C 220 92, 260 78, 290 82 
+                         C 330 92, 380 105, 420 110" fill="none" stroke="#2563EB" stroke-dasharray="4 2" stroke-width="2"></path>
+<!-- Measured Air Temp Curve (solid dark teal/amber climbing to 7.4°C at Y:44) -->
+<path d="M 40 110 
+                         L 145 110 
+                         C 170 95, 200 68, 245 52 
+                         C 270 44, 285 45, 310 65 
+                         C 335 105, 380 108, 420 108" fill="none" stroke="#0F766E" stroke-width="2.5"></path>
+<!-- Early Warning Trigger Marker @ 01:24 (X: 254, Y: 56) -->
+<circle cx="254" cy="56" fill="#DC2626" r="4.5" stroke="#FFFFFF" stroke-width="1.5"></circle>
+<line stroke="#DC2626" stroke-dasharray="1 2" stroke-width="1" x1="254" x2="254" y1="56" y2="92"></line>
+<!-- Callout Badge for Marker -->
+<g transform="translate(190, 88)">
+<rect fill="#FEE2E2" height="20" rx="4" stroke="#DC2626" stroke-width="0.5" width="138"></rect>
+<text fill="#991B1B" font-family="Inter" font-size="8.5" font-weight="700" x="6" y="14">⚠ 01:24 Early Warning: +0.07°C/min</text>
+</g>
+<!-- Peak 7.4°C indicator at 01:45 (X: 275, Y: 44) -->
+<circle cx="275" cy="44" fill="#7D4200" r="3.5"></circle>
+<text fill="#7D4200" font-family="Inter" font-size="8.5" font-weight="700" x="282" y="42">Peak 7.4°C</text>
+</svg>
+<!-- Chart Legend Pills -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-1 text-on-surface font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-primary rounded-full"></span>
+<span>Measured Air Temp</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-secondary rounded-full border-t border-dashed"></span>
+<span>Est. Vaccine Core Temp</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 bg-primary-fixed/50 rounded"></span>
+<span>Safe Band (2.0°C–8.0°C)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 bg-tertiary-fixed rounded"></span>
+<span>Grid Outage Window</span>
+</div>
+</div>
+</div>
+</div>
+<!-- "CAUSE CARD" (Structured Root Cause & Evidence Analysis) -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<!-- Cause Card Header -->
+<div class="flex items-center gap-space-xs pb-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">build_circle</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Primary Root Cause: Auxiliary Power Transfer Latency + Reduced Thermal Buffer</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">4 concurring telemetric and physical conditions identified</span>
+</div>
+</div>
+<!-- Structured Evidence Bullets -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<!-- Evidence 1: Grid & Inverter -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm">
+<div class="text-[18px] mt-0.5">⚡</div>
+<div class="flex flex-col gap-0.5 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Grid Loss &amp; Inverter Lag</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm">48m Delay</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    MSEDCL 11kV feeder tripped at <span class="font-semibold text-on-surface">23:40 IST</span>. PHC backup 1kVA inverter experienced a 48-minute transfer delay due to a blown float fuse; manual changeover switch was engaged by night ward staff at <span class="font-semibold text-on-surface">00:28 IST</span>.
+                  </p>
+</div>
+</div>
+<!-- Evidence 2: Holdover Depletion -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm">
+<div class="text-[18px] mt-0.5">❄️</div>
+<div class="flex flex-col gap-0.5 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Holdover Depletion from Routine Immunization</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm">~60% Charge</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Passive ice-lining charge was reduced following Wednesday Routine Immunization (RI) session (<span class="font-semibold text-on-surface">14 clinic door openings</span> logged between 11:00–16:00 yesterday), lowering initial holdover endurance by ~40%.
+                  </p>
+</div>
+</div>
+<!-- Evidence 3: Thermal Incursion Rate -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm">
+<div class="text-[18px] mt-0.5">🌡️</div>
+<div class="flex flex-col gap-0.5 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Thermal Incursion &amp; Warming Velocity</span>
+<span class="px-space-xs py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">+0.88°C/hr</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Chamber air warmed at <span class="font-semibold text-on-surface">+0.88°C/hr</span> (nominal baseline is 0.52°C/hr), reaching <span class="font-semibold text-tertiary">7.4°C</span> at 01:45 IST. Simulated vaccine core temperature was buffered and remained protected under <span class="font-semibold text-primary">5.6°C</span>.
+                  </p>
+</div>
+</div>
+<!-- Evidence 4: Safe Resolution -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm">
+<div class="text-[18px] mt-0.5">🛡️</div>
+<div class="flex flex-col gap-0.5 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Safe Telemetric Resolution</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary font-label-sm text-label-sm">No Breach &gt;8.0°C</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Main grid power restored at <span class="font-semibold text-on-surface">02:15 IST</span>; compressor operated at 100% duty cycle, successfully stabilizing the chamber air to <span class="font-semibold text-on-surface">4.0°C by 03:25 IST</span>. No freeze risk (&lt;2.0°C) or upper breach was sustained.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sources & Verification Footnote (Clinical Trust) -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary mt-0.5">verified_user</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Verified Data Sources:</span>
+<p class="font-body-sm text-body-sm leading-normal">
+                Telemetry Stream <span class="underline decoration-dotted cursor-pointer text-primary">PUN-HAD-ILR02</span> (22:10–03:40 IST) • Pune MSEDCL Feeder Event Log <span class="underline decoration-dotted cursor-pointer text-primary">#PUN-G-884</span> • Maintenance Record <span class="underline decoration-dotted cursor-pointer text-primary">#418</span> (Inverter Float Fuse Inspection, 14 Aug 2024).
+              </p>
+</div>
+</div>
+<!-- Suggested Follow-up Action Chips -->
+<div class="flex flex-col gap-1 pt-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Suggested Operational Actions</span>
+<div class="flex flex-wrap gap-space-xs">
+<button class="h-9 px-space-sm rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">compare_arrows</span>
+<span>Show similar fridges</span>
+</button>
+<button class="h-9 px-space-sm rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">assignment_add</span>
+<span>Draft service request</span>
+</button>
+<button class="h-9 px-space-sm rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">translate</span>
+<span>Explain in Hindi (हिंदी में सारांश)</span>
+</button>
+<button class="h-9 px-space-sm rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">picture_as_pdf</span>
+<span>Download incident PDF</span>
+</button>
+</div>
+</div>
+<!-- Mandatory Verbatim Assistant Footer Disclaimer -->
+<div class="py-1 px-space-xs flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant opacity-80">
+<span class="material-symbols-outlined text-[14px]">info</span>
+<span>Answers are generated from ThermoTwin data; check before acting.</span>
+</div>
+</div>
+</div>
+<!-- Copilot Input Controls & Preset Suggestions -->
+<div class="p-space-md bg-surface-container-lowest shadow-[0_-1px_4px_rgba(0,0,0,0.05)] flex flex-col gap-space-xs">
+<!-- Quick Prompt Presets -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="whitespace-nowrap text-on-surface-variant">Presets:</span>
+<button class="px-space-sm py-1 rounded-full bg-surface-container-low hover:bg-surface-container whitespace-nowrap text-on-surface transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">send_and_archive</span>
+<span>Draft SOP broadcast</span>
+</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container-low hover:bg-surface-container whitespace-nowrap text-on-surface transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">summarize</span>
+<span>Summarize night alerts</span>
+</button>
+<button class="px-space-sm py-1 rounded-full bg-surface-container-low hover:bg-surface-container whitespace-nowrap text-on-surface transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">electrical_services</span>
+<span>Feeder trip history</span>
+</button>
+</div>
+<!-- Chat Input Bar -->
+<div class="relative flex items-center gap-space-xs">
+<div class="relative flex-1">
+<input class="w-full h-12 pl-space-md pr-10 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline text-body-md focus:outline-none focus:ring-2 focus:ring-primary/40 transition-shadow" placeholder="Ask about telemetry anomalies, facility trends, or SOPs..." type="text" value=""/>
+<button class="absolute right-2 top-2.5 p-1 text-on-surface-variant hover:text-on-surface transition-colors" title="Voice dictation">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+</div>
+<button class="h-12 w-12 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Attach file or telemetry record">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<button class="h-12 px-space-md rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors flex items-center justify-center gap-1 shadow-sm">
+<span>Send</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Lightweight client-side micro-interactions for the Copilot side-panel
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputField = document.querySelector('input[type="text"]');
+      const actionChips = document.querySelectorAll('button');
+
+      actionChips.forEach(chip => {
+        chip.addEventListener('click', (e) => {
+          const text = chip.innerText.trim();
+          if (text.includes("Explain in Hindi")) {
+            if (inputField) {
+              inputField.value = "इस घटना का सारांश हिंदी में समझाएं (Inverter lag and holdover status)";
+              inputField.focus();
+            }
+          } else if (text.includes("Draft service request")) {
+            if (inputField) {
+              inputField.value = "Create draft work order for Hadapsar PHC 1kVA Inverter relay fuse replacement";
+              inputField.focus();
+            }
+          } else if (text.includes("Show similar fridges")) {
+            if (inputField) {
+              inputField.value = "List all Godrej GVR units in Pune district with holdover <70% after RI sessions";
+              inputField.focus();
+            }
+          }
+        });
+      });
+    });
+  </script>
+</div></main></div></body></html>

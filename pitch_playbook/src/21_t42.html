@@ -1,0 +1,269 @@
+<article class="view" id="v-t42" data-track="t4" data-title="LocusNet">
+<header class="phead">
+  <div class="kicker"><span class="chip t4">Track 4 · UST</span><span class="chip">T4-2</span></div>
+  <h2>LocusNet</h2>
+  <p class="sub">Locate a moving target from a few noisy beacons, stay accurate when walls bend the signal, say how sure it is, and tell the hospital where to put the next beacon.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●●○○</b></div><div>Demo impact<b>●●●●●</b></div><div>Provable<b>●●●●●</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Some fixed devices at known positions (beacons, also called anchors) measure how far away a moving tag is, using ultra-wideband radio time of flight or Bluetooth signal strength. From a few distances you compute the tag's X and Y position. In a perfect room with many beacons this is school geometry. In a real hospital the readings are noisy, some beacons drop out for a while, and walls make the signal arrive late (non-line-of-sight, NLOS), so the measured distance is longer than the true one. The task: estimate position anyway, with fewer beacons than ideal, and report how confident you are.</p>
+<div class="co warn"><span class="lbl">PDF error to be aware of</span><p>The "Suggested Technology" line under this problem (time-series forecasting, anomaly detection, classification, explainable AI) is a copy from the cold-storage problem. For this problem think robust estimation, filtering and sensor fusion. Say so on your slide so the judges see you noticed.</p></div>
+
+<h4>What the PDF requires</h4>
+<ul>
+<li>Estimate target X and Y from range and/or signal-strength measurements, using a reduced number of reference points.</li>
+<li>Handle noise, missing reference points and intermittent loss; identify or reduce the influence of probable NLOS or biased measurements.</li>
+<li>Use motion history or temporal filtering where useful.</li>
+<li>Report position <b>with confidence or uncertainty</b>.</li>
+<li><b>Compare accuracy under different infrastructure densities and noise conditions.</b></li>
+<li>Dataset suggestion: a virtual room, hospital floor or warehouse with known reference coordinates and simulated trajectories; ideal distance and RSSI plus injected noise, packet loss, NLOS bias and missing anchors; ground-truth coordinates. Hidden test with different paths, noise levels and obstruction patterns.</li>
+<li>Goal: lowest practical error on the unseen test set.</li>
+</ul>
+
+<h4>Why the problem is harder than it looks</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Difficulty</th><th>What happens</th><th>Why a basic solver fails</th></tr></thead>
+<tbody>
+<tr><td>Too few anchors</td><td>Two ranges give two possible positions (mirror image). One range gives a circle.</td><td>Least squares has no unique answer; it picks something arbitrary with no warning.</td></tr>
+<tr><td>NLOS bias</td><td>Range is always too long, by 0.5 to 3 m behind walls. Not zero-mean noise.</td><td>Least squares treats it as noise and drags the position toward the wrong side.</td></tr>
+<tr><td>Missing data</td><td>Packets lost in bursts; an anchor can vanish for seconds.</td><td>Fixed-input neural nets break when the input shape changes.</td></tr>
+<tr><td>Different layouts in the hidden test</td><td>Different anchor count and wall patterns.</td><td>A model trained on one layout memorises it.</td></tr>
+<tr><td>No uncertainty</td><td>The estimate is a single point.</td><td>The user cannot tell a good fix from a guess.</td></tr>
+</tbody></table></div>
+
+<h4>Terms</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Anchor</td><td>Fixed beacon with known coordinates.</td></tr>
+<tr><td>Trilateration</td><td>Position from distances to three or more anchors.</td></tr>
+<tr><td>RSSI</td><td>Received signal strength. Path-loss model: RSSI(d) = RSSI0 minus 10 n log10(d/d0) plus random shadowing. Noisy and wall-sensitive.</td></tr>
+<tr><td>GDOP</td><td>Geometric dilution of precision. A measure of how anchor layout amplifies range errors. Anchors in a line are bad; spread around the target is good.</td></tr>
+<tr><td>Cramér-Rao bound (CRLB)</td><td>A mathematical floor on the error any unbiased estimator can reach for a given geometry and noise. A useful yardstick.</td></tr>
+</tbody></table></div>
+
+<h3>Our concept: LocusNet</h3>
+<div class="g3">
+<div class="card"><h4>1. Anchor-agnostic learning</h4><p>The model reads a set of anchor tokens (position, range, signal strength, valid flag), so it accepts any number or placement of anchors. Random anchor dropout during training means the hidden test's different layout is just another draw.</p></div>
+<div class="card"><h4>2. Learned trust inside a classical filter</h4><p>A small model scores each anchor's chance of being NLOS and its bias, and those scores set the noise terms of a Kalman or particle filter with a wall-aware map. We keep the guarantees of filtering and add what learning is good at.</p></div>
+<div class="card"><h4>3. Honest uncertainty and a placement advisor</h4><p>Every fix comes with a calibrated 90% ellipse. The same maths tells a facility where a fourth or fifth beacon helps most, which is the PDF's "reduce installation complexity" in one feature.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>LocusNet</th></tr></thead>
+<tbody>
+<tr><td>Least-squares trilateration</td><td>Fails with under three anchors or any NLOS bias.</td><td>Robust loss, anchor-subset consensus, motion prior, map.</td></tr>
+<tr><td>Plain kNN fingerprinting</td><td>Needs an on-site survey; breaks when anchors change.</td><td>Geometry-based; no survey.</td></tr>
+<tr><td>End-to-end MLP</td><td>Fixed input size; overfits layouts; no uncertainty.</td><td>Set-based model with variance output.</td></tr>
+<tr><td>Single number output</td><td>User cannot judge reliability.</td><td>Calibrated ellipse and zone fallback.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>The best live demo in the set: a moving dot on a hospital floor plan, anchors you can switch off, an ellipse that grows honestly, and classical trilateration failing next to it. The score is a number on a hidden set, so it is objectively comparable, and the PDF's "compare infrastructure densities" becomes our headline chart.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>Teams with signal-processing depth will submit strong filters. Our edge must be the combination (anchor-agnostic, calibrated, advisor) and the demo. Sim-to-real gap will be questioned; answer with domain randomisation and a public-dataset sanity check.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Simulate</b><span>Floor plan with walls, anchors, trajectories; ranges, RSSI, NLOS, packet loss.</span></div>
+<div class="st"><b>Describe each anchor</b><span>Features: range, RSSI, range implied by RSSI, leave-one-out residual, jumps, validity.</span></div>
+<div class="st"><b>Trust model</b><span>Probability of NLOS and expected bias per anchor.</span></div>
+<div class="st"><b>Estimate</b><span>Robust fix by consensus of anchor subsets; Kalman or particle filter with walls.</span></div>
+<div class="st"><b>Learn</b><span>Set-transformer with anchor dropout predicts a correction and covariance.</span></div>
+<div class="st"><b>Calibrate</b><span>Conformal scaling so the 90% ellipse holds 90%.</span></div>
+<div class="st"><b>Serve and advise</b><span>Locate API, live map, degradation heat-map, placement advisor.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>sim/</td><td>Floor plans (wall segments), trajectories, ranging and RSSI models, noise, NLOS, dropout, hidden-split generator</td><td>NumPy, Shapely for wall intersections</td></tr>
+<tr><td>baselines/</td><td>LS, WLS, EKF, particle filter</td><td>NumPy, SciPy</td></tr>
+<tr><td>trust/</td><td>Per-anchor NLOS and bias estimator</td><td>LightGBM or small MLP</td></tr>
+<tr><td>fusion/</td><td>Robust estimator, RANSAC subsets, EKF and particle filter with map constraint</td><td>NumPy, Numba optional</td></tr>
+<tr><td>net/</td><td>Set-transformer with heteroscedastic output, GRU smoother</td><td>PyTorch</td></tr>
+<tr><td>calib/</td><td>Conformal calibration, coverage tests</td><td>NumPy</td></tr>
+<tr><td>advisor/</td><td>CRLB maps, greedy placement, what-if</td><td>NumPy</td></tr>
+<tr><td>api/ and ui/</td><td>Locate endpoint, WebSocket stream, canvas map, experiment pages</td><td>FastAPI, React with canvas or SVG</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Simulator</h4>
+<ul>
+<li><b>Floor plan.</b> A polygon with wall segments (rooms and corridors of a ward, around 30 m by 20 m). A walkable area is stored as polygons so we can constrain particles and classify zones.</li>
+<li><b>Trajectories.</b> Pick random waypoints, route along corridors (shortest path on a walkable graph), speed 0.5 to 1.5 m/s with pauses and turns, sampled 5 to 10 Hz.</li>
+<li><b>Ranges.</b> r_i = distance(target, anchor_i) + noise + NLOS bias. Noise standard deviation grows slowly with distance. NLOS is decided geometrically (the segment target to anchor crosses a wall) plus random blockage bursts for people and furniture. Bias is positive, exponential or log-normal, larger with more walls crossed.</li>
+<li><b>RSSI.</b> Log-distance path loss with per-wall attenuation (a few dB each) and shadow fading, quantised like a real radio.</li>
+<li><b>Loss.</b> Bursty packet loss (two-state Gilbert-Elliott chain) plus whole-anchor outages for several seconds.</li>
+<li><b>Output table.</b> trajectory id, time, ground-truth x and y, one row per anchor with anchor id and coordinates, range, RSSI, valid flag. Keep the LOS flag in a separate file for analysis only, never as a model input.</li>
+<li><b>Hidden split.</b> Different floor layouts, anchor counts and placements, noise levels, NLOS rates and trajectory styles.</li>
+</ul>
+
+<h4>2. Per-anchor features</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Range r_i, RSSI_i, valid</td><td>Raw measurements.</td></tr>
+<tr><td>Range implied by RSSI</td><td>Invert the path-loss model; a large gap between this and r_i is a strong NLOS cue.</td></tr>
+<tr><td>Leave-one-out residual</td><td>Solve for position without anchor i, then compare its predicted distance to r_i. Needs at least 3 other anchors, otherwise use the motion prior.</td></tr>
+<tr><td>Temporal jump</td><td>Change of r_i since the previous step compared with the largest feasible speed. A sudden jump signals blockage.</td></tr>
+<tr><td>Rolling variance of r_i and RSSI_i</td><td>NLOS and multipath increase variance.</td></tr>
+<tr><td>Geometry context</td><td>Number of valid anchors, GDOP of the current subset, anchor bearing spread.</td></tr>
+</tbody></table></div>
+
+<h4>3. Robust estimation</h4>
+<ul>
+<li><b>Weighted least squares.</b> Minimise the sum over anchors of w_i (r_i minus ||x minus a_i||)². Weights from the trust model: w_i = (1 minus P_nlos) divided by sigma_i². Gauss-Newton from a coarse grid initialisation to avoid local minima.</li>
+<li><b>Robust loss.</b> Replace the square with a Huber or Cauchy loss so one bad range cannot dominate.</li>
+<li><b>Subset consensus (RANSAC style).</b> With K anchors, solve on every subset of size 3 (K is small, so enumeration is cheap), count anchors consistent within a gate, keep the best consensus, refit on its inliers.</li>
+<li><b>Two anchors left.</b> Two candidate points. Use the previous position, velocity and the walkable-area map to pick one, and inflate the covariance.</li>
+<li><b>One anchor left.</b> Dead reckoning from the motion model; the ellipse grows with time. State this honestly in the UI.</li>
+</ul>
+<h4>4. Tracking</h4>
+<pre class="code">State x = [px, py, vx, vy]       Motion: constant velocity + process noise Q
+Measurement i: z_i = ||p - a_i|| + b_i + n_i
+   n_i ~ N(0, sigma_i^2 * (1 + k * P_nlos_i / (1 - P_nlos_i + eps)))      learned trust inflates variance
+   b_i  = learned bias estimate (subtracted when P_nlos is high)
+Gate: accept measurement i only if Mahalanobis innovation^2 &lt; chi2(1, 0.99)
+Particle filter variant: 1000 particles; weight = product of range likelihoods; zero weight if a particle crosses a wall
+Output: mean (x, y) and covariance Sigma (from EKF or particle spread)</pre>
+<p>The particle filter is the answer to the two-anchor mirror ambiguity: both candidates survive as clusters until motion and walls eliminate one.</p>
+
+<h4>5. The learned model</h4>
+<ul>
+<li><b>Input.</b> A set of anchor tokens [ax, ay, r, rssi, valid, implied range, residual] plus the previous estimate. Anchors are unordered, so use attention without positional encodings.</li>
+<li><b>Output.</b> A position correction relative to the robust estimate (residual learning is more stable than predicting from scratch) and a covariance through a heteroscedastic Gaussian likelihood (predict log standard deviations and a correlation).</li>
+<li><b>Training tricks.</b> Random anchor dropout (0 to 60%), random NLOS rate, noise scale, wall layouts and anchor placements for domain randomisation; curriculum from easy to hard.</li>
+<li><b>Temporal part.</b> A small GRU over successive corrected estimates as a smoother.</li>
+<li><b>Comparison.</b> Report three systems: classical only, hybrid (learned trust plus filter), end-to-end network. Pick the best on validation; show all in the ablation.</li>
+</ul>
+<h4>6. Calibrated uncertainty</h4>
+<p>Compute the Mahalanobis distance of the true error under each predicted covariance on a calibration set. Take the 90th percentile of those scores as a scale factor, so the final ellipse is the predicted ellipse multiplied by that factor. On the test set, report coverage per condition (target 90%). When trace(Sigma) exceeds a threshold, return a <b>zone</b> ("probably Ward B, 78%") by integrating the posterior over room polygons instead of a misleading point.</p>
+<h4>7. Anchor Placement Advisor</h4>
+<pre class="code">Fisher information at position x:   J(x) = sum_i  (1 / sigma_i(x)^2) * u_i u_i^T ,   u_i = (x - a_i) / ||x - a_i||
+Error floor:  CRLB(x) = sqrt( trace( J(x)^-1 ) )
+sigma_i(x) is inflated where the line to anchor i crosses walls (NLOS-aware)
+Objective: choose K anchor positions from a candidate grid to minimise mean or P90 of CRLB over walkable cells
+Method: greedy forward selection (add the anchor that lowers the objective most), then local swap refinement
+Report: predicted error heat-map, recommended positions, minimum K for P90 under 1.5 m</pre>
+<p>Validate the advisor with the simulator: placements it recommends must achieve lower measured error than random or corner placements.</p>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Position estimate from range or RSSI</td><td><span class="tier core">Core</span></td><td>Robust WLS plus filter.</td><td>The task.</td><td>M</td></tr>
+<tr><td>Handles missing and noisy anchors</td><td><span class="tier core">Core</span></td><td>Valid masks, gating, subset consensus.</td><td>Direct requirement.</td><td>M</td></tr>
+<tr><td>NLOS detection</td><td><span class="tier core">Core</span></td><td>Per-anchor probability and bias.</td><td>Direct requirement.</td><td>M</td></tr>
+<tr><td>Uncertainty ellipse</td><td><span class="tier core">Core</span></td><td>Covariance output with conformal scaling.</td><td>Direct requirement.</td><td>M</td></tr>
+<tr><td>Degradation heat-map</td><td><span class="tier core">Core</span></td><td>Error versus anchors, NLOS rate and noise.</td><td>The PDF's required comparison.</td><td>S</td></tr>
+<tr><td>Anchor-agnostic network</td><td><span class="tier wow">Wow</span></td><td>Set-transformer with dropout.</td><td>One model, any layout.</td><td>L</td></tr>
+<tr><td>Kill-an-anchor live demo</td><td><span class="tier wow">Wow</span></td><td>Click to disable; compare with trilateration.</td><td>Judges remember seeing it adapt.</td><td>M</td></tr>
+<tr><td>Anchor Placement Advisor</td><td><span class="tier wow">Wow</span></td><td>CRLB maps and greedy placement.</td><td>Turns accuracy into cheaper installs.</td><td>M</td></tr>
+<tr><td>Distance to theoretical floor</td><td><span class="tier wow">Wow</span></td><td>Plot error against CRLB.</td><td>Shows how close to optimal.</td><td>S</td></tr>
+<tr><td>Map-aware particle filter</td><td><span class="tier wow">Wow</span></td><td>Walls zero out impossible particles.</td><td>Resolves ambiguity; visually clear.</td><td>M</td></tr>
+<tr><td>Last-known-zone fallback</td><td><span class="tier wow">Wow</span></td><td>Posterior mass per room.</td><td>Honest output when unsure.</td><td>S</td></tr>
+<tr><td>Calibration report</td><td><span class="tier stretch">Stretch</span></td><td>Coverage by condition.</td><td>Trust story.</td><td>S</td></tr>
+<tr><td>Public-dataset sanity check</td><td><span class="tier stretch">Stretch</span></td><td>Run baseline on one open UWB or BLE set (check licence).</td><td>Answers the sim-to-real question.</td><td>M</td></tr>
+<tr><td>Multi-target tracking</td><td><span class="tier stretch">Stretch</span></td><td>Independent filters per tag id.</td><td>Hospital asset view.</td><td>S</td></tr>
+<tr><td>3D floor extension</td><td><span class="tier stretch">Stretch</span></td><td>Add z with floor classification.</td><td>Scalability slide.</td><td>L</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Live map.</b> Floor plan; anchors as pins with range circles; ground-truth path in demo mode; our estimate with trail and 90% ellipse; classical estimate in a second colour. Per-anchor chips showing P(NLOS) and whether it is used.</li>
+<li><b>Control panel.</b> Toggle anchors, trigger an NLOS burst, noise and packet-loss sliders, play, pause, speed.</li>
+<li><b>Compare mode.</b> Split view: classical trilateration against LocusNet on the same measurements.</li>
+<li><b>Experiments.</b> Heat-map of RMSE and P90 over anchors × NLOS rate × noise; CDF of error; ablation table; CRLB overlay.</li>
+<li><b>Placement advisor.</b> Drag candidate anchors on the plan and watch the predicted error heat-map update; press "Recommend" for the greedy answer.</li>
+<li><b>API explorer.</b> Paste measurements, get JSON.</li>
+</ul>
+<pre class="code">POST /v1/locate
+{ "t": 1729760001.2,
+  "measurements": [ {"anchor":"A1","range":7.42,"rssi":-71}, {"anchor":"A3","range":12.9,"rssi":-84}, {"anchor":"A4","valid":false} ] }
+
+200 OK
+{ "x": 12.31, "y": 7.84,
+  "cov": [[0.21,0.03],[0.03,0.17]],
+  "ellipse90": {"a":1.12,"b":0.86,"theta_deg":28},
+  "zone": {"name":"Ward B corridor","p":0.91},
+  "anchors": [ {"id":"A1","p_nlos":0.04,"used":true}, {"id":"A3","p_nlos":0.71,"used":false}, {"id":"A4","used":false} ],
+  "confidence": "medium", "mode": "3-anchor-consensus" }</pre>
+
+<h3>Data and evaluation</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric or test</th><th>Details</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>RMSE, median, P90, P95</td><td>Per condition and overall, on unseen layouts and trajectories.</td><td>P90 under 1.5 m at 5 anchors with 20% NLOS</td></tr>
+<tr><td>Degradation grid</td><td>Anchors in {3, 4, 5, 6, 8} × NLOS rate in {0, 10, 30%} × noise in {0.1, 0.3, 0.5 m}.</td><td>Smooth decline; beat classical in every cell with NLOS</td></tr>
+<tr><td>Error CDF</td><td>Plot against baselines (LS, WLS, EKF, particle filter).</td><td>Left of every baseline</td></tr>
+<tr><td>Calibration</td><td>Coverage of the 90% ellipse.</td><td>88 to 92% in every condition group</td></tr>
+<tr><td>Gap to CRLB</td><td>Ratio of RMSE to bound in LOS conditions.</td><td>Within 1.3×</td></tr>
+<tr><td>Ablations</td><td>No NLOS filter, no motion model, no map, fixed-layout network.</td><td>Each should visibly hurt</td></tr>
+<tr><td>Latency and size</td><td>Per update on laptop CPU; model size.</td><td>Under 10 ms; under 5 MB</td></tr>
+<tr><td>Placement advisor</td><td>Measured error with advised placement versus random and corner placements.</td><td>Advisor clearly best</td></tr>
+</tbody></table></div>
+<p>As with the other Track 4 problems, targets are placeholders until you measure. State limitations: simulator is idealised, real UWB hardware has antenna delays and calibration offsets, only 2D.</p>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Floor plan, anchors, trajectories, range noise, NLOS.</li><li>LS versus robust WLS plus EKF.</li><li>Animated plot: anchor 3 fails, classical jumps, ours holds.</li><li>First degradation table for 3 to 6 anchors.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Simulator v2 (RSSI, bursts, hidden splits), baselines, metrics.</li>
+<li><b>Day 2.</b> Trust model, particle filter with map, subset consensus.</li>
+<li><b>Day 3.</b> Set-transformer, calibration, API, live map.</li>
+<li><b>Day 4.</b> Placement advisor, experiments page, recorded demo, README.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 2 h: adapt to the organisers' schema; score the existing models on the dev set.</li>
+<li>2 to 8: fine-tune on their distribution; recalibrate ellipses.</li>
+<li>8 to 14: expand demo (compare mode, kill-an-anchor).</li>
+<li>14 to 20: robustness tests, advisor validation, limitations page.</li>
+<li>20 to 24: rehearse and record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Algorithms lead:</b> filters, consensus, CRLB.</li><li><b>ML lead:</b> trust model, set-transformer, calibration.</li><li><b>Simulation and evaluation:</b> data, baselines, grids.</li><li><b>Frontend and pitch:</b> live map, compare mode, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Hidden data format unknown</td><td>Cannot score.</td><td>Keep inputs as tidy tables with column mapping; accept range-only or RSSI-only.</td></tr>
+<tr><td>Network overfits the simulator</td><td>Bad hidden-set score.</td><td>Domain randomisation, ablation to classical hybrid, public-data check; fall back to the hybrid if validation says so.</td></tr>
+<tr><td>Time sink on transformers</td><td>No working demo.</td><td>Hybrid first (Day 1 to 2); network is a stretch that must beat it to ship.</td></tr>
+<tr><td>Particle filter slow</td><td>Laggy demo.</td><td>Cap particles; vectorise; EKF fallback.</td></tr>
+<tr><td>Calibration drifts under new conditions</td><td>Ellipse misses.</td><td>Recalibrate on a small slice of the dev set at the finale.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Hospitals lose time hunting for wheelchairs and infusion pumps, and indoor positioning is too expensive to cover every room. LocusNet locates a tag from as few as three beacons, spots signals bent by walls, keeps working when beacons drop out, and tells you how sure it is. It also tells the hospital where to place the next beacon, so accuracy costs fewer devices.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> Floor plan, five beacons, a tag walking through wards. Say "most of the time this works; here is when it does not".</li>
+<li><b>0:45 Classical trilateration.</b> Switch on an NLOS burst behind a wall; the classical dot jumps through the wall.</li>
+<li><b>1:30 LocusNet.</b> Same measurements: the dot holds; anchor chip turns red with P(NLOS) 0.8; the ellipse widens slightly.</li>
+<li><b>2:15 Kill an anchor.</b> Disable two anchors. Ellipse grows, still correct. Disable a third: it says "probably Ward B, 78%" instead of guessing.</li>
+<li><b>3:00 Experiments.</b> Degradation heat-map and error CDF, with CRLB overlay.</li>
+<li><b>3:45 Placement advisor.</b> "With four beacons, here is the best layout; predicted P90 1.3 m." Drag one away and show error rising.</li>
+<li><b>4:30 Close.</b> API call, model size and latency, limitations.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> hospitals, care homes, warehouses, public buildings.</p><p><b>Gap:</b> accurate indoor tracking needs many beacons and clear radio paths, which real buildings do not have.</p><p><b>Why now:</b> UWB and Bluetooth tags are cheap; the missing piece is software that tolerates sparse, imperfect infrastructure.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution and innovation</span><p><b>Different:</b> anchor-agnostic model; learned NLOS trust inside a map-aware filter; calibrated uncertainty; placement advisor.</p><p><b>Mechanism:</b> features, trust, robust fusion, learned correction, calibration.</p><p><b>Feasible:</b> built tonight on simulated floor: error X m versus Y m classical (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Python, NumPy, SciPy, Shapely, PyTorch, LightGBM, FastAPI, React canvas. Name the public dataset if used.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Live map with ellipse, kill-an-anchor, compare mode, degradation heat-map, placement advisor.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> simulator, baselines, robust filter, first figure. <b>In progress:</b> network, calibration. <b>Next:</b> real UWB trial, 3D.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Fewer beacons per ward, faster asset retrieval, safer wandering-patient alerts, indoor navigation for visually impaired visitors.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>Why not just train a neural network end to end?</summary><p>We did, as one of three systems. The hybrid is more robust, explainable and gives guaranteed behaviour with few anchors. The numbers decide which one ships.</p></details>
+<details class="qa"><summary>How do you handle only two anchors?</summary><p>The particle filter keeps both mirror solutions, the map and motion model remove one, and the ellipse is inflated honestly. With one anchor we report a zone.</p></details>
+<details class="qa"><summary>Is your uncertainty real or decorative?</summary><p>We calibrate with conformal scaling and report empirical coverage for every condition group; the target is 90% coverage for the 90% ellipse.</p></details>
+<details class="qa"><summary>How do you know it will work on real hardware?</summary><p>We randomise noise, bias and layouts, and test on a public dataset; real UWB needs antenna delay calibration and an on-site trial, which is our next step.</p></details>
+<details class="qa"><summary>What is the placement advisor based on?</summary><p>Fisher information and the Cramér-Rao bound with wall-aware noise, then greedy selection. We validate it by simulating its layouts against random ones.</p></details>
+<details class="qa"><summary>Can it track several tags?</summary><p>Yes; each tag has its own filter. Anchors are shared.</p></details>
+<details class="qa"><summary>What is the compute cost?</summary><p>Under 10 ms per update on a laptop CPU; small enough for an edge gateway.</p></details>
+<details class="qa"><summary>What if an anchor position is wrong?</summary><p>Anchor survey errors bias everything. We mention it as a limit and propose self-calibration from tag motion as future work.</p></details>
+</article>

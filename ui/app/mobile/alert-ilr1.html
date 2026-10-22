@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThermoTwin · ILR-1 Cause Card</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-page="detail">
+<main>
+  <div class="row" style="margin-bottom:6px">
+    <div><h1 style="margin:0">ILR-1</h1><div class="kind">Ice-lined fridge · Room 102</div></div>
+    <span class="pill warn" id="status" data-i18n="st.early">Early warning</span>
+  </div>
+
+  <div class="card warn" style="margin-top:12px">
+    <div class="msg warn" style="margin-top:0" data-i18n="ilr1.msg" id="lMsg">May go below 0 °C in about 60 min</div>
+    <div class="range" style="margin-top:6px" id="lRange">Likely between 40 and 85 min</div>
+    <div class="vals">
+      <div><span>Air now</span><b id="lAir">2.4 °C</b></div>
+      <div><span>Vaccine (est.)</span><b id="lVial">3.1 °C</b></div>
+      <div><span>Air in 1 h</span><b style="color:var(--warn)" id="lAir1h">0.0 °C</b></div>
+    </div>
+    <svg class="chart" id="chart" viewBox="0 0 320 170" role="img" aria-label="Air and estimated vaccine temperature over the last 3 hours and the next 2 hours"></svg>
+    <div class="legend">
+      <span><i style="border-color:#14211c"></i>Air (measured)</span>
+      <span><i style="border-color:#0f766e;border-top-style:dashed"></i>Vaccine (estimated)</span>
+      <span><i style="border-color:#b45309;border-top-style:dotted"></i>Forecast</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span data-i18n="cause.title">Likely cause</span> · <span class="pill grey">High confidence</span></h2>
+    <div class="name" data-i18n="cause.name">Thermostat set too cold</div>
+    <ul class="evid" style="margin-top:8px">
+      <li>Falling steadily for 2 hours, with no recovery cycles</li>
+      <li>Temperature falling 0.4 °C every 10 min</li>
+      <li>No door-opening spikes since 8:15 AM</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="steps.title">What to do now</h2>
+    <ol class="steps">
+      <li data-i18n="step1">Turn the thermostat knob one step warmer</li>
+      <li data-i18n="step2">Move freeze-sensitive vaccines away from the walls</li>
+      <li data-i18n="step3">Check again in 20 minutes</li>
+    </ol>
+    <button class="btn primary" id="done" data-i18n="btn.done">I've done this</button>
+    <a class="btn ghost" href="tel:+912025501234" data-i18n="btn.call">Call supervisor</a>
+  </div>
+
+  <p class="fine">Advisory only. The official WHO alarm runs separately.<br>People decide what happens to stock.</p>
+</main>
+<script src="app.js"></script>
+<script src="../shared/live.js"></script>
+<script src="live-phone.js"></script>
+<script>
+  // Chart: last 3 h (measured) and next 2 h (forecast), one point every 30 min.
+  var air = [4.6, 4.4, 4.1, 3.7, 3.3, 2.9, 2.4], airF = [2.4, 1.2, 0.0, -0.8, -1.2];
+  var vac = [4.7, 4.6, 4.4, 4.1, 3.8, 3.5, 3.1], vacF = [3.1, 2.4, 1.7, 1.1, 0.7];
+  var X = function (i) { return 34 + i * 26; };            // i = 0..11 (30-min steps, now at i = 6)
+  var Y = function (t) { return 150 - (t + 2) * 11; };      // -2..10 °C
+  var svg = document.getElementById('chart'), s = '';
+  function drawChart() {
+  s = '';
+  s += '<rect x="34" y="' + Y(8) + '" width="286" height="' + (Y(2) - Y(8)) + '" fill="#e8f5ec"/>';
+  s += '<line x1="34" x2="320" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="#b91c1c" stroke-dasharray="4 3" stroke-width="1"/>';
+  s += '<text x="36" y="' + (Y(8) + 11) + '" font-size="9" fill="#15803d">safe 2–8 °C</text>';
+  s += '<text x="36" y="' + (Y(0) - 3) + '" font-size="9" fill="#b91c1c">0 °C</text>';
+  [-2, 2, 8].forEach(function (v) { s += '<text x="28" y="' + (Y(v) + 3) + '" font-size="9" fill="#5d6f68" text-anchor="end">' + v + '</text>'; });
+  [['-3h', 0], ['-2h', 2], ['-1h', 4], ['now', 6], ['+1h', 8], ['+2h', 10]].forEach(function (p) {
+    s += '<text x="' + X(p[1]) + '" y="166" font-size="9" fill="#5d6f68" text-anchor="middle">' + p[0] + '</text>';
+  });
+  s += '<line x1="' + X(6) + '" x2="' + X(6) + '" y1="' + Y(10) + '" y2="' + Y(-2) + '" stroke="#5d6f68" stroke-dasharray="2 3"/>';
+  function path(arr, start) { return arr.map(function (v, i) { return (i ? 'L' : 'M') + X(i + start) + ' ' + Y(v); }).join(' '); }
+  s += '<path d="' + path(vac, 0) + '" fill="none" stroke="#0f766e" stroke-width="2" stroke-dasharray="5 3"/>';
+  s += '<path d="' + path(vacF, 6) + '" fill="none" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="2 3" opacity=".8"/>';
+  s += '<path d="' + path(air, 0) + '" fill="none" stroke="#14211c" stroke-width="2.4"/>';
+  s += '<path d="' + path(airF, 6) + '" fill="none" stroke="#b45309" stroke-width="2.4" stroke-dasharray="2 3"/>';
+  s += '<circle cx="' + X(6) + '" cy="' + Y(air[6]) + '" r="3.5" fill="#14211c"/>';
+  if (!window.ttLiveOn) s += '<circle cx="' + X(8) + '" cy="' + Y(0) + '" r="4" fill="#b45309"/>';
+  svg.innerHTML = s;
+  }
+  drawChart();
+
+  document.getElementById('done').addEventListener('click', function () {
+    var st = document.getElementById('status');
+    st.className = 'pill info';
+    st.setAttribute('data-i18n', 'st.watch');
+    st.textContent = document.documentElement.lang === 'hi' ? 'रिकवरी पर नज़र' : 'Watching recovery';
+    this.disabled = true;
+    this.style.opacity = '.6';
+    ttToast('Logged. ThermoTwin will check the fridge is recovering in 20 min.');
+  });
+</script>
+</body>
+</html>

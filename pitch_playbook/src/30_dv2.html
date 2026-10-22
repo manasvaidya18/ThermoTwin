@@ -1,0 +1,339 @@
+<article class="view" id="v-dv2" data-track="dv" data-title="Sudoku Engine">
+<header class="phead">
+  <div class="kicker"><span class="chip dv">DeltaV pack</span><span class="chip">#02 IO Signal Sudoku</span></div>
+  <h2>Sudoku Engine</h2>
+  <p class="sub">Give every one of 10,000+ signals an exact home in a control-system cabinet, from rules the engineer defines. Solver places, referee proves, queries are drafted, and revisions move as little as possible.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●●○</b></div><div>No data wait<b>●●●○○</b></div><div>Stands out<b>●●●●●</b></div><div>Demo impact<b>●●●●○</b></div><div>Provable<b>●●●●●</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>The plant, in 60 seconds</h4>
+<p>A process plant (chemicals, oil and gas, pharma) has thousands of field instruments: pressure and level transmitters, switches, valves, motors. Each instrument sends or receives one electrical signal over a pair of wires. Wires are bundled into multi-pair cables of 24, 12, 6 or 2 pairs and run to a marshalling cabinet in the control room. Inside the cabinet the control system (here Emerson's DeltaV) needs every signal landed on a specific module, called a <b>CHARM</b>, which sits in a slot on a <b>baseplate</b>. Baseplates hang off a <b>CIOC</b> (a controller card), and CIOCs are mounted in a cabinet. Choosing where each signal goes is called IO allocation. Today engineers do it by hand in Excel for 10,000+ signals, and every customer revision means redoing and re-tracing it.</p>
+<div class="g3">
+<div class="card"><h4>Hardware hierarchy</h4><p>1 signal = 1 CHARM slot.<br>12 CHARMs per baseplate.<br>8 baseplates per CIOC.<br>4 CIOCs per cabinet.<br><b>384 slots per cabinet.</b></p></div>
+<div class="card"><h4>Cables</h4><p>24, 12, 6 or 2 pairs. A 24-pair fills exactly two baseplates: 22 signals plus 2 wired spare pairs. All pairs of a cable sit side by side in pair order.</p></div>
+<div class="card"><h4>Why it is hard</h4><p>Groups must stay together, A and B must be apart, spares must be left, naming must follow patterns, and the customer will send Rev B next week.</p></div>
+</div>
+
+<h4>Inputs and outputs (from the PDF)</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Input</th><th>Content</th></tr></thead>
+<tbody>
+<tr><td>Customer IO MDB (Excel, one or many files)</td><td>One row per signal: tag, IO type (AI, AO, DI, DO-SOV, DO-Horn and so on), cable, pair, IO group, segregation (A, B or none). Example: <code>10-PT-1001A, AI, CBL-101, pair 1, G1, A</code>.</td></tr>
+<tr><td>IO Allocation template (Excel)</td><td>The output format the tool must fill.</td></tr>
+<tr><td>Rules</td><td>Defined by the user in a rule panel. Nothing hard-coded.</td></tr>
+</tbody></table></div>
+<div class="tw"><table class="t">
+<thead><tr><th>Output must show</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>Every signal's slot</td><td>Cabinet, CIOC, baseplate, CHARM slot.</td></tr>
+<tr><td>Right hardware and names</td><td>Correct CHARM type and terminal block, names from user patterns.</td></tr>
+<tr><td>Zero rule violations</td><td>And a TQ (technical query to the customer) for each issue it cannot resolve.</td></tr>
+<tr><td>Reporting</td><td>Cabinets needed, fill % and spares per cabinet; rule-check report; TQ list (missing data, rule conflicts, capacity).</td></tr>
+<tr><td>Revision support</td><td>Load Rev B, keep unchanged signals in place with the fewest moves, impact report (added, deleted, moved, cabinets hit).</td></tr>
+</tbody></table></div>
+
+<h4>The example rules, in detail</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Rule</th><th>Meaning</th><th>Type</th></tr></thead>
+<tbody>
+<tr><td>1 Keep groups together</td><td>Signals with the same IO Grouping stay in the same cabinets, in sequence. No group means any free slot.</td><td>Cohesion (strong soft)</td></tr>
+<tr><td>2 Never put A and B together</td><td>Duty or standby, or risk-area signals marked A and B, go to different CIOCs.</td><td>Anti-affinity (hard)</td></tr>
+<tr><td>3 Respect capacity</td><td>12 CHARMs per baseplate, 8 baseplates per CIOC, 4 CIOCs per cabinet.</td><td>Capacity (hard)</td></tr>
+<tr><td>4 Keep each cable together</td><td>All pairs land side by side in pair order; a 24-pair takes two full baseplates.</td><td>Contiguity (hard)</td></tr>
+<tr><td>5 Leave spare room</td><td>About 10% per cabinet by keeping some baseplates empty. Value set per project.</td><td>Reserve (hard, parameterised)</td></tr>
+<tr><td>6 Right CHARM and terminal block</td><td>AI to AI CHARM standard; AO to AO CHARM; DI to DI CHARM; high-current DO (SOV, horn, beacon, sounder) to isolated DO CHARM with fused injected-power block; normal DO to high-side DO CHARM; relay output to high-side DO with relay block.</td><td>Mapping (hard)</td></tr>
+<tr><td>Naming</td><td>User patterns such as <code>&lt;Area&gt;-DCS-&lt;Unit&gt;-&lt;Seq&gt;</code>, <code>&lt;Area&gt;CIOC&lt;Unit&gt;&lt;Seq&gt;</code>, <code>&lt;CIOC no&gt;-CBP-&lt;n&gt;</code>.</td><td>Generation</td></tr>
+<tr><td>+ your own rules</td><td>Users add, edit, switch off as many as needed.</td><td>Extensible</td></tr>
+</tbody></table></div>
+<div class="co warn"><span class="lbl">Ambiguities to settle (ask early)</span>
+<ul>
+<li>Can one baseplate mix CHARM types and terminal-block types? (Our default: yes, mapping is per slot.)</li>
+<li>Is A/B separation within the same group only, or global across all groups?</li>
+<li>Is the ~10% spare per cabinet or per project, and does it round up or down?</li>
+<li>Is group cohesion hard or soft when a group is larger than a cabinet?</li>
+<li>Do wired spare pairs consume slots for the capacity count? (PDF figure implies yes.)</li>
+<li>How are area, unit and sequence numbers obtained: from tag prefixes, a project config, or the template?</li>
+<li>Does "in sequence" mean the original MDB row order, cable number order or group order?</li>
+</ul></div>
+
+<h3>Our concept: Sudoku Engine</h3>
+<div class="g3">
+<div class="card"><h4>1. Rules are data, not code</h4><p>A small declarative rule language compiles into solver constraints. New rule or new hardware profile means a YAML edit and, for a new rule type, a plug-in class. This directly meets "a new rule or new IO MDB needs no code change".</p></div>
+<div class="card"><h4>2. A solver places, a referee proves</h4><p>Allocation uses constraint programming (OR-Tools CP-SAT). Then an independent referee, written separately, re-reads the output Excel and re-checks every enabled rule. "Zero violations" becomes a certificate you can show.</p></div>
+<div class="card"><h4>3. Revisions that barely move anything</h4><p>Unchanged signals are pinned. Added signals first use wired spare pairs and free slots nearby, then grow outward. The impact report shows the ripple radius and moved signals with reasons.</p></div>
+</div>
+<div class="g3">
+<div class="card"><h4>4. TQs written like an engineer</h4><p>Every issue the tool cannot resolve becomes a TQ with the rule, the evidence cells, a plain reason and a ready-to-send question. Similar TQs are grouped.</p></div>
+<div class="card"><h4>5. AI where it helps</h4><p>An LLM maps columns, turns plain-English requests into validated rules, drafts TQ wording and mines rules from legacy allocations. It never decides a placement.</p></div>
+<div class="card"><h4>6. A board you can read</h4><p>The Sudoku board shows cabinet, CIOC, baseplate and slot, coloured by group, striped by A/B, with violations pulsing red. Rule playground sliders show cost in cabinets live.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Obvious approach</th><th>What goes wrong</th><th>Sudoku Engine</th></tr></thead>
+<tbody>
+<tr><td>Ask an LLM to allocate</td><td>Violations at scale, no guarantee, non-repeatable.</td><td>LLM only maps columns and drafts rules; solver places; referee verifies.</td></tr>
+<tr><td>Greedy script with hard-coded rules</td><td>Fails the "new rule needs no code change" test; poor packing; hard to revise.</td><td>Declarative rules, CP-SAT optimisation, pin-and-release revisions.</td></tr>
+<tr><td>Excel macros</td><td>Unmaintainable, no explanations.</td><td>Engine plus explanation and impact reports.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>The hidden test is objective (unseen MDB plus a revision), the problem says it is a constraint-packing puzzle, and almost nobody will build the referee, the optimality gap against a lower bound, or the minimal-move revision. The demo also looks good: a board that fills itself.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>"Where is the AI?" will be asked, so lead with the AI layer and the AI-plus-guarantee message. Template format and some rule interpretations are unknown until samples arrive, so build adapters and ask questions early. Judges who expect machine learning may under-score a solver; the answer is that engineers do not accept a probabilistic allocation.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Ingest</b><span>Read Excel files; auto-map columns; validate data; normalise.</span></div>
+<div class="st"><b>Rules</b><span>Rule panel and YAML; static conflict check; hardware profile.</span></div>
+<div class="st"><b>Pack kits</b><span>Turn cables into baseplate kits; classify by lane (group, segregation).</span></div>
+<div class="st"><b>Solve</b><span>CP-SAT: kits to CIOCs and cabinets; then order and place slots.</span></div>
+<div class="st"><b>Name and map</b><span>CHARM and terminal block per signal; names from patterns.</span></div>
+<div class="st"><b>Referee</b><span>Independent re-check of every rule on the output Excel.</span></div>
+<div class="st"><b>Report</b><span>Filled template, TQ log, fill and spare report, certificate.</span></div>
+<div class="st"><b>Revise</b><span>Diff, pin, re-solve locally, impact report.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th><th>Owner</th></tr></thead>
+<tbody>
+<tr><td>ingest/</td><td>Excel readers, column mapper, validators, template adapter</td><td>pandas, openpyxl, rapidfuzz, LLM fallback</td><td>Integration lead</td></tr>
+<tr><td>rules/</td><td>Rule schema, registry, plug-in interface, static conflict checker</td><td>Pydantic, YAML</td><td>Algorithm lead</td></tr>
+<tr><td>solver/</td><td>Kit builder, CP-SAT models, warm start, LNS, slot placement</td><td>OR-Tools CP-SAT</td><td>Algorithm lead</td></tr>
+<tr><td>naming/</td><td>Pattern engine with padding and counters, CHARM and terminal-block mapping</td><td>Python</td><td>Integration lead</td></tr>
+<tr><td>referee/</td><td>Independent rule checks from the output file; violation report; certificate</td><td>pandas</td><td>A second person (not the solver author)</td></tr>
+<tr><td>tq/</td><td>Issue taxonomy, explanation builder, grouping, drafts</td><td>Python, LLM for wording</td><td>Integration lead</td></tr>
+<tr><td>revision/</td><td>Diff, pin and release, impact report</td><td>pandas, CP-SAT</td><td>Algorithm lead</td></tr>
+<tr><td>gen/</td><td>Synthetic IO MDB generator with planted defects; benchmark runner</td><td>NumPy</td><td>Data engineer</td></tr>
+<tr><td>api/ and ui/</td><td>Project store, endpoints, rule panel, board, TQ inbox, revision studio</td><td>FastAPI, SQLite, React (or Streamlit)</td><td>Frontend lead</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Data model</h4>
+<pre class="code">Signal   { tag, io_type, cable, pair, group|None, seg: 'A'|'B'|None, attrs{...}, source{file, sheet, row} }
+Cable    { id, size in {24,12,6,2}, pairs: 1..size, used: {pair -&gt; tag}, spare: pairs without a tag (wired) }
+Block    = Cable occupying `size` consecutive slots (spare pairs included)
+Kit      = up to 12 slots of blocks packed onto one baseplate; 24-pair = double kit (2 adjacent baseplates)
+Lane     = (group, seg) ; lanes (g,'A') and (g,'B') must not share a CIOC when the A/B rule is on
+Hardware { slots_per_baseplate: 12, baseplates_per_cioc: 8, ciocs_per_cabinet: 4, charm_map: io_type -&gt; (CHARM, terminal_block) }
+Alloc    { tag -&gt; (cabinet, cioc, baseplate, slot, charm, tb, names) , spares -&gt; (cabinet, cioc, baseplate, slot) }</pre>
+
+<h4>2. The rule language</h4>
+<pre class="code">project: UNIT-100
+hardware_profile: deltav_charm_v1
+params: { area: AR1, unit: "100", spare_pct: 10 }
+rules:
+  - { id: capacity,      type: capacity,       enabled: true }                          # from the profile
+  - { id: cable_together,type: contiguity,     enabled: true, align_big_blocks: true }
+  - { id: ab_apart,      type: anti_affinity,  enabled: true, field: seg, values: [A, B], scope: cioc, within: group }
+  - { id: group_together,type: cohesion,       enabled: true, field: group, scope: cabinet, ordered: true, weight: 100 }
+  - { id: spare,         type: reserve,        enabled: true, scope: cabinet, pct: "{spare_pct}", unit: baseplate }
+  - { id: sov_isolated,  type: mapping,        enabled: true, when: { io_type: [DO-SOV, DO-Horn] }, charm: DO_ISO, tb: FUSED_INJ }
+  - { id: names,         type: naming,         enabled: true, patterns: { cabinet_sys: "{area}-DCS-{unit}-{seq:02d}",
+                                                                           marshalling: "{area}-DCM-{unit}-{seq:02d}",
+                                                                           cioc: "{area}CIOC{unit}{seq:04d}", baseplate: "{cioc_no:03d}-CBP-{n}" } }
+  - { id: keep_diesel_pumps_apart, type: anti_affinity, enabled: true, field: attrs.equipment, values: [P-201A, P-201B], scope: cabinet }   # user-added</pre>
+<p>Every rule type is a plug-in with two separate methods: <code>compile(model, ctx)</code> adds constraints and objective terms, and <code>check(allocation, ctx)</code> returns violations. The referee only calls <code>check</code>, never the solver's own data structures.</p>
+<pre class="code">class RuleType(Protocol):
+    schema: type[BaseModel]                        # validates parameters from the panel
+    def compile(self, model: "CpModelBuilder", ctx: "Context") -&gt; None: ...
+    def check(self, alloc: "Allocation", ctx: "Context") -&gt; list["Violation"]: ...
+    def explain(self, violation) -&gt; str: ...       # plain-English reason for TQs and the board</pre>
+<p><b>Static rule checker.</b> Before solving, test the rule set against the data: contradictory parameters (spare 40% with a group that needs 70% of a cabinet), rules referencing missing columns, a cable whose pairs contain both A and B signals while rule 2 demands separate CIOCs (impossible: raise a TQ). This catches conflicts early and is itself a feature.</p>
+
+<h4>3. Validation and the TQ taxonomy</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Category</th><th>Examples</th><th>Detection</th></tr></thead>
+<tbody>
+<tr><td>Missing data</td><td>Missing IO type; missing cable or pair; unknown IO type not in the mapping table; blank tag.</td><td>Column profile and mapping lookup.</td></tr>
+<tr><td>Consistency</td><td>Duplicate tags; two signals on the same cable and pair; pair number larger than cable size; cable size not in {24, 12, 6, 2}; same cable with two different sizes.</td><td>Group-by checks.</td></tr>
+<tr><td>Rule conflict</td><td>A and B signals inside one cable; group requires a segregation it does not have; impossible reserve.</td><td>Static rule checker.</td></tr>
+<tr><td>Capacity</td><td>A configured cabinet limit exceeded; spare reserve unattainable.</td><td>Capacity arithmetic and solver status.</td></tr>
+<tr><td>Probable typos</td><td>Tag that breaks the dominant pattern (<code>10-PT-1O01</code>), near-duplicate tags.</td><td>Pattern model and edit distance; AI-assisted.</td></tr>
+</tbody></table></div>
+<p>Each TQ record: id, category, severity (blocker, major, minor), affected tags and cables, rule id, source cells (file, sheet, row), explanation, options to resolve, a draft question for the customer, status. Output as a TQ sheet in the same workbook and on the TQ inbox screen. Group similar items ("37 signals have no cable; probably one sheet is missing").</p>
+
+<h4>4. The solver, step by step</h4>
+<ol>
+<li><b>Normalise.</b> Resolve cables to blocks; compute each block's slot size including spare pairs; handle cables with signals from several groups (flag).</li>
+<li><b>Build kits.</b> Pack small blocks (6 and 2 pairs) of the same lane onto baseplates by first-fit-decreasing; 12-pair is one kit; 24-pair is a double kit with adjacency. A kit is the unit of placement. Record free slots inside each kit (for later spare use).</li>
+<li><b>Warm start.</b> Order groups by file order, lay lanes into CIOCs with next-fit while respecting A/B apart and cabinet reserve. This yields a valid, if not tight, allocation in seconds and serves as the solver hint.</li>
+<li><b>Level 1 model (CIOC and cabinet assignment).</b></li>
+</ol>
+<pre class="code">Variables   x[k,m] in {0,1}     kit k placed in CIOC m          (m = 1..M, M from the warm start plus slack)
+            y[lane,m] in {0,1}  lane has at least one kit in CIOC m
+            z[g,j] in {0,1}     group g has at least one kit in cabinet j  (CIOC m belongs to cabinet ceil(m/4))
+            u[j] in {0,1}       cabinet j used
+Hard        sum_m x[k,m] = 1                                   (every kit placed once)
+            sum_k size_k * x[k,m] &lt;= 8                         (baseplates per CIOC)
+            sum_{m in cabinet j} sum_k size_k * x[k,m] &lt;= U    (spare reserve: U = floor((1 - spare_pct) * 32))
+            y[lane,m] &gt;= x[k,m]  for k in lane
+            y[(g,A),m] + y[(g,B),m] &lt;= 1                       (A and B apart)        [scope parameter: same group or global]
+            u[j] &gt;= x-based usage ;  CIOC m used only if m-1 used (symmetry breaking)
+Objective   minimise  W1*sum_j u[j]  +  W2*sum z[g,j]  +  W3*sum y[lane,m]  +  W4*(span of each lane's CIOC indices)
+            lexicographic weights: W1 &gt;&gt; W2 &gt;&gt; W3 &gt;&gt; W4 ; revision runs add  W0*moves  with W0 largest</pre>
+<ol start="5">
+<li><b>Scaling.</b> About 10,000 signals is roughly 900 kits and 110 CIOCs, a manageable model. For larger inputs decompose by group clusters in windows (for example 120 kits), fix the rest from the warm start, solve, and repeat (large neighbourhood search). Use a time limit with the best solution so far, log the bound.</li>
+<li><b>Level 2 (placement inside each CIOC).</b> Sequence kits in lane and cable order, assign baseplate positions 1..8 contiguous; double kits take adjacent positions; inside a baseplate assign slots in order so pairs run consecutively and pair order is kept. Empty baseplates fall to the end of each CIOC and cabinet, which realises the reserve.</li>
+<li><b>Level 3 (names and hardware).</b> Apply the mapping and naming rules; counters per scope; zero-padding from the patterns.</li>
+</ol>
+<p><b>Lower bound for the headline claim.</b> Slots needed = sum of block sizes (spares included). Baseplates needed at least ceil(slots / 12). Cabinets at least ceil(baseplates / floor(32 × (1 minus spare))). Example: 10,000 signals at 92% pair fill is about 10,900 slots, about 906 baseplates, and with 10% spare (28 usable per cabinet) at least 33 cabinets. Report "ours: N cabinets, bound: M, gap: N minus M".</p>
+
+<h4>5. Naming engine</h4>
+<p>Tokens come from project parameters, tag parsing (regular expression on the tag for unit) and counters. Counters are scoped (per area and unit). Support padding and formatting (<code>{seq:04d}</code>). Test with the PDF's examples: <code>AR1-DCS-100-01</code>, <code>AR1CTL10001</code>, <code>AR1-DCM-100-01</code>, <code>AR1CIOC100001</code>, <code>001-CBP-1</code>. Patterns are validated so unknown tokens are rejected in the panel.</p>
+
+<h4>6. The referee</h4>
+<ul>
+<li>Reads only the exported workbook. Rebuilds the hierarchy from cell values, never from solver memory.</li>
+<li>Checks every enabled rule's <code>check()</code>, plus global invariants: every input signal appears exactly once or has a TQ; no slot used twice; slot indices within capacity; names match patterns; CHARM and terminal block match the mapping.</li>
+<li>Outputs a violations table (rule, entity, expected, found) and a certificate page: counts checked, violations found, rule set hash, input file hash.</li>
+<li><b>Differential testing.</b> Property-based tests (for example Hypothesis) generate random small projects; solver output must give zero referee violations; an intentionally broken allocation must be caught. The build fails otherwise.</li>
+</ul>
+
+<h4>7. Revisions: Rev A to Rev B</h4>
+<ol>
+<li><b>Diff</b> by tag (fallback: cable plus pair). Classes: unchanged, added, deleted, modified (type, cable, pair, group, segregation).</li>
+<li><b>Pin</b> every unchanged signal to its Rev A slot. Deleted signals free their slots (they become new spare capacity).</li>
+<li><b>Place additions</b> with an escalating search: wired spare pairs on the same cable (zero moves), free slots in the same kit, same lane's CIOCs, new baseplate in the lane's CIOC, new CIOC in the same cabinet, new cabinet.</li>
+<li><b>Modified signals.</b> A changed IO type changes CHARM but may keep the slot; a changed group or cable may force a move. Resolve with the same escalation.</li>
+<li><b>Release radius.</b> If pinned positions make the problem infeasible, release neighbours step by step (slots, baseplate, CIOC, cabinet) and re-solve with the moves penalty. Record the radius needed.</li>
+<li><b>Impact report.</b> Added, deleted, moved, unchanged counts; list of moved signals with from, to and reason code ("cable CBL-105 grew from 12 to 24 pairs and needs 12 contiguous slots"); cabinets touched; ripple radius; stability score (share of unchanged signals still in the same slot; target 99% or higher for small revisions).</li>
+</ol>
+
+<h4>8. Reports</h4>
+<ul>
+<li><b>Allocation sheet</b> in the customer's template (map columns with a template adapter file, keep styles).</li>
+<li><b>Summary sheet:</b> cabinets and CIOCs needed, fill % and spare per cabinet, per-group footprint, gap versus lower bound.</li>
+<li><b>Rule-check report</b> from the referee and the <b>TQ log</b>.</li>
+<li><b>Revision impact</b> workbook and board overlay.</li>
+</ul>
+
+<h4>9. The AI layer</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Capability</th><th>How it works</th><th>Guardrail</th></tr></thead>
+<tbody>
+<tr><td>Column auto-mapping</td><td>Header synonyms and fuzzy matching, value profiling (pair numbers are integers up to 24, segregation values A, B or blank), LLM fallback for odd headers.</td><td>Shown for confirmation; mapping saved per customer template.</td></tr>
+<tr><td>Rule copilot (natural language to rule)</td><td>"Reserve 15% spare and isolate all SOVs" becomes a JSON rule, validated against the schema, shown as a diff with the number of signals it affects.</td><td>Nothing is applied without approval; referee covers it.</td></tr>
+<tr><td>TQ copilot</td><td>Groups similar TQs, ranks by impact, drafts a polite customer question with the evidence cells.</td><td>Facts are inserted from data, the LLM only phrases.</td></tr>
+<tr><td>Rule mining</td><td>Given a legacy allocation and its MDB, test candidate rules from a library and report which hold ("A and B apart: 100%; spare 9.4%; groups contiguous 96%").</td><td>Statistics first, LLM wording second; user adopts rules explicitly.</td></tr>
+<tr><td>Tag typo detector</td><td>Learn the dominant pattern of tags and flag outliers.</td><td>Suggest, never change data.</td></tr>
+<tr><td>Explain placement</td><td>Click a slot: list the rules and constraints that shaped it, generated from the constraint trace.</td><td>Text is templated from facts; LLM only smooths.</td></tr>
+</tbody></table></div>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Excel in, template Excel out</td><td><span class="tier core">Core</span></td><td>Readers, mapping, template adapter.</td><td>The task.</td><td>M</td></tr>
+<tr><td>Rule panel (add, edit, switch off, save)</td><td><span class="tier core">Core</span></td><td>Schema-driven forms from rule plug-ins.</td><td>"Nothing hard-coded".</td><td>M</td></tr>
+<tr><td>One-click allocation</td><td><span class="tier core">Core</span></td><td>Kits, CP-SAT, placement, naming.</td><td>The task.</td><td>L</td></tr>
+<tr><td>TQ list and rule-check report</td><td><span class="tier core">Core</span></td><td>Taxonomy plus referee.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Revision impact report</td><td><span class="tier core">Core</span></td><td>Pin and release.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Independent referee and certificate</td><td><span class="tier wow">Wow</span></td><td>Re-reads the Excel; checks every rule.</td><td>Proves zero violations.</td><td>M</td></tr>
+<tr><td>Sudoku board</td><td><span class="tier wow">Wow</span></td><td>Cabinet, CIOC, baseplate, 12-slot grid with layers.</td><td>The picture people remember.</td><td>M</td></tr>
+<tr><td>Rule playground with live cost</td><td><span class="tier wow">Wow</span></td><td>Change spare % and see cabinets change.</td><td>Judges can play.</td><td>M</td></tr>
+<tr><td>Optimality gap</td><td><span class="tier wow">Wow</span></td><td>Cabinets versus lower bound.</td><td>"Within one cabinet of the minimum."</td><td>S</td></tr>
+<tr><td>Why is this signal here?</td><td><span class="tier wow">Wow</span></td><td>Constraint trace per slot.</td><td>Trust and teaching.</td><td>M</td></tr>
+<tr><td>Rev A to Rev B slider</td><td><span class="tier wow">Wow</span></td><td>Animates moved cells and highlights touched cabinets.</td><td>Revision story in one screen.</td><td>M</td></tr>
+<tr><td>Natural-language rules</td><td><span class="tier wow">Wow</span></td><td>LLM to validated JSON.</td><td>The AI moment.</td><td>M</td></tr>
+<tr><td>Rule mining from a legacy allocation</td><td><span class="tier stretch">Stretch</span></td><td>Candidate-rule statistics.</td><td>Surprising and useful.</td><td>M</td></tr>
+<tr><td>Hardware profiles</td><td><span class="tier stretch">Stretch</span></td><td>Capacity and mapping tables as data; add another DCS.</td><td>Scalability.</td><td>S</td></tr>
+<tr><td>Synthetic benchmark and fuzzing page</td><td><span class="tier stretch">Stretch</span></td><td>Generate 100 to 25,000 signals with planted defects.</td><td>Proof at scale.</td><td>M</td></tr>
+<tr><td>Cost estimate</td><td><span class="tier stretch">Stretch</span></td><td>Cabinets times unit cost, saved rework time.</td><td>Business case.</td><td>S</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ol>
+<li><b>Import.</b> Drag and drop MDB files and the template; column mapping preview with confidence; data-quality score; first TQs appear immediately.</li>
+<li><b>Rule panel.</b> Cards per rule with switch, parameters, weight; "add rule" with a type picker or a natural-language box; conflict warnings; save and load rule sets.</li>
+<li><b>Allocate.</b> A single button; progress shows kits placed and best bound; completes into the board.</li>
+<li><b>Board.</b> Cabinet tabs; each CIOC a row of 8 baseplates of 12 cells. Layers: group, IO type, segregation, cable, violations, changed since Rev A. Hover shows tag, cable, pair, CHARM, terminal block, names. Fill and spare meters per cabinet.</li>
+<li><b>TQ inbox.</b> Filters by category and severity, bulk export, draft text, status.</li>
+<li><b>Reports.</b> Summary, certificate, lower-bound comparison, download.</li>
+<li><b>Revision studio.</b> Load Rev B; diff summary; run; impact map; moved list with reasons; export.</li>
+</ol>
+
+<h3>Data and evaluation</h3>
+<h4>Synthetic generator</h4>
+<ul>
+<li>Parameters: signals (100, 1,000, 10,000, 25,000), cable size mix (for example 24-pair 30%, 12-pair 30%, 6-pair 25%, 2-pair 15%), pair fill rate 85 to 100%, number and size of groups (log-normal), A/B share, IO type mix (AI, DI, AO, DO standard, DO isolated).</li>
+<li>Defect injection: missing group, duplicate tag, bad pair number, unknown IO type, A and B inside one cable, tag typos.</li>
+<li>Revisions: add, delete, modify percentages (1%, 5%, 10%), cable size growth, group changes.</li>
+</ul>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>Definition</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Allocated or TQ'd</td><td>Share of signals with a slot or an explained TQ.</td><td>100%</td></tr>
+<tr><td>Rule violations</td><td>Referee count on every run.</td><td>0</td></tr>
+<tr><td>Cabinets versus bound</td><td>Our cabinets minus lower bound.</td><td>At most 1</td></tr>
+<tr><td>Fill and spare</td><td>Per cabinet.</td><td>As the rules demand</td></tr>
+<tr><td>Solve time</td><td>1,000 and 10,000 signals; first feasible and best within limit.</td><td>Under 10 s and 60 s</td></tr>
+<tr><td>TQ recall and precision</td><td>Against planted defects.</td><td>95% or higher</td></tr>
+<tr><td>Revision stability</td><td>Unchanged signals keeping their slot.</td><td>99% or higher for 1 to 5% revisions</td></tr>
+<tr><td>Flexibility test</td><td>Add a new rule and a new column mapping with no code change.</td><td>Demonstrated live</td></tr>
+</tbody></table></div>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight (about 4 hours)</h4><ul class="tight"><li>Write the rule YAML schema for the PDF's rules.</li><li>Generator for 1,000 signals; kit builder; CP-SAT for one cabinet.</li><li>Referee v0 for capacity, A and B apart, cable contiguity.</li><li>Screenshot of the board; a timing for 10,000 signals with the warm start.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Ingest, mapper, template adapter, rule engine and naming.</li>
+<li><b>Day 2.</b> Full solver (Levels 1 to 3), mapping rules, referee complete, TQ taxonomy.</li>
+<li><b>Day 3.</b> Board, rule panel, reports, optimality gap.</li>
+<li><b>Day 4.</b> Revision engine and studio, benchmark at 10,000 and 25,000, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 2 h: run the unseen MDB through the mapper; fix template and column quirks.</li>
+<li>2 to 8: resolve rule interpretations with organisers; tune weights; read the TQs.</li>
+<li>8 to 14: stabilise the revision workflow on their Rev B.</li>
+<li>14 to 20: natural-language rules, polish board, documentation.</li>
+<li>20 to 24: rehearse; record backup.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Algorithm lead:</b> solver, revision.</li><li><b>Referee and data engineer:</b> referee, generator, tests, benchmark.</li><li><b>Integration:</b> ingest, template, naming, TQ, API.</li><li><b>Frontend and pitch:</b> board, panel, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Template or MDB differs from our assumptions</td><td>Cannot export.</td><td>Template adapter driven by a mapping file; column mapper; ask for samples now.</td></tr>
+<tr><td>Rule semantics differ from our reading</td><td>Hidden test mismatch.</td><td>Make each interpretation a rule option; settle with organisers; show assumptions on a slide.</td></tr>
+<tr><td>CP-SAT too slow at 10,000+</td><td>Timeouts.</td><td>Warm start, decomposition by group windows, time limit, LNS; always return the best feasible.</td></tr>
+<tr><td>Cable straddling and alignment edge cases</td><td>Contiguity violations.</td><td>Kits and double kits; referee tests; fuzz the generator for odd sizes.</td></tr>
+<tr><td>Judges ask for more AI</td><td>Lower score.</td><td>Show the AI layer prominently; explain why safety-critical placement is not left to a model.</td></tr>
+<tr><td>Solver and referee share a bug</td><td>False certificate.</td><td>Different authors, different code paths; referee reads only the Excel.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Every control system project starts with an engineer spending weeks in Excel deciding which of 10,000 signals goes in which slot, and then redoing it whenever the customer revises. Sudoku Engine takes the signal list and the project's rules, places every signal, proves zero violations with an independent referee, raises a clear question for anything it cannot place, and when a new revision arrives it moves only what it has to. Rules are data, so a new rule or a new project needs no code.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> Show a messy MDB and the empty template. State the rules in one sentence.</li>
+<li><b>0:40 Import.</b> Drop the file. Columns map with confidence; first TQs appear (missing IO type, duplicate tag).</li>
+<li><b>1:15 Rules.</b> Open the panel. Type "reserve 15% spare"; show the proposed rule and the signals it affects. Accept.</li>
+<li><b>1:50 Allocate.</b> One click on 10,000 signals; the board fills. Open a baseplate; show a 24-pair cable on two baseplates with its spare pairs.</li>
+<li><b>2:40 Proof.</b> Referee certificate: 0 violations across N checks. Show cabinets used versus the lower bound.</li>
+<li><b>3:15 Why here.</b> Click a slot; show the constraints behind it.</li>
+<li><b>3:45 Revision.</b> Load Rev B. 99.4% unchanged; moved signals highlighted with reasons; impact report.</li>
+<li><b>4:30 Flexibility.</b> Add a new rule live; re-run; the board updates.</li>
+<li><b>4:50 Close.</b> Limits and next hardware profile.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> automation engineers preparing DCS cabinets, and their customers.</p><p><b>Gap:</b> allocation of 10,000+ signals is manual in Excel; each customer revision means rework and re-tracing; rule violations are found late.</p><p><b>Why now:</b> projects are larger and faster, and revisions are frequent.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> declarative rules; solver plus independent referee; minimal-move revisions; AI for mapping, rules and queries.</p><p><b>Mechanism:</b> ingest, rules, kits, CP-SAT, naming, referee, report.</p><p><b>Feasible:</b> synthetic 10,000-signal run tonight: X cabinets (bound Y), 0 violations, Z seconds.</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>Python, OR-Tools CP-SAT, pandas, openpyxl, Pydantic, FastAPI, React or Streamlit, SQLite, Docker. LLM for column mapping and rule drafting (state provider and model).</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Rule panel, Sudoku board, TQ inbox, certificate, rule playground, revision studio.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> generator, kits, one-cabinet solve, referee v0. <b>In progress:</b> full solver, UI. <b>Next:</b> other DCS profiles, rule mining.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Weeks of manual allocation reduced to minutes, fewer late errors, cheaper revisions. Extends to other control systems and to marshalling and wiring design.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>Where is the AI?</summary><p>In the parts that need language and judgement: mapping messy columns, turning plain-English requests into rules, writing customer queries, mining rules from past projects. Placement is a constraint problem and engineers need guarantees, so the solver places and a referee proves.</p></details>
+<details class="qa"><summary>How do you guarantee zero violations?</summary><p>The referee re-reads the output file and checks every enabled rule independently of the solver. It is tested against random projects and against deliberately broken allocations.</p></details>
+<details class="qa"><summary>What if the rules cannot all be satisfied?</summary><p>The static checker warns before solving, and for the allocation we raise TQs with the conflicting rule, the affected signals and options, instead of silently breaking a rule.</p></details>
+<details class="qa"><summary>How optimal is the result?</summary><p>We compare cabinets used with a capacity lower bound and report the gap. The first objective is fewer cabinets.</p></details>
+<details class="qa"><summary>Does it scale?</summary><p>10,000 signals is about 900 kits; we use a warm start, decomposition and time-limited CP-SAT. We benchmark up to 25,000.</p></details>
+<details class="qa"><summary>How does a revision keep signals in place?</summary><p>Unchanged signals are pinned, additions use spare pairs and nearby free slots first, and the search radius widens only if needed. The impact report shows the ripple radius.</p></details>
+<details class="qa"><summary>Can users add a rule you did not foresee?</summary><p>Yes, with existing rule types through the panel, or a new type as a small plug-in with its own check function that the referee automatically uses.</p></details>
+<details class="qa"><summary>What if the template is different?</summary><p>The output is produced through a mapping file, so a new template means a new mapping, not new code.</p></details>
+<details class="qa"><summary>Is this specific to DeltaV?</summary><p>Phase 1 is DeltaV. Capacities and mapping live in a hardware profile, so another DCS is a new profile and perhaps a rule plug-in.</p></details>
+</article>

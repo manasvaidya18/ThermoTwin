@@ -1,0 +1,248 @@
+<article class="view" id="v-im1" data-track="im" data-title="VibeLens">
+<header class="phead">
+  <div class="kicker"><span class="chip im">iMocha track</span><span class="chip">IM-01 Vibe Coding assessment</span></div>
+  <h2>VibeLens</h2>
+  <p class="sub">An AI-era coding assessment that watches the whole journey, not just the chat. Candidates get a fair, welcoming workspace. Recruiters get a one-page report where every score links to a moment they can replay.</p>
+  <div class="meters">
+    <div>Doable in 4 days<b>●●●○○</b></div><div>No data wait<b>●●●●●</b></div><div>Stands out<b>●●●○○</b></div><div>Demo impact<b>●●●●○</b></div><div>Provable<b>●●●○○</b></div>
+  </div>
+</header>
+
+<h3>Understand the problem</h3>
+<h4>In plain words</h4>
+<p>Developers now build software together with an AI assistant: they plan, prompt, check what comes back and fix its mistakes. Most coding tests still make candidates solve puzzles alone against a timer. iMocha is prototyping an assessment in which the candidate gets a small real-world task and a full workspace in the browser (editor, terminal, live preview, AI assistant), builds something that works, and the recruiter gets a report on the skills shown. The basics work. The open questions are the candidate experience and how useful, fair and understandable the skill report is.</p>
+<div class="co tint"><span class="lbl">What iMocha already ships (from their public help pages, read today)</span>
+<ul>
+<li>A "Coding Assessment with AI Assistant": problem on the left, code editor in the centre, AI assistant panel on the right.</li>
+<li>The assistant is <b>hint-only</b>: one hint, explanation or guiding question at a time; it never writes passing code. It cannot see the candidate's code unless it is attached with an @ mention.</li>
+<li>Two separate results: the coding score, and an <b>AI fluency</b> badge (High, Medium, Low) built from three A, B, C graded parameters: Context Quality, Critical Thinking, Collaboration. Recruiters can read the full chat transcript.</li>
+<li>Candidates who never use the assistant receive Low overall. Messages up to 15,000 characters; any language is accepted without penalty.</li>
+<li>Listed as <b>not in the current release</b>: a practice or preview mode, on-request re-evaluation of grades, Excel export.</li>
+</ul>
+<p>The PDF's problem is a prototype aimed at the experience and the report, so our value is in what the current product does not do. Treat this as public documentation, which may change, and present your ideas as complementary, never as criticism.</p></div>
+<h4>What the PDF requires</h4>
+<ul>
+<li><b>Candidate experience:</b> a welcoming onboarding or practice mode, clear task guidance, and an assistant that coaches and explains rather than just handing over code.</li>
+<li><b>Showing how the candidate worked:</b> capture the journey (planning, prompting, testing, fixing) in a way candidates find fair and transparent.</li>
+<li><b>A clear skill report:</b> one-page visual summary of skills, strengths and gaps, each result explained in plain language and backed by examples from the candidate's own work.</li>
+<li><b>AI collaboration insights:</b> how clearly the candidate stated intent, whether they checked the AI's output, whether they understood the code it produced.</li>
+<li><b>Feedback for candidates:</b> what went well and what to practise next, without revealing hidden checks.</li>
+<li>Outcomes: a working prototype (a mock workspace or recorded sample session is acceptable), a sample skill report generated from at least one session, and a clear explanation of why the report is fair and easy to trust. Stages: mock-ups first, then a working core flow on a sample task, then a full end-to-end experience with richer insights and fairness handling.</li>
+</ul>
+
+<h3>Our concept: VibeLens</h3>
+<div class="g3">
+<div class="card"><h4>1. Capture the whole workflow</h4><p>Every prompt, edit, run, test, paste and accept or reject becomes an event. The session is segmented into Understand, Plan, Build, Verify, Fix and Reflect, so the report can talk about how the candidate worked, not just what they typed to the assistant.</p></div>
+<div class="card"><h4>2. Evidence you can replay</h4><p>Every score has two or three evidence moments. Click one and the session replays at that timestamp. Recruiters can check the claim themselves in 20 seconds. Candidates see exactly why they got a result.</p></div>
+<div class="card"><h4>3. Fairness you can test</h4><p>Rubric-anchored scoring, language-neutral prompt assessment, scoring agreement between independent judges, a parity test on synthetic sessions, human re-evaluation on request. A "Why you can trust this report" panel makes it visible.</p></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Typical approach</th><th>Limit</th><th>VibeLens</th></tr></thead>
+<tbody>
+<tr><td>Score the chat transcript</td><td>Ignores what happened in the editor, terminal and tests.</td><td>Full event stream with deterministic metrics plus judged qualities.</td></tr>
+<tr><td>One LLM judge writes a grade</td><td>Opaque; variable; hard to trust.</td><td>Facts by code, judgement by rubric with cited evidence, two judges with agreement shown.</td></tr>
+<tr><td>Penalise not using the AI</td><td>Unfair to strong independent coders.</td><td>"AI judgement" includes choosing not to use it; other dimensions still score fully.</td></tr>
+<tr><td>Report is a badge</td><td>Hard to act on.</td><td>One page of skills with evidence, plus a candidate feedback page.</td></tr>
+</tbody></table></div>
+<div class="co win"><span class="lbl">Why we win</span><p>It answers every bullet in the PDF's expected solution and builds on, rather than repeats, what the sponsor's product already has. Replay-linked evidence and the fairness panel are memorable and easy to demo.</p></div>
+<div class="co bad"><span class="lbl">Why we might lose</span><p>This is the sponsor's headline problem and will attract the most submissions. A chat-plus-score version will blend in. Scope risk is real: a full workspace is large, so lead with the capture, replay and report, and use a recorded or mock session as the PDF explicitly allows.</p></div>
+
+<h3>Architecture</h3>
+<div class="flow">
+<div class="st"><b>Practice and task</b><span>Onboarding sandbox, then a scoped task with a spec that has realistic ambiguity.</span></div>
+<div class="st"><b>Workspace</b><span>Editor, terminal or run panel, live preview, coaching assistant.</span></div>
+<div class="st"><b>Event capture</b><span>Prompts, AI replies, edits, pastes, runs, tests, idle gaps with timestamps.</span></div>
+<div class="st"><b>Analysis</b><span>Phases, authorship map, verification metrics, prompt qualities, comprehension checks.</span></div>
+<div class="st"><b>Judging</b><span>Rubric dimensions scored with cited evidence; two judges; confidence.</span></div>
+<div class="st"><b>Report</b><span>One-page recruiter report, candidate feedback, replay links.</span></div>
+<div class="st"><b>Fairness layer</b><span>Parity tests, agreement, appeal, audit log.</span></div>
+</div>
+<div class="tw"><table class="t">
+<thead><tr><th>Component</th><th>Responsibility</th><th>Tech</th></tr></thead>
+<tbody>
+<tr><td>web/workspace</td><td>Editor, runner, preview, assistant panel, onboarding</td><td>React, Monaco editor, Sandpack for JS or Pyodide for Python, or a containerised runner</td></tr>
+<tr><td>assistant/</td><td>Coaching modes, hint ladder, optional code context with consent</td><td>LLM API with a system prompt and policy</td></tr>
+<tr><td>events/</td><td>Event schema, batching, storage, replay</td><td>WebSocket or HTTP batches, FastAPI, SQLite or Postgres</td></tr>
+<tr><td>analysis/</td><td>Provenance, phase segmentation, metrics</td><td>Python, diff algorithms</td></tr>
+<tr><td>judge/</td><td>Rubric scoring with schema-constrained output, agreement checks</td><td>LLM structured outputs</td></tr>
+<tr><td>report/</td><td>Recruiter and candidate pages, PDF</td><td>HTML to PDF</td></tr>
+<tr><td>fairness/</td><td>Synthetic persona sessions, parity tests, audit log</td><td>Python</td></tr>
+</tbody></table></div>
+
+<h3>How it works inside</h3>
+<h4>1. Event capture</h4>
+<pre class="code">Event { t, session_id, type, payload }
+types:  prompt{text, attached_code?}  ai_reply{text, code_blocks[]}  insert_ai{block_id}  paste{chars, source_guess}
+        edit{file, range, inserted, deleted}  run{cmd}  test{passed, failed, names}  error{message}
+        file_open{file}  focus_change{visible}  idle{seconds}  preview_load{ok}  reflect{text}
+Snapshots: full code snapshot at run, test, insert and every 60 s; diffs between snapshots keep storage small
+Replay:   apply events in order to rebuild editor state; a scrubber jumps to any timestamp</pre>
+<p>Typing every keystroke is not needed. Aggregate typing bursts (start, end, characters). Candidates are told exactly what is captured, in the onboarding.</p>
+<h4>2. Provenance: who wrote each line</h4>
+<ul>
+<li>Maintain the document as lines with tags: <b>human</b>, <b>ai</b>, <b>ai-edited</b>. When the candidate presses insert or pastes text that matches an AI code block (fuzzy match above about 0.8), tag the lines as ai. A later edit that changes more than about 20% of a line's characters turns it into ai-edited.</li>
+<li>At the end compute: share of final lines by tag, AI lines removed, AI lines rewritten, and the largest unreviewed paste (inserted with no run or test within two minutes).</li>
+<li>This feeds the <b>AI Reliance Map</b>: the final code coloured by provenance, a quick, honest picture.</li>
+</ul>
+<h4>3. Phases</h4>
+<p>Label each event with an intent: clarify requirements, plan approach, generate code, debug an error, explain code, test or review, refactor. Rules classify non-chat events (a test run is "verify"). A small LLM call classifies prompts, checked against rules. Then segment by change points into Understand, Plan, Build, Verify, Fix, Reflect. Render as the <b>Session DNA</b> ribbon: coloured segments on a time axis with markers.</p>
+<h4>4. Deterministic metrics</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Metric</th><th>How computed</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td>Context richness of prompts</td><td>Presence of code, exact error text, expected versus actual behaviour, constraints; 0 to 4 per prompt.</td><td>Clarity of intent.</td></tr>
+<tr><td>Independence before asking</td><td>Edits and runs before the first help prompt on each sub-problem.</td><td>Tries first, then asks.</td></tr>
+<tr><td>Verification rate and latency</td><td>Share of AI insertions followed by a run or test within 120 s; median delay.</td><td>Checks the AI's output.</td></tr>
+<tr><td>Tests written by the candidate</td><td>Test files or cases authored, share of passing.</td><td>Engineering discipline.</td></tr>
+<tr><td>Debug loop efficiency</td><td>Prompts and runs between an error and its fix; use of the error message.</td><td>Debugging skill.</td></tr>
+<tr><td>Edit-after-AI ratio</td><td>AI lines later edited by the candidate.</td><td>Understanding and ownership.</td></tr>
+<tr><td>Outcome</td><td>Hidden tests passed by category, linting, complexity, readability.</td><td>Quality of what was built.</td></tr>
+</tbody></table></div>
+<h4>5. Comprehension micro-checks</h4>
+<p>At the end, ask two short questions generated from the candidate's final code, for example "what does <code>summarise([])</code> return?" or "why does this loop stop?". The answer key is computed by <b>running the code</b>, not by an LLM opinion, so grading is objective. Right answers show understanding of what was built, whoever wrote it. This is the cleanest measure of "did they understand the code the AI produced".</p>
+<h4>6. Rubric and scoring</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Dimension</th><th>Evidence sources</th><th>Levels</th></tr></thead>
+<tbody>
+<tr><td>Problem decomposition</td><td>Planning prompts, structure of steps, early tests or notes.</td><td>Emerging, Developing, Proficient, Advanced</td></tr>
+<tr><td>Context and prompt clarity</td><td>Context richness, clarity of intent, constraints stated.</td><td>Same four levels</td></tr>
+<tr><td>Verification habits</td><td>Verification rate, tests, trap catches.</td><td>Same</td></tr>
+<tr><td>Debugging</td><td>Debug loop efficiency, hypotheses stated.</td><td>Same</td></tr>
+<tr><td>Code quality</td><td>Hidden tests, lint, structure.</td><td>Same</td></tr>
+<tr><td>AI judgement</td><td>Accepted or rejected AI output sensibly; chose not to use AI when unnecessary.</td><td>Same, or "chose independence"</td></tr>
+<tr><td>Understanding</td><td>Comprehension checks, edit-after-AI, explanations.</td><td>Same</td></tr>
+</tbody></table></div>
+<ul>
+<li>Map metrics to levels with transparent bands (a documented table). Qualitative judgements (such as prompt clarity) come from an LLM judge that must return JSON with level, rationale and <b>evidence event ids</b>. A checker rejects any evidence id that does not exist or does not match the claim.</li>
+<li><b>Two judges</b> (different prompts or models) score independently; agreement is shown; a gap larger than one level lowers the confidence band and flags the dimension for human review.</li>
+<li>Show each dimension as a level with a confidence band, never a false-precision percentage.</li>
+</ul>
+<h4>7. Fairness engineering</h4>
+<div class="tw"><table class="t">
+<thead><tr><th>Concern</th><th>Design response</th></tr></thead>
+<tbody>
+<tr><td>Language and phrasing</td><td>Score intent and context, not grammar. Parity test: the same behaviour expressed in English, Hinglish and non-native phrasing must score within a small tolerance. Report the result.</td></tr>
+<tr><td>Penalising independence</td><td>No "Low" for not using the assistant. Other dimensions score normally; "AI judgement" shows "chose independence".</td></tr>
+<tr><td>Judge variance</td><td>Two independent judges, agreement shown, human review flag.</td></tr>
+<tr><td>Message volume bias</td><td>Count quality, not quantity.</td></tr>
+<tr><td>Speed and latency</td><td>Normalise for assistant response time; do not reward typing speed.</td></tr>
+<tr><td>Hidden checks</td><td>Candidate feedback is by skill category; never reveals test content.</td></tr>
+<tr><td>Transparency</td><td>Onboarding states what is captured and how scores work; the candidate can view their report.</td></tr>
+<tr><td>Recourse</td><td>Request a human re-evaluation; reviewer sees the evidence; override is logged.</td></tr>
+<tr><td>Accommodations</td><td>Extra-time flag; accessibility settings.</td></tr>
+<tr><td>Privacy</td><td>Consent, retention period, only what the task needs.</td></tr>
+</tbody></table></div>
+<p><b>Parity test in practice.</b> Generate synthetic sessions from personas (verifier, delegator, explorer, driver) with the same behaviour but different language styles; run the pipeline; report the score differences. If they exceed tolerance, the metric or judge prompt is changed. Display "tested on N synthetic sessions" in the trust panel.</p>
+<h4>8. The assistant: a coach, not a solver</h4>
+<ul>
+<li><b>Modes</b> an organisation can pick: hint-only, pair (shows small snippets), open (vibe mode). The report notes the mode so comparisons are fair.</li>
+<li><b>Hint ladder.</b> Level 1 nudge, level 2 concept, level 3 pseudo-steps, level 4 small snippet if the mode allows. Moving down the ladder is recorded.</li>
+<li><b>Context.</b> A "share my code" toggle makes it explicit when the assistant sees the candidate's code; the act of sharing is itself a context-quality signal.</li>
+<li><b>Explain mode</b> for errors and code; the assistant asks "what did you expect to happen?" when the prompt is vague.</li>
+</ul>
+<h4>9. Task design</h4>
+<p>A 30 to 45 minute task such as "expense tracker with CSV import and monthly summary". The spec has realistic gaps (negative amounts, duplicate rows, time zones) and hidden tests by category (happy path, edge cases, robustness). The assistant's natural mistakes on those edges are what trap-catch rates observe. Do not sabotage the assistant: that would be unfair and unrepeatable.</p>
+
+<h3>Feature catalogue</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Feature</th><th>Tier</th><th>How it works</th><th>Why it is remembered</th><th class="nw">Effort</th></tr></thead>
+<tbody>
+<tr><td>Workspace with editor, runner, preview, assistant</td><td><span class="tier core">Core</span></td><td>Monaco plus sandbox plus chat.</td><td>The experience.</td><td>L</td></tr>
+<tr><td>Event capture and session store</td><td><span class="tier core">Core</span></td><td>Event schema and snapshots.</td><td>Foundation for everything.</td><td>M</td></tr>
+<tr><td>One-page skill report</td><td><span class="tier core">Core</span></td><td>Dimensions, evidence, plain language.</td><td>Required output.</td><td>M</td></tr>
+<tr><td>Candidate feedback</td><td><span class="tier core">Core</span></td><td>Went well, practise next, no hidden checks.</td><td>Required output.</td><td>S</td></tr>
+<tr><td>Practice mode and onboarding</td><td><span class="tier core">Core</span></td><td>Mini-task with a tour.</td><td>Welcoming first minute.</td><td>M</td></tr>
+<tr><td>Session replay with evidence links</td><td><span class="tier wow">Wow</span></td><td>Scrubber and event application; every score links to a moment.</td><td>Trust in one click.</td><td>L</td></tr>
+<tr><td>Session DNA ribbon</td><td><span class="tier wow">Wow</span></td><td>Phase segments on a timeline.</td><td>A picture of how they work.</td><td>M</td></tr>
+<tr><td>AI Reliance Map</td><td><span class="tier wow">Wow</span></td><td>Provenance colouring of final code.</td><td>Immediate and honest.</td><td>M</td></tr>
+<tr><td>Comprehension micro-checks</td><td><span class="tier wow">Wow</span></td><td>Questions graded by running code.</td><td>Separates understanding from accepting.</td><td>M</td></tr>
+<tr><td>Working-style archetype</td><td><span class="tier wow">Wow</span></td><td>Verifier, Delegator, Explorer, Driver.</td><td>Easy to remember and discuss.</td><td>S</td></tr>
+<tr><td>Trust panel with parity results</td><td><span class="tier wow">Wow</span></td><td>Method, agreement, parity test, appeal.</td><td>Fairness made visible.</td><td>M</td></tr>
+<tr><td>Hint ladder</td><td><span class="tier wow">Wow</span></td><td>Graded help recorded in the report.</td><td>Coaching story.</td><td>S</td></tr>
+<tr><td>Recruiter comparison view</td><td><span class="tier stretch">Stretch</span></td><td>Side by side with explanations; export.</td><td>Usable in hiring.</td><td>M</td></tr>
+<tr><td>Human re-evaluation request</td><td><span class="tier stretch">Stretch</span></td><td>Queue with evidence view and audit log.</td><td>Fair process.</td><td>M</td></tr>
+<tr><td>Task generator</td><td><span class="tier stretch">Stretch</span></td><td>Tasks from a job description with hidden tests.</td><td>Scalability.</td><td>L</td></tr>
+</tbody></table></div>
+
+<h3>Screens and flows</h3>
+<ul>
+<li><b>Welcome and practice.</b> What is measured, what is captured, a 5-minute sandbox task, a try-the-assistant moment.</li>
+<li><b>Task screen.</b> Task brief with acceptance criteria; editor; terminal or run output; live preview; assistant panel with hint ladder; timer; "share my code" toggle.</li>
+<li><b>Finish.</b> Two comprehension questions and a short reflection prompt ("what would you do next").</li>
+<li><b>Candidate report.</b> Friendly summary, strengths, practise-next items, link to replay of their own session.</li>
+<li><b>Recruiter report (one page).</b> Candidate and task header; role-readiness band; radar and dimension bars with confidence; archetype; Session DNA; three moments that mattered with replay buttons; AI collaboration insights (intent clarity, output checked, code understood); code outcome by hidden-test category; the trust panel.</li>
+<li><b>Replay.</b> Scrubber, event list, editor state, assistant chat.</li>
+<li><b>Recruiter list.</b> Candidates, filters, compare, export.</li>
+</ul>
+
+<h3>Data and evaluation</h3>
+<ul>
+<li><b>Sessions.</b> Record two or three real sessions from teammates, and generate 20 to 30 synthetic persona sessions for the fairness tests. Use only consenting, non-sensitive data.</li>
+<li><b>Metrics to report:</b> inter-judge agreement (percentage within one level, Cohen's kappa), parity test deltas across language styles, correlation of report dimensions with hidden-test outcomes, recruiter reading test (can 5 peers answer five questions about a candidate from the one-pager in under 60 seconds), candidate usefulness rating of the feedback page.</li>
+<li><b>Honest limits:</b> small sample, synthetic personas are not real candidates, scores are decision support not a hiring decision.</li>
+</ul>
+
+<h3>Execution plan</h3>
+<div class="g2">
+<div class="card"><h4>Tonight</h4><ul class="tight"><li>Define the event schema and rubric on one page.</li><li>Record one sample session as a JSON event log (even scripted).</li><li>Build the recruiter one-pager as HTML from that log, with the radar, Session DNA ribbon and three evidence cards.</li></ul></div>
+<div class="card"><h4>Round 2</h4>
+<ul class="tight">
+<li><b>Day 1.</b> Workspace shell (editor, runner, chat) and event logging end to end.</li>
+<li><b>Day 2.</b> Provenance, phases, deterministic metrics, comprehension questions.</li>
+<li><b>Day 3.</b> Judges and rubric, report generation, candidate feedback, replay.</li>
+<li><b>Day 4.</b> Practice mode, trust panel, parity test run, README, recorded demo.</li></ul></div>
+<div class="card"><h4>Finale</h4>
+<ul class="tight">
+<li>0 to 4 h: live session end to end; fix capture bugs.</li>
+<li>4 to 10: richer insights, comparison view, human review path.</li>
+<li>10 to 16: fairness evidence and parity results; polish report.</li>
+<li>16 to 22: live demo rehearsal with a real session; failure fallbacks.</li>
+<li>22 to 24: freeze and record.</li></ul></div>
+<div class="card"><h4>Who does what</h4>
+<ul class="tight"><li><b>Frontend lead:</b> workspace, replay, report.</li><li><b>Backend lead:</b> events, analysis, API.</li><li><b>LLM and fairness lead:</b> assistant policy, judges, parity tests.</li><li><b>Pitch and design:</b> report design, onboarding, slides.</li></ul></div>
+</div>
+
+<h3>Risks and mitigations</h3>
+<div class="tw"><table class="t">
+<thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td>Building a full workspace eats the time</td><td>No report.</td><td>Use Sandpack or Pyodide; the PDF accepts a mock workspace or recorded session; report and replay come first.</td></tr>
+<tr><td>LLM judge inconsistency</td><td>Unfair or flaky scores.</td><td>Deterministic metrics carry most weight; rubric-constrained JSON; two judges; confidence bands.</td></tr>
+<tr><td>Privacy concerns</td><td>Trust loss.</td><td>Consent screen, minimal capture, retention statement.</td></tr>
+<tr><td>Crowded problem</td><td>Blends in.</td><td>Lead with replay-linked evidence and parity results.</td></tr>
+<tr><td>Over-claiming validity</td><td>Judges push back.</td><td>State limits; call it decision support.</td></tr>
+</tbody></table></div>
+
+<h3>Pitch kit</h3>
+<h4>30-second pitch</h4>
+<div class="pitch"><p>Hiring teams want to know how someone works with AI, but a chat score tells you little. VibeLens records the whole session, from planning and prompting to testing and fixing, and turns it into a one-page skill report where every score links to a moment you can replay. Candidates get a practice mode and honest feedback. Fairness is built in: language-neutral scoring, two independent judges, a parity test and an appeal path.</p><button type="button" class="copybtn">Copy</button></div>
+<h4>5-minute demo script</h4>
+<ol>
+<li><b>0:00 Problem.</b> "Two candidates, same score, very different habits."</li>
+<li><b>0:40 Practice mode.</b> Show the welcome and what is measured.</li>
+<li><b>1:15 The session.</b> Short clip or live: prompt, AI reply, insert, run, test fail, fix.</li>
+<li><b>2:00 Report.</b> The one-pager; radar and Session DNA.</li>
+<li><b>2:40 Evidence.</b> Click "Verification: Advanced". The replay jumps to the moment they ran tests right after an AI insertion.</li>
+<li><b>3:15 Reliance map.</b> Final code coloured human, AI and edited.</li>
+<li><b>3:45 Comprehension.</b> Their answer versus the code's real output.</li>
+<li><b>4:15 Trust panel.</b> Agreement and parity results; appeal button; candidate feedback page.</li>
+<li><b>4:50 Close.</b> Roadmap.</li>
+</ol>
+<h4>Slide text you can paste</h4>
+<div class="slidegrid">
+<div class="slide"><span class="lbl">Slide 2 · Problem and need</span><p><b>Who:</b> candidates (students and job seekers) and recruiters.</p><p><b>Gap:</b> tests ignore how developers really work with AI; chat-based scores are hard to trust and give candidates little to learn from.</p><p><b>Why now:</b> AI-assisted development is standard practice in teams.</p></div>
+<div class="slide"><span class="lbl">Slide 3 · Solution</span><p><b>Different:</b> full-workflow capture, replay-linked evidence, comprehension checks, fairness tests.</p><p><b>Mechanism:</b> capture, analyse, judge, report.</p><p><b>Feasible:</b> sample report generated from a recorded session (fill in).</p></div>
+<div class="slide"><span class="lbl">Slide 4 · Architecture</span><p>React, Monaco, Sandpack or Pyodide, FastAPI, SQLite or Postgres, LLM API with structured output, HTML to PDF. Declare models.</p></div>
+<div class="slide"><span class="lbl">Slide 5 · Features</span><p>Practice mode, task workspace, hint ladder, replay, one-page report, candidate feedback, trust panel.</p></div>
+<div class="slide"><span class="lbl">Slide 6 · Roadmap</span><p><b>Built:</b> event schema, sample session, report page. <b>In progress:</b> workspace capture, judges. <b>Next:</b> comparison view, task generator.</p></div>
+<div class="slide"><span class="lbl">Slide 7 · Impact</span><p>Better hiring signal, kinder candidate experience, feedback that helps people improve, fairness evidence for recruiters.</p></div>
+</div>
+<h4>Likely judge questions</h4>
+<details class="qa"><summary>How is this different from an AI fluency score?</summary><p>A chat-based score looks at the conversation. We also capture edits, runs and tests, show provenance of the final code, test comprehension by running the code, and link every score to a replayable moment. We add practice mode and a re-evaluation path.</p></details>
+<details class="qa"><summary>How do you keep the scoring fair?</summary><p>Rubric-anchored levels, language-neutral intent scoring, two independent judges with agreement shown, a parity test on synthetic sessions, and human re-evaluation on request.</p></details>
+<details class="qa"><summary>Can an LLM judge be trusted?</summary><p>Most signals are computed by code; the judge only rates qualities, must cite real event ids, and a checker rejects unsupported claims.</p></details>
+<details class="qa"><summary>What about candidates who do not use the AI?</summary><p>They are not penalised. Other dimensions score fully and AI judgement is marked "chose independence".</p></details>
+<details class="qa"><summary>What is captured and is it private?</summary><p>Prompts, edits, runs and tests for the task, with consent and a retention limit, told to the candidate up front.</p></details>
+<details class="qa"><summary>Does the assistant just give the answer?</summary><p>No. It coaches with a hint ladder; the mode is configurable and recorded so comparisons stay fair.</p></details>
+<details class="qa"><summary>How would a recruiter use the report?</summary><p>Read the one page in a minute, open the replay for any claim they want to check, compare candidates, and share the candidate feedback.</p></details>
+</article>

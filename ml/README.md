@@ -2,10 +2,19 @@
 
 Predictive early warning for vaccine fridges, built from temperature readings only (what eVIN loggers record).
 
+Two loops run on the same temperature readings:
+
 ```
-simulator -> freeze labels -> digital twin (Virtual Vial) -> features -> LightGBM hazard model
-          -> calibration -> alert threshold under a false-alert budget -> Replay Benchmark
+Fast loop, every 10 min:  reading -> sensor check -> digital twin (Virtual Vial, 30/60/120-min forecasts)
+                          -> 33 features (10 min to 6 h windows) -> freeze + heat risk (LightGBM hazard, next 2 h)
+                          -> cause (LightGBM) -> door-opening recovery check -> alert level
+Slow loop, rolling 24 h:  last 24 h vs the unit's own baseline -> Cooling Health Index (0-100)
+                          -> degradation model (LightGBM hazard over days) -> days until service
 ```
+
+Training: simulator -> labels from ground truth -> twin -> features -> LightGBM -> calibration -> alert threshold under
+a false-alert budget -> benchmark on held-out fridges. Checked on real data: 123 Bangkok fridges (Virtual Vial) and
+real service-dated faults in ultra-low freezers (slow loop).
 
 ## Run
 
@@ -13,10 +22,15 @@ simulator -> freeze labels -> digital twin (Virtual Vial) -> features -> LightGB
 pip install -r requirements.txt
 python scripts/train.py              # 240 fridges x 21 days, about 45 s
 python scripts/train.py --units 80 --days 14   # quick run
+python scripts/train_degradation.py  # slow-loop model: 300 fridges x 60 days, about 30 s (added to models.pkl)
+python scripts/evaluate_recovery.py  # door openings vs failures on the test fridges
+python scripts/validate_bangkok.py   # Virtual Vial on 123 real fridges (needs the dataset, see below)
+python scripts/validate_ult_freezers.py   # slow loop on real freezer faults (needs the dataset)
 python -m pytest -q                  # tests
 ```
 
-Trained models go to `artifacts/models.pkl` (freeze, heat and cause models plus alert thresholds); benchmark CSVs,
+Trained models go to `artifacts/models.pkl` (freeze, heat, cause and degradation models plus alert thresholds); `train.py`
+keeps an existing degradation model when it rewrites the file. Benchmark CSVs,
 `summary.json` and logs go to `results/`. The backend's inference service loads `artifacts/models.pkl`.
 
 ## Modules
@@ -29,6 +43,11 @@ Trained models go to `artifacts/models.pkl` (freeze, heat and cause models plus 
 | `thermotwin/features.py` | Temperature-only features plus twin outputs. |
 | `thermotwin/model.py` | LightGBM discrete-time hazard over twelve 10-minute slots; cumulative risk, time-to-breach P10/P50/P90, isotonic calibration, SHAP explanations. |
 | `thermotwin/benchmark.py` | Policies P0 (<= 0 °C), P1 WHO (<= -0.5 °C for 60 min), P2 early rule (<= 2 °C for 30 min), P3 ThermoTwin; recall, lead time, false alerts per fridge-month. |
+| `thermotwin/cause.py` | Cause classifier (cooling too hard, power cut, weak cooling, sensor fault, none) scored against injected faults; rule-based Sensor check |
+| `thermotwin/recovery.py` | Door-opening recovery check (rule): a sharp rise in one reading that falls back within 30 min while the vaccine estimate barely moves is labelled "door opening, recovering, no action needed" |
+| `thermotwin/degradation.py` | Slow loop: rolling 24 h window features vs the unit's own baseline, Cooling Health Index, and a LightGBM hazard model over the next 14 days (chance of a degradation failure within 7 days, days until service) |
+| `thermotwin/datasets.py` | Loaders that convert the Bangkok fridge and Danish freezer datasets to the standard 10-minute reading format |
+| `thermotwin/pipeline.py` | Shared training and evaluation for freeze, heat and cause |
 
 ## Live demo
 
@@ -66,15 +85,88 @@ Conclusion: on warning time the two are comparable; the LSTM is ahead at very st
 advantage is what the twin adds: the vaccine's estimated temperature, cause and steps, what-if scenarios and holdover.
 The LightGBM model is not smaller or faster than this LSTM (about 1.4 MB vs 0.12 MB). Heat: both catch 27-30 of 31 with 30-40 min.
 
-## Modules added
+## Door openings vs failures (recovery vs intervention)
 
-| File | What it does |
+`python scripts/evaluate_recovery.py`, seed-0 test fridges (48 fridges, 21 days, simulated):
+
+| | Result |
 |---|---|
-| `thermotwin/cause.py` | Cause classifier (cooling too hard, power cut, weak cooling, sensor fault, none) scored against injected faults; rule-based Sensor check |
-| `thermotwin/pipeline.py` | Shared training and evaluation for freeze, heat and cause |
+| Normal door openings during healthy periods | 6,300 |
+| ... that raised no alert | **99.1%** |
+| ... labelled "door opening, recovering" by the rule | 59% (72% of openings of 10 min or more; short ones often leave no visible spike in a 10-minute reading) |
+| Fault onsets (no door opening nearby) wrongly labelled as a door opening | 8% (the label is a note only and never suppresses an alert) |
+| Real freeze failures caught | 41/41 (benchmark above) |
+
+## Slow loop: degradation and days until service
+
+`python scripts/train_degradation.py`: 300 simulated fridges x 60 days, split 60/20/20 by fridge. Labels: the first time
+the vaccine exceeds +8 °C for 60 min while compressor wear or a door-seal leak is active. Threshold chosen on validation
+fridges under a budget of 0.5 false maintenance alerts per unit-month (an alert is false only if the unit has no
+degradation at all).
+
+| Test fridges (simulated) | Result |
+|---|---|
+| Degradation failures caught before they happened | **22/30**, median **7 days** of warning |
+| Wearing units flagged | 37/45, median 10 days after the wear started |
+| False maintenance alerts | 0.25 per unit-month |
+| Cooling Health Index | median 98 on healthy unit-days, 91 three to seven days before a failure |
+
+While a compressor wears, the thermostat compensates by running longer, so temperature alone shows only a slow creep:
+the unit runs warmer than its own normal, most at its warmest moments, and its cooling dips get weaker. A 3-day baseline
+matters: against the first 3 days, that creep correlates about twice as strongly with true capacity loss as against day 1.
+
+## Real-data checks
+
+### Virtual Vial on 123 real household fridges (Bangkok)
+
+Dataset: Paviet-Salomon et al., "Dataset of household cold-chain conditions ... Bangkok", Recherche Data Gouv,
+DOI 10.57745/TMWYBQ, CC BY-NC-SA 4.0 (used for validation only). 5 days per fridge at 5-minute steps; the twin sees only
+the middle-shelf air temperature (every second reading, so 10-minute steps) and is compared with the product probe
+(meat-simulating gel, recorded in 0.5 °C steps, so errors below about 0.15 °C cannot be resolved).
+
+| | Result |
+|---|---|
+| Best-fit product time constant per fridge | **median 60 min** (middle half 45-120 min): the twin's prior |
+| Virtual Vial closer to the product than raw air | 106 of 123 fridges |
+| Median per-fridge error, twin vs raw air | 0.58 °C vs 0.67 °C |
+| After a one-day calibration at installation (offset learned on day 1, scored on days 2-5) | **median per-fridge error 0.28 °C**, mean 0.53 °C; 83% of readings inside the ± band |
+
+Most of the remaining error is a fixed offset: the product sat in a different spot from the air probe. A one-day
+reference measurement at installation removes it.
+
+### Slow loop on real freezer faults (Danish National Biobank)
+
+Dataset: Huang et al., "A labelled dataset for long-term performance of Ultra-low Temperature Freezers", Scientific
+Data 2023, Figshare 10.6084/m9.figshare.c.6805332, CC0. Results: `results/ult_freezer_validation.json`
+(`python scripts/validate_ult_freezers.py`).
+
+For 23 gradual faults from the service records (12 refrigerant leaks, 11 compressor faults, 17 freezers) we took the
+chamber temperature for the 2 months before the service date, resampled it to 10-minute readings, and ran the twin,
+features and slow loop against each freezer's own first-week baseline. 23 healthy 3-month windows (no fault within
+6 months, start-up months excluded) are the comparison. The degradation model is the one trained on simulated 2-8 °C
+fridges, applied unchanged at -80 °C.
+
+| | Result |
+|---|---|
+| Faults with a maintenance alert in the 14 days before the service call | **17/23 (74%)** |
+| Healthy 14-day stretches with a maintenance alert | **14%** (of 128) |
+| By fault type | refrigerant leaks **11/12**, compressor faults 6/11 |
+| Separation of the model score, last 14 days vs healthy days (AUC) | 0.68 (0.5 = none, 1.0 = perfect) |
+
+Caveats: 23 faults is a small sample; fault dates are service-request dates, and some freezers were probably already
+running visibly warm when the service was called, so "before the service call" is not always "before anyone noticed".
+The Cooling Health Index's scale (25 points per °C) is set for 2-8 °C units and is too sensitive at -80 °C, where door
+openings swing the chamber by tens of degrees; a freezer-specific scale is needed before showing it for freezers.
+
+### Getting the datasets
+
+They are not committed. `ml/data/external/bangkok/raw/` holds the 123 `.txt` files (Recherche Data Gouv API, one request
+per file); `ml/data/external/ult_freezers/raw/` holds selected monthly Revco logs read out of the Figshare zip with HTTP
+range requests (the full archive is 9.8 GB), plus `freezer_faults.csv` and `plan.json` listing the windows used.
 
 ## Next
 
+- Longer demo history so the slow loop shows a full wear story live
 - Chronos/TimesFM baseline; hybrid (LSTM on twin features)
-- Realism checks against public fridge traces; cross-simulator test
+- Cross-simulator test (Benamirouche et al. 2026 synthetic fridge dataset)
 - Lifeboat-routing calculation in code

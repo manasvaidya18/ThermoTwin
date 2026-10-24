@@ -1,0 +1,21 @@
+{
+  "fault_windows": 23,
+  "healthy_windows": 23,
+  "health_median_last_14_days_before_service": 98.86921296296286,
+  "health_median_same_freezers_30plus_days_before": 100.0,
+  "health_median_healthy_freezers": 100.0,
+  "auc_health_last14_vs_healthy": 0.63912038647343,
+  "auc_model_score_last14_vs_healthy": 0.6769692753623189,
+  "faults_with_health_below_85_in_last_14_days": "16/23",
+  "healthy_windows_with_health_below_85_anytime": "15/23",
+  "faults_with_model_alert_in_last_14_days": "17/23",
+  "healthy_windows_with_model_alert": "9/23",
+  "share_faults_alerted_last_14_days": 0.7391304347826086,
+  "share_healthy_14_day_stretches_alerted": 0.140625,
+  "healthy_14_day_stretches": 128,
+  "alerted_by_type": {
+    "compressor": "6/11",
+    "refrigerant_leak": "11/12"
+  },
+  "note": "Model trained on simulated 2-8 \u00b0C fridges and applied unchanged to -80 \u00b0C freezers; fault dates are service-request dates. AUC 0.5 = no signal, 1.0 = perfect separation."
+}

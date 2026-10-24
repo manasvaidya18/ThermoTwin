@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | gateway | `services/gateway` | 8080 | public `/api/*`, serves `frontend/` | telemetry, alerts |
 | telemetry | `services/telemetry` | 8101 | fridge registry, readings, demo clock (tables `facilities`, `fridges`, `fridge_stock`, `readings`) | none |
-| inference | `services/inference` | 8102 | loaded models (`ml/artifacts/models.pkl`); stateless | none |
+| inference | `services/inference` | 8102 | loaded models (`ml/artifacts/models.pkl`): twin, freeze/heat risk, cause, sensor check, door-recovery check, and the slow loop (Cooling Health Index, days until service); stateless | none |
 | alerts | `services/alerts` | 8103 | Guardian tiers, Cause Cards, vaccine-aware alerts (table `alert_events`) | telemetry, inference |
 
 Each service has `service.py` (logic, plain Python) and `app.py` (FastAPI routes). `common/` holds the settings
@@ -15,6 +15,7 @@ and clock labels.
 
 - **telemetry:** `GET /health`, `GET /fridges`, `GET /readings`, `GET /clock`, `POST /clock`
 - **inference:** `GET /health`, `GET /info`, `POST /score {fridges, readings}` returns one scored row per reading
+  (risk, countdown, cause, `recovery` state, `health`, `service_risk7`, `days_to_service`, `maintenance_due`)
 - **alerts:** `GET /health`, `GET /fleet?tick=`, `GET /fridges/{id}?tick=&hours=`, `GET /fridges/{id}/summary?tick=`, `GET /history?tick=&fridge_id=`
 - **gateway:** see the root README
 
@@ -49,3 +50,15 @@ simulates them and stores the readings in the database:
 - Lonikand is healthy.
 
 Facility names and vaccine stock come from `db/seed/`.
+
+## Fields added for the new ML parts
+
+Every fridge in `/api/fridges` and `/api/fridges/{id}` now also has:
+
+- `recovery`: `{state: "" | "watching" | "recovered", message}`. When a Normal fridge just recovered from a door
+  opening, `message` reads "Door opening, recovering: no action needed".
+- `maintenance`: `{health_index (0-100 or null while the unit's normal is learned), service_risk_7d, days_to_service,
+  due, message}` from the slow loop.
+
+Alert levels are unchanged by both. The demo scenario has only 3 days of history, so the slow loop uses day 1 as the
+baseline there (3 days in real use) and moves only a little during the demo.

@@ -80,9 +80,16 @@ def main() -> None:
                    benchmark=bench.to_dict(orient="records"),
                    cause_confusion=cause["confusion"].round(3).to_dict())
     (OUT / "summary.json").write_text(json.dumps(summary, indent=2, default=float))
+    models = {"freeze": res["freeze"]["model"], "heat": res["heat"]["model"], "cause": cause["model"],
+              "thresholds": summary["thresholds"]}
+    old_path = ARTIFACTS / "models.pkl"
+    if old_path.exists():                     # keep the slow-loop model (trained separately by train_degradation.py)
+        with open(old_path, "rb") as f:
+            prev = pickle.load(f)
+        if "degradation" in prev:
+            models["degradation"] = prev["degradation"]
     with open(ARTIFACTS / "models.pkl", "wb") as f:
-        pickle.dump({"freeze": res["freeze"]["model"], "heat": res["heat"]["model"], "cause": cause["model"],
-                     "thresholds": summary["thresholds"]}, f)
+        pickle.dump(models, f)
     print(f"\nSaved results/benchmark.csv, results/summary.json, artifacts/models.pkl  (total {time.time() - t0:.0f}s)")
 
 

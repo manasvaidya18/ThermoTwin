@@ -53,3 +53,13 @@ def test_vaccine_aware_downgrade():
     assert adjust_tier("Critical", "freeze", ["OPV"], cat)[0] == "Critical"        # measured breaches never downgraded
     assert adjust_tier("Early warning", "heat", ["OPV"], cat)[0] == "Early warning"
     assert adjust_tier("Early warning", "freeze", ["NewVaccine"], cat)[0] == "Early warning"  # unknown = sensitive
+
+
+def test_fridges_carry_recovery_and_maintenance(client):
+    client.post("/api/clock", json={"action": "reset"})
+    f = client.get("/api/fridges").json()["fridges"]
+    for x in f:
+        assert set(x["recovery"]) == {"state", "message"}
+        m = x["maintenance"]
+        assert {"health_index", "service_risk_7d", "days_to_service", "due", "message"} <= set(m)
+        assert m["health_index"] is None or 0 <= m["health_index"] <= 100

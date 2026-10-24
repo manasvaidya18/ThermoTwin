@@ -6,6 +6,8 @@
   function tierText(t) { return hi() ? (HI[t] || t) : t; }
   function msg(d) {
     var p = d.ttb && d.ttb.p50;
+    if (d.tier === 'Normal' && d.recovery && d.recovery.state === 'recovered')
+      return hi() ? 'दरवाज़ा खुला था, तापमान सामान्य हो रहा है: कुछ करने की ज़रूरत नहीं' : d.recovery.message;
     if (d.tier === 'Normal') return hi() ? 'स्थिर, 2–8 °C के भीतर' : 'Stable, within 2–8 °C';
     if (d.kind === 'freeze' && p && d.tier !== 'Critical') return hi() ? 'लगभग ' + p + ' मिनट में वैक्सीन जम सकती है' : 'Vaccine may freeze in about ' + p + ' min';
     if (d.kind === 'freeze' && d.tier === 'Critical') return hi() ? 'हवा एक घंटे से −0.5 °C या नीचे है' : 'Air at or below −0.5 °C for an hour';

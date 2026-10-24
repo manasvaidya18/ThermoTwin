@@ -13,7 +13,7 @@ from backend.common import config
 from backend.common.db import connect, vaccine_catalogue
 from backend.common.timefmt import clock_label
 
-from .rules import CARD, TIER_ORDER, lst, message, num, tier_timeline
+from .rules import CARD, TIER_ORDER, lst, maintenance_info, message, num, recovery_info, tier_timeline
 from .vaccines import adjust_tier, freeze_sensitive_stock
 
 
@@ -68,16 +68,21 @@ class AlertService:
         title, steps = CARD.get(cause_key, CARD["none"])
         risk = row["risk_freeze"] if kind != "heat" else row["risk_heat"]
         pre = "f" if kind != "heat" else "h"
+        recovery = recovery_info(row)
+        msg = message(tier, kind, row)
+        if tier == "Normal" and recovery["state"] == "recovered":
+            msg = recovery["message"]
         return dict(
             id=fid, facility=m["facility"], fridge=m["fridge"], taluka=m["taluka"], cls=m["cls"],
             tick=int(t), clock=clock_label(t), tier=tier, kind=kind,
-            message=message(tier, kind, row),
+            message=msg,
             air=round(float(row["air"]), 1), vial=round(float(row["vial"]), 1), vial_sd=round(float(row["vial_sd"]), 2),
             air_in_1h=round(float(row["air_fc6"]), 1), slope_per_10min=round(float(row["slope"]), 2),
             risk_2h=round(float(risk), 3),
             ttb=dict(p10=num(row[f"ttb_{pre}_p10"]), p50=num(row[f"ttb_{pre}_p50"]), p90=num(row[f"ttb_{pre}_p90"])),
             cause=dict(key=cause_key, title=title, steps=steps, confidence=round(float(row["cause_conf"]), 2)),
             stock=stock, freeze_sensitive=freeze_sensitive_stock(stock, self.catalogue), stock_note=stock_note,
+            recovery=recovery, maintenance=maintenance_info(row),
         )
 
     def detail(self, fid: str, t: int, hours: int = 24) -> dict:

@@ -21,3 +21,6 @@ _local/
 
 # Database is created on first start from db/schema.sql + db/seed
 db/*.db
+
+# Downloaded public datasets (not redistributed)
+ml/data/external/

@@ -70,7 +70,7 @@ On Windows you can use the launchers in `scripts/` instead. For the offline UI w
 |---|---|---|
 | GET | `/api/state` | demo clock |
 | POST | `/api/clock` `{action: play\|pause\|reset\|step, ticks}` | demo clock |
-| GET | `/api/fridges` | every fridge: tier, Virtual Vial, risk, time to breach, cause, stock |
+| GET | `/api/fridges` | every fridge: tier, Virtual Vial, risk, time to breach, cause, stock, door-recovery note, cooling health and days until service |
 | GET | `/api/fridges/{id}?hours=24` | one fridge with history, forecast and 24 h exposure |
 | GET | `/api/alerts` | fridges not in Normal |
 | GET | `/api/alerts/history?fridge_id=` | tier changes so far (from the database) |

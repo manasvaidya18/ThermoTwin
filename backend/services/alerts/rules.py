@@ -77,6 +77,36 @@ def message(tier: str, kind: str, row: pd.Series) -> str:
     return "Stable, within 2–8 °C"
 
 
+RECOVERY = {0: ("", ""), 1: ("watching", "Sudden rise: watching for recovery"),
+            2: ("recovered", "Door opening, recovering: no action needed")}
+
+
+def recovery_info(row: pd.Series) -> dict:
+    v = row.get("recovery", 0)
+    state, msg = RECOVERY.get(int(v) if v == v and v is not None else 0, ("", ""))
+    return dict(state=state, message=msg)
+
+
+def maintenance_info(row: pd.Series) -> dict:
+    """Slow loop: Cooling Health Index and days until service (None while the unit's normal is still being learned)."""
+    h = row.get("health")
+    if h is None or h != h:
+        return dict(health_index=None, service_risk_7d=None, days_to_service=None, due=False,
+                    message="Learning this unit's normal (first day of data)")
+    due = bool(row.get("maintenance_due") == 1)
+    days = num(row.get("days_to_service"))
+    risk = num(row.get("service_risk7"))
+    if due:
+        msg = (f"Cooling weakening: book a technician, failure possible in about {days:.0f} days" if days
+               else "Cooling weakening: book a technician this week")
+    elif h < 85:
+        msg = "Cooling a little weaker than this unit's normal: keep watching"
+    else:
+        msg = "Cooling normal"
+    return dict(health_index=int(round(h)), service_risk_7d=None if risk is None else round(risk, 3),
+                days_to_service=days, due=due, message=msg)
+
+
 def num(v) -> float | None:
     return None if v is None or v != v else float(v)
 

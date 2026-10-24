@@ -6,7 +6,7 @@
 
   function api(path, body) {
     var ctl = new AbortController();
-    setTimeout(function () { ctl.abort(); }, 1500);
+    setTimeout(function () { ctl.abort(); }, 6000);   // generous: a busy demo laptop can be slow; offline mode fails fast anyway
     return fetch(path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal }
                             : { signal: ctl.signal }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
   }

@@ -1,0 +1,25 @@
+{
+  "fridges": 123,
+  "readings_per_fridge": 734,
+  "tau_prior_min": 60.0,
+  "mae_vial_prior": 0.7856748780113825,
+  "mae_raw_air": 0.8971598878139618,
+  "median_fridge_mae_vial": 0.5846581583886208,
+  "median_fridge_mae_air": 0.6653170391061451,
+  "fridges_where_vial_beats_air": 106,
+  "within_2sd_share": 0.36403688059226963,
+  "mae_vial_best_tau": 0.7583467010208308,
+  "best_tau_median_min": 60.0,
+  "best_tau_iqr_min": [
+    45.0,
+    120.0
+  ],
+  "mean_abs_offset": 0.6742122906615223,
+  "days2to5_mae_raw_air": 0.8925932754581783,
+  "days2to5_mae_vial": 0.7804254012276405,
+  "days2to5_mae_vial_after_day1_calibration": 0.5349766645652901,
+  "days2to5_median_fridge_mae_calibrated": 0.28385355579619126,
+  "days2to5_within_2sd_calibrated": 0.82746313903817,
+  "quantisation_floor": 0.145,
+  "note": "Product probe recorded in 0.5 \u00b0C steps; errors below ~0.15 \u00b0C are not resolvable."
+}

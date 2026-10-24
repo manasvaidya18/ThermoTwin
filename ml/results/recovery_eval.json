@@ -1,0 +1,11 @@
+{
+  "test_fridges": 48,
+  "door_openings_healthy": 6300,
+  "door_openings_no_alert_share": 0.9907936507936508,
+  "door_openings_labelled_recovering_share": 0.5931746031746031,
+  "long_openings_10min_plus": 995,
+  "long_openings_labelled_share": 0.7185929648241206,
+  "fault_onsets_without_door": 62,
+  "fault_onsets_called_door_share": 0.08064516129032258,
+  "note": "Short openings (1-3 min) often leave no visible spike in a 10-minute logger reading; the label matters for the longer ones, and the no-alert share covers all of them."
+}

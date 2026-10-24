@@ -59,3 +59,31 @@ def test_repeat_alerts_count_once():
     a = np.zeros((1, 100), dtype=bool)
     a[0, [10, 11, 20, 21, 80]] = True      # flicker at 10 and 20 is one incident; 80 is a new one
     assert episodes(a) == [(0, 10), (0, 80)]
+
+
+def test_recovery_rule_labels_a_door_spike_but_not_a_steady_fall():
+    from thermotwin.recovery import RECOVERED, recovery_states
+    air = np.full((2, 30), 5.0)
+    air[0, 10] = 8.0                       # door opening: one high reading, back next reading
+    air[1, 10:] = 5.0 - 0.3 * np.arange(20)  # fault: steady fall, never recovers
+    innov = np.zeros_like(air)
+    vial = np.full_like(air, 5.0)
+    st = recovery_states(air, innov, vial)
+    assert (st[0] == RECOVERED).any()
+    assert not (st[1] == RECOVERED).any()
+
+
+def test_degradation_window_features_flag_a_warming_unit():
+    import pandas as pd
+    from thermotwin.degradation import DAY, window_features
+    T = 6 * DAY
+    t = np.arange(T)
+    base = 5 + 0.8 * np.sin(2 * np.pi * t / 6)           # thermostat cycling
+    warm = base + np.clip((t - 3 * DAY) / DAY, 0, None) * 0.8   # runs warmer from day 3
+    rows = []
+    for u, a in enumerate((base, warm)):
+        rows.append(pd.DataFrame({"unit": u, "tick": t, "air": a, "d1": np.diff(a, prepend=a[0]), "innov": 0.0,
+                                  "hour": (t // 6) % 24, "is_domestic": 0.0}))
+    w = window_features(pd.concat(rows, ignore_index=True), baseline_days=3)
+    end = w[w["tick"] == T - 1].set_index("unit")
+    assert end.loc[0, "health"] > 95 and end.loc[1, "health"] < end.loc[0, "health"] - 10

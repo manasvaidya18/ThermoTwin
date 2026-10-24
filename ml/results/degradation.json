@@ -1,0 +1,18 @@
+{
+  "units": 300,
+  "days": 60,
+  "threshold": 0.182,
+  "budget_false_per_unit_month": 0.5,
+  "test": {
+    "failures": 30,
+    "caught": 22,
+    "median_warning_days": 7.0,
+    "units_with_wear": 45,
+    "wear_flagged": 37,
+    "median_days_from_wear_start_to_flag": 10.0,
+    "false_alerts_per_unit_month": 0.25
+  },
+  "health_median_3to7_days_before_failure": 91.24363425925922,
+  "health_median_healthy_unit_days": 97.60850694444444,
+  "seconds": 26
+}

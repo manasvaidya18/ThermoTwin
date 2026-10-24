@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prediction engine: one scored reading (POST /score -> rows[])",
+  "type": "object",
+  "properties": {
+    "fridge_id": {"type": "string"},
+    "tick": {"type": "integer", "description": "10-minute reading index"},
+    "air": {"type": "number"}, "vial": {"type": "number", "description": "Virtual Vial: estimated vaccine temperature"},
+    "vial_sd": {"type": "number"}, "slope": {"type": "number", "description": "trend, °C per 10 min"},
+    "air_fc3": {"type": "number"}, "air_fc6": {"type": "number"}, "air_fc12": {"type": "number"},
+    "vial_fc3": {"type": "number"}, "vial_fc6": {"type": "number"}, "vial_fc12": {"type": "number"},
+    "risk_freeze": {"type": "number", "description": "calibrated chance a freeze starts within 2 h"},
+    "risk_freeze1h": {"type": "number"},
+    "ttb_f_p10": {"type": ["number", "null"]}, "ttb_f_p50": {"type": ["number", "null"]}, "ttb_f_p90": {"type": ["number", "null"]},
+    "risk_heat": {"type": "number"},
+    "ttb_h_p10": {"type": ["number", "null"]}, "ttb_h_p50": {"type": ["number", "null"]}, "ttb_h_p90": {"type": ["number", "null"]},
+    "cause": {"enum": ["cooling_too_hard", "power_cut", "weak_cooling", "sensor_fault", "none"]},
+    "cause_conf": {"type": "number"},
+    "sensor": {"type": "boolean", "description": "trust check failed (stuck or missing readings)"},
+    "recovery": {"enum": [0, 1, 2], "description": "0 none, 1 spike watching, 2 door opening recovered"},
+    "why_freeze": {"type": "string"}, "why_heat": {"type": "string"},
+    "health": {"type": ["number", "null"], "description": "Cooling Health Index 0-100"},
+    "service_risk7": {"type": ["number", "null"]}, "days_to_service": {"type": ["number", "null"]},
+    "maintenance_due": {"type": ["number", "null"]}
+  }
+}

@@ -5,22 +5,24 @@ __pycache__/
 .venv/
 venv/
 
-# Large or regenerable outputs (models.pkl is kept so the live demo runs after cloning)
-ml/artifacts/models_seed*.pkl
-ml/results/*.npz
+# Secrets and local settings (copy .env.example to .env)
+.env
+
+# Django database (created by migrate + seed_demo)
+backend/db.sqlite3
+*.sqlite3
+
+# Large or regenerable model outputs (models.pkl is kept so the demo runs after cloning)
+prediction_engine/models/models_seed*.pkl
+prediction_engine/results/*.npz
+
+# Downloaded public datasets (not redistributed)
+prediction_engine/data/external/
 
 # Hackathon brief PDFs from the organisers and packaged zips
 /*-*-*-*-*.pdf
 *.zip
 
-# Local tooling
+# Local tooling and local-only files
 .claude/
-
-# Local-only files (organiser PDFs, old zips, old code kept for reference)
 _local/
-
-# Database is created on first start from db/schema.sql + db/seed
-db/*.db
-
-# Downloaded public datasets (not redistributed)
-ml/data/external/

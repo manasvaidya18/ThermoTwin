@@ -4,7 +4,7 @@ ThermoTwin UI demo
 Windows: double-click START_DEMO.bat. The browser opens http://localhost:8080.
 Mac/Linux: open a terminal in this folder and run:  python3 serve.py 8080
 Then open http://localhost:8080. Python 3 is the only requirement. Everything works offline.
-Live model instead of fixed data: START_LIVE.bat (needs pip install -r ../backend/requirements.txt).
+Live model instead of fixed data: START_LIVE.bat (needs: pip install -r ../backend/requirements.txt).
 
 Phone app (clinic handler)  ->  phone.html
   Home > tap ILR-1 > Cause Card > "I've done this"

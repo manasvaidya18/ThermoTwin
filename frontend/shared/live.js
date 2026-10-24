@@ -1,4 +1,4 @@
-// Live mode: when the page is served by the ThermoTwin API (python backend/run_all.py), pull real model output every
+// Live mode: when the page is served by the ThermoTwin API (python scripts/run_demo.py), pull real model output every
 // 2 s and show a demo-clock bar. When the API is absent (static demo), nothing changes and the fixed data stays.
 (function () {
   var TIER_CLASS = { 'Normal': 'ok', 'Advisory': 'info', 'Early warning': 'warn', 'Critical': 'crit', 'Sensor check': 'sensor' };

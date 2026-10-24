@@ -1,64 +1,26 @@
-# Backend services
-
-| Service | Folder | Port | Owns | Calls |
-|---|---|---|---|---|
-| gateway | `services/gateway` | 8080 | public `/api/*`, serves `frontend/` | telemetry, alerts |
-| telemetry | `services/telemetry` | 8101 | fridge registry, readings, demo clock (tables `facilities`, `fridges`, `fridge_stock`, `readings`) | none |
-| inference | `services/inference` | 8102 | loaded models (`ml/artifacts/models.pkl`): twin, freeze/heat risk, cause, sensor check, door-recovery check, and the slow loop (Cooling Health Index, days until service); stateless | none |
-| alerts | `services/alerts` | 8103 | Guardian tiers, Cause Cards, vaccine-aware alerts (table `alert_events`) | telemetry, inference |
-
-Each service has `service.py` (logic, plain Python) and `app.py` (FastAPI routes). `common/` holds the settings
-(`config.py`, all overridable by environment variables), database access (`db.py`), the HTTP client (`http.py`)
-and clock labels.
-
-## Service APIs
-
-- **telemetry:** `GET /health`, `GET /fridges`, `GET /readings`, `GET /clock`, `POST /clock`
-- **inference:** `GET /health`, `GET /info`, `POST /score {fridges, readings}` returns one scored row per reading
-  (risk, countdown, cause, `recovery` state, `health`, `service_risk7`, `days_to_service`, `maintenance_due`)
-- **alerts:** `GET /health`, `GET /fleet?tick=`, `GET /fridges/{id}?tick=&hours=`, `GET /fridges/{id}/summary?tick=`, `GET /history?tick=&fridge_id=`
-- **gateway:** see the root README
-
-## Run
+# Backend (Django + Django REST Framework)
 
 ```bash
-python backend/run_all.py          # one process (TT_MODE=local), port 8080
-python backend/run_services.py     # four processes (TT_MODE=http)
-python -m pytest -q backend/tests
+python backend/manage.py migrate
+python backend/manage.py seed_demo          # Pune demo network + demo users
+python backend/manage.py runserver 8080     # or: python scripts/run_demo.py (also starts the prediction engine)
+python backend/manage.py test tests         # from the repo root
+python backend/manage.py createsuperuser    # Django admin at /admin/
 ```
 
-## Environment variables
+| App | Models | Endpoints |
+|---|---|---|
+| `accounts` | `Profile` (role: admin, officer, employee, technician, driver; organization; facilities) | `/api/auth/login`, `/logout`, `/me`, `/register` |
+| `organizations` | `Organization` (government / private) | `/api/organizations` |
+| `facilities` | `Facility`, `StorageUnit`, `Vaccine`, `StockItem`, `Technician` | `/api/facilities`, `/api/units`, `/api/vaccines`, `/api/stock`, `/api/technicians` |
+| `telemetry` | `Reading`, `Device` (hashed key) | `/api/state`, `/api/clock`, `/api/readings` |
+| `alerts` | `AlertEvent` (tier changes, escalation level), `Acknowledgement` | `/api/fridges`, `/api/fridges/<id>`, `/api/alerts`, `/api/alerts/history`, `/api/alerts/<id>/acknowledge`, `/api/units/<id>/live`, `/api/health` |
+| `incidents` | `Incident`, `IncidentAction` | `/api/incidents`, `/api/incidents/<id>/actions`, `/resolve` |
+| `reports` | (none) | `/api/reports/summary`, `/alerts.csv`, `/incidents.csv` |
 
-| Variable | Default |
-|---|---|
-| `TT_MODE` | `local` (or `http`) |
-| `TT_DB` | `db/thermotwin.db` |
-| `TT_MODELS` | `ml/artifacts/models.pkl` |
-| `TT_SCENARIO` | `services/telemetry/scenarios/pune_demo.json` |
-| `TT_FRONTEND` | `frontend/` |
-| `TT_TELEMETRY_URL`, `TT_INFERENCE_URL`, `TT_ALERTS_URL` | `http://127.0.0.1:8101` / `8102` / `8103` |
+Each app has `models.py`, `serializers.py`, `views.py`, `services.py` (the logic) and `urls.py`. Alert rules live in
+`apps/alerts/rules.py` and `vaccines.py`; `apps/alerts/prediction_client.py` calls the prediction engine at
+`TT_ENGINE_URL`, or runs it in-process if it is not reachable.
 
-## Demo scenario
-
-`services/telemetry/scenarios/pune_demo.json` scripts six Pune fridges over 3 days. On first start, telemetry
-simulates them and stores the readings in the database:
-- PHC Wagholi ILR-1 drifts cold: Advisory, then Early warning, then Critical.
-- Junnar has a power cut.
-- Baramati has weak cooling.
-- Khed has a stuck probe.
-- Shirur runs cold.
-- Lonikand is healthy.
-
-Facility names and vaccine stock come from `db/seed/`.
-
-## Fields added for the new ML parts
-
-Every fridge in `/api/fridges` and `/api/fridges/{id}` now also has:
-
-- `recovery`: `{state: "" | "watching" | "recovered", message}`. When a Normal fridge just recovered from a door
-  opening, `message` reads "Door opening, recovering: no action needed".
-- `maintenance`: `{health_index (0-100 or null while the unit's normal is learned), service_risk_7d, days_to_service,
-  due, message}` from the slow loop.
-
-Alert levels are unchanged by both. The demo scenario has only 3 days of history, so the slow loop uses day 1 as the
-baseline there (3 days in real use) and moves only a little during the demo.
+Permissions: reading dashboards is open (demo); changing network setup needs an officer; acknowledging alerts and
+working incidents needs any logged-in user; devices post readings with their own key (`X-Device-Key`).

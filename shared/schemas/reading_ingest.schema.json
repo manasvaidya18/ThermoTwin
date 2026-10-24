@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "POST /api/readings",
+  "description": "Readings from a device (device_id + header X-Device-Key) or from a logged-in user (unit). Stored as 10-minute ticks.",
+  "type": "object",
+  "properties": {
+    "device_id": {"type": "string", "examples": ["esp32-wagholi"]},
+    "unit": {"type": "string", "examples": ["wagholi-ilr1"]},
+    "readings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "temp_c"],
+        "properties": {
+          "timestamp": {"type": "string", "format": "date-time"},
+          "temp_c": {"type": ["number", "null"], "minimum": -100, "maximum": 70}
+        }
+      }
+    }
+  },
+  "required": ["readings"]
+}

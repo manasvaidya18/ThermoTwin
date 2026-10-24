@@ -1,1 +1,0 @@
-# ThermoTwin Django package marker

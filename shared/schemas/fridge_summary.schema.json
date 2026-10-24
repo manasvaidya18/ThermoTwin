@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GET /api/fridges -> fridges[] (and GET /api/fridges/<id>, which adds series, forecast, exposure_24h)",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string"}, "facility": {"type": "string"}, "fridge": {"type": "string"}, "taluka": {"type": "string"},
+    "cls": {"type": "string"}, "tick": {"type": "integer"}, "clock": {"type": "string"},
+    "tier": {"enum": ["Critical", "Early warning", "Sensor check", "Advisory", "Normal"]},
+    "kind": {"enum": ["freeze", "heat", "sensor", ""]},
+    "message": {"type": "string"}, "why": {"type": "string", "description": "SHAP reasons for an early warning"},
+    "air": {"type": "number"}, "vial": {"type": "number"}, "vial_sd": {"type": "number"},
+    "air_in_1h": {"type": "number"}, "slope_per_10min": {"type": "number"}, "risk_2h": {"type": "number"},
+    "ttb": {"type": "object", "properties": {"p10": {"type": ["number", "null"]}, "p50": {"type": ["number", "null"]}, "p90": {"type": ["number", "null"]}}},
+    "cause": {"type": "object", "properties": {"key": {"type": "string"}, "title": {"type": "string"}, "steps": {"type": "array", "items": {"type": "string"}}, "confidence": {"type": "number"}}},
+    "stock": {"type": "array", "items": {"type": "string"}}, "freeze_sensitive": {"type": "array", "items": {"type": "string"}},
+    "stock_note": {"type": "string"},
+    "recovery": {"type": "object", "properties": {"state": {"enum": ["", "watching", "recovered"]}, "message": {"type": "string"}}},
+    "maintenance": {"type": "object", "properties": {"health_index": {"type": ["integer", "null"]}, "service_risk_7d": {"type": ["number", "null"]}, "days_to_service": {"type": ["number", "null"]}, "due": {"type": "boolean"}, "message": {"type": "string"}}},
+    "technicians": {"type": "array", "items": {"type": "object", "properties": {"name": {"type": "string"}, "phone": {"type": "string"}}}}
+  }
+}

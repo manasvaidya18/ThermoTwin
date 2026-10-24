@@ -14,10 +14,9 @@ from _django import run, setup
 
 def job() -> None:
     from apps.alerts import services as alerts
-    from apps.telemetry.models import Reading
-    from apps.telemetry.services import LIVE
+    from apps.telemetry.services import live_units
 
-    units = list(Reading.objects.filter(source=LIVE).values_list("unit_id", flat=True).distinct())
+    units = live_units()
     if not units:
         print("no live readings yet")
     for u in units:

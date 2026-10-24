@@ -9,7 +9,7 @@ likely cause and say why; a daily slow loop predicts how many days remain before
 
 ```
 thermotwin/
-├── backend/                 Django + Django REST Framework (users, network, readings, alerts, incidents, reports)
+├── backend/                 Django + DRF on PostgreSQL; readings in InfluxDB (users, network, alerts, incidents, reports)
 │   ├── config/              settings, urls, asgi, wsgi, middleware, frontend serving
 │   ├── apps/
 │   │   ├── accounts/        login (token), roles: officer / employee / technician / driver / admin
@@ -49,6 +49,15 @@ website + phone app  ◀──────── /api/* ────────
 
 Django handles users, the network, readings, alerts and tickets. The ML runs in the FastAPI prediction engine; if it is
 not running, Django runs the same engine in-process so the demo still works.
+
+**Databases**
+
+| Store | Holds | Fallback |
+|---|---|---|
+| **PostgreSQL** (Django ORM) | users and roles, organizations, facilities, storage units, vaccines, stock, technicians, devices, alert events, acknowledgements, incidents | SQLite file if `POSTGRES_DB` is not set |
+| **InfluxDB 2.x** | `temperature` (every sensor reading: tags unit, source) and `prediction` (Virtual Vial, freeze/heat risk, cooling health over time) | a PostgreSQL table if InfluxDB is not configured or not reachable |
+
+Configure both in `.env` (see `.env.example`).
 
 ## Run
 

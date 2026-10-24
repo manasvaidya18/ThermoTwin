@@ -1,16 +1,68 @@
 {
   "name": "pune_demo",
   "description": "3-day Pune district demo. Fault times are minutes from the start of the scenario (1440 = 1 day).",
+  "start_time": "2026-10-22T00:00:00+05:30",
   "seed": 7,
   "days": 3,
   "start_tick": 328,
   "end_tick": 431,
   "fridges": {
-    "wagholi-ilr1":  {"setpoint": 4.6, "amb_base": 31, "faults": [{"kind": "thermostat_cold", "start": 3000, "end": 4320, "setpoint": -3.0, "ramp": 90}]},
-    "junnar-ilr01":  {"setpoint": 4.8, "amb_base": 34, "faults": [{"kind": "power_cut", "start": 3280, "end": 3440}]},
-    "baramati-df01": {"setpoint": 5.0, "amb_base": 35, "faults": [{"kind": "compressor_wear", "start": 1440, "end": 4320, "rate": 0.32}]},
-    "khed-ilr03":    {"setpoint": 4.8, "amb_base": 30, "faults": [{"kind": "sensor_stuck", "start": 3180, "end": 4320}]},
-    "shirur-ilr01":  {"setpoint": 3.0, "amb_base": 33, "faults": []},
-    "lonikand-ilr2": {"setpoint": 4.5, "amb_base": 30, "faults": []}
+    "wagholi-ilr1": {
+      "setpoint": 4.6,
+      "amb_base": 31,
+      "faults": [
+        {
+          "kind": "thermostat_cold",
+          "start": 3000,
+          "end": 4320,
+          "setpoint": -3.0,
+          "ramp": 90
+        }
+      ]
+    },
+    "junnar-ilr01": {
+      "setpoint": 4.8,
+      "amb_base": 34,
+      "faults": [
+        {
+          "kind": "power_cut",
+          "start": 3280,
+          "end": 3440
+        }
+      ]
+    },
+    "baramati-df01": {
+      "setpoint": 5.0,
+      "amb_base": 35,
+      "faults": [
+        {
+          "kind": "compressor_wear",
+          "start": 1440,
+          "end": 4320,
+          "rate": 0.32
+        }
+      ]
+    },
+    "khed-ilr03": {
+      "setpoint": 4.8,
+      "amb_base": 30,
+      "faults": [
+        {
+          "kind": "sensor_stuck",
+          "start": 3180,
+          "end": 4320
+        }
+      ]
+    },
+    "shirur-ilr01": {
+      "setpoint": 3.0,
+      "amb_base": 33,
+      "faults": []
+    },
+    "lonikand-ilr2": {
+      "setpoint": 4.5,
+      "amb_base": 30,
+      "faults": []
+    }
   }
 }

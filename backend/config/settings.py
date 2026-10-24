@@ -1,7 +1,8 @@
 """Django settings for the ThermoTwin backend.
 
-Values come from environment variables (see .env.example at the repo root). SQLite by default; PostgreSQL when
-POSTGRES_DB is set.
+Values come from environment variables (see .env.example at the repo root).
+Databases: PostgreSQL for application data (when POSTGRES_DB is set; SQLite otherwise, e.g. for quick tests) and
+InfluxDB for time series (when INFLUX_URL and INFLUX_TOKEN are set; otherwise readings use a database table).
 """
 from __future__ import annotations
 
@@ -113,3 +114,7 @@ FRONTEND_DIR = Path(os.environ.get("TT_FRONTEND", REPO_ROOT / "frontend"))
 ENGINE_URL = os.environ.get("TT_ENGINE_URL", "")            # empty = run the prediction engine in-process
 SCENARIO_PATH = Path(os.environ.get("TT_SCENARIO", BASE_DIR / "apps" / "telemetry" / "scenarios" / "pune_demo.json"))
 ESCALATE_AFTER_MIN = int(os.environ.get("TT_ESCALATE_AFTER_MIN", 30))
+
+# Time series: sensor readings and model outputs go to InfluxDB 2.x when configured, else to the database table.
+INFLUX = dict(url=os.environ.get("INFLUX_URL", ""), token=os.environ.get("INFLUX_TOKEN", ""),
+              org=os.environ.get("INFLUX_ORG", "thermotwin"), bucket=os.environ.get("INFLUX_BUCKET", "thermotwin"))

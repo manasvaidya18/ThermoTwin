@@ -15,12 +15,11 @@ def main() -> None:
     from apps.alerts import services as alerts
     from apps.incidents.models import Incident
     from apps.incidents.services import open_incident
-    from apps.telemetry.models import Reading
-    from apps.telemetry.services import LIVE, clock
+    from apps.telemetry.services import clock, live_units
 
     eng = alerts.engine()
     summaries = eng.fleet(clock().end)
-    for u in Reading.objects.filter(source=LIVE).values_list("unit_id", flat=True).distinct():
+    for u in live_units():
         s = alerts.live_summary(u)
         if s:
             summaries.append(s)

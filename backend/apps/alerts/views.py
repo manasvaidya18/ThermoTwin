@@ -79,5 +79,7 @@ def unit_live(request, unit: str):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def health(request):
-    return Response({"backend": {"ok": True, "framework": "django"},
+    from django.db import connection
+    return Response({"backend": {"ok": True, "framework": "django", "database": connection.vendor},
+                     "timeseries": {"store": telemetry.store().name},
                      "prediction_engine": {"ok": True, "mode": prediction_client.mode()}})

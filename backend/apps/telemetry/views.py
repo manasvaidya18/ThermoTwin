@@ -7,8 +7,8 @@ from apps.accounts.permissions import role_of
 from apps.facilities.models import StorageUnit
 
 from . import services
-from .models import Device, Reading
-from .serializers import ClockActionSerializer, IngestSerializer, ReadingSerializer
+from .models import Device
+from .serializers import ClockActionSerializer, IngestSerializer
 
 
 def _public_state() -> dict:
@@ -41,10 +41,9 @@ def readings(request):
     POST /api/readings: {device_id, readings:[{timestamp, temp_c}]} with header X-Device-Key,
                         or {unit, readings:[...]} as a logged-in user."""
     if request.method == "GET":
-        qs = Reading.objects.filter(source=request.GET.get("source", services.LIVE))
-        if request.GET.get("unit"):
-            qs = qs.filter(unit_id=request.GET["unit"])
-        return Response(ReadingSerializer(qs.order_by("-tick")[:500], many=True).data)
+        src = request.GET.get("source", services.LIVE)
+        rows = services.readings(src, request.GET.get("unit"))
+        return Response({"source": src, "store": services.store().name, "readings": rows[-500:]})
 
     s = IngestSerializer(data=request.data)
     s.is_valid(raise_exception=True)

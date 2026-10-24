@@ -38,6 +38,27 @@ class AlertEngine:
                       for fid, g in feat.groupby("fridge_id")}
         self._tiers = {fid: dict(zip(self._rows[fid].index, tier_timeline(self._rows[fid], self.thresholds)))
                        for fid in self.ids if fid in self._rows}
+        self._store_predictions(feat)
+
+    def _store_predictions(self, feat: pd.DataFrame) -> None:
+        """Write the model's outputs (Virtual Vial, risk, cooling health) to InfluxDB as a time series."""
+        st = telemetry.store()
+        if st.name != "influxdb":
+            return
+        try:
+            rows = []
+            for fid, g in feat.groupby("fridge_id"):
+                t0 = telemetry.tick_time(self.source, fid, 0)
+                if t0 is None:
+                    continue
+                for r in g.itertuples(index=False):
+                    rows.append(dict(unit=fid, tick=int(r.tick), time=t0 + pd.Timedelta(minutes=10 * int(r.tick)),
+                                     vial=r.vial, risk_freeze=r.risk_freeze, risk_heat=r.risk_heat,
+                                     health=None if r.health != r.health else r.health))
+            st.write_predictions(self.source, rows)
+        except Exception as e:      # noqa: BLE001 - storing history must never break alerting
+            import logging
+            logging.getLogger(__name__).warning("could not write predictions to InfluxDB: %s", e)
 
     # ---- persistence -------------------------------------------------------------------------------------------------
     def record_events(self) -> int:

@@ -1,19 +1,19 @@
-"""Telemetry services: the demo scenario, the demo clock, reading storage and device ingestion."""
+"""Telemetry services: the demo scenario, the demo clock, reading storage (InfluxDB or the database) and ingestion."""
 from __future__ import annotations
 
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 from functools import lru_cache
 
 from django.conf import settings
-from django.db import transaction
 from django.utils import timezone
 
 from apps.facilities.models import StorageUnit
 from apps.facilities.services import registry
 
 from .clock import Clock
-from .models import Device, Reading
+from .models import Device
+from .timeseries import store  # noqa: F401  (re-exported for other apps)
 
 LIVE = "live"
 
@@ -28,10 +28,15 @@ def scenario_source() -> str:
     return scenario()["name"]
 
 
+def scenario_time(tick: int) -> datetime:
+    """Timestamp of a scenario reading (end of its 10-minute interval)."""
+    return datetime.fromisoformat(scenario()["start_time"]) + timedelta(minutes=10 * (tick + 1))
+
+
 def ensure_scenario_readings() -> int:
-    """Simulate the demo scenario (ColdChain Gym) into the readings table once. Returns rows written."""
+    """Simulate the demo scenario (ColdChain Gym) into the reading store once. Returns readings written."""
     src = scenario_source()
-    if Reading.objects.filter(source=src).exists():
+    if store().has_source(src):
         return 0
     from prediction_engine.digital_twin.thermal_model import FleetConfig, simulate_fleet   # only needed here
 
@@ -40,19 +45,40 @@ def ensure_scenario_readings() -> int:
     spec = [dict(cls=f["cls"], **sc["fridges"].get(f["id"], {})) for f in reg]
     log, _, _ = simulate_fleet(FleetConfig(days=sc["days"], seed=sc["seed"], units_spec=spec))
     ids = [f["id"] for f in reg]
-    rows = [Reading(unit_id=ids[int(u)], source=src, tick=int(t), minute=int(m), temp_c=None if a != a else float(a))
-            for u, t, m, a in log[["unit", "tick", "minute", "air_meas"]].itertuples(index=False)]
-    with transaction.atomic():
-        Reading.objects.bulk_create(rows, batch_size=2000)
-    return len(rows)
+    rows = [(ids[int(u)], int(t), scenario_time(int(t)), None if a != a else float(a))
+            for u, t, a in log[["unit", "tick", "air_meas"]].itertuples(index=False)]
+    return store().write_readings(src, rows)
 
 
 def readings(source: str, unit: str | None = None) -> list[dict]:
-    qs = Reading.objects.filter(source=source)
-    if unit:
-        qs = qs.filter(unit_id=unit)
-    return [dict(fridge_id=u, tick=t, minute=m, temp_c=v)
-            for u, t, m, v in qs.order_by("unit_id", "tick").values_list("unit_id", "tick", "minute", "temp_c")]
+    """Readings as a complete 10-minute grid per unit (gaps filled with temp_c None), as the twin expects."""
+    rows = store().read(source, unit)
+    by_unit: dict[str, dict[int, float | None]] = {}
+    for u, t, _, v in rows:
+        by_unit.setdefault(u, {})[t] = v
+    if not by_unit:
+        return []
+    last = max(max(d) for d in by_unit.values())
+    return [dict(fridge_id=u, tick=t, minute=(t + 1) * 10, temp_c=d.get(t))
+            for u, d in sorted(by_unit.items()) for t in range(last + 1)]
+
+
+def live_units() -> list[str]:
+    """Units that have live device readings."""
+    return sorted({u for u, _, _, _ in store().read(LIVE)})
+
+
+def tick_time(source: str, unit: str, tick: int) -> datetime | None:
+    """Real timestamp of a reading (for writing predictions next to it)."""
+    if source == scenario_source():
+        return scenario_time(tick)
+    first = _first_live_time(unit)
+    return first + timedelta(minutes=10 * tick) if first else None
+
+
+def _first_live_time(unit: str) -> datetime | None:
+    rows = [r for r in store().read(LIVE, unit) if r[2] is not None]
+    return min((ts - timedelta(minutes=10 * t) for _, t, ts, _ in rows), default=None)
 
 
 # ---- demo clock ------------------------------------------------------------------------------------------------------
@@ -103,17 +129,14 @@ def ingest(unit: StorageUnit, rows: list[dict]) -> dict:
     clean, errors = validate_readings([dict(r, fridge_id=unit.slug) for r in rows])
     if not clean:
         return dict(stored=0, errors=errors)
-    first = Reading.objects.filter(source=LIVE, unit=unit).order_by("tick").values_list("recorded_at", flat=True).first()
-    t0 = first or clean[0]["timestamp"]
-    stored = 0
+    t0 = _first_live_time(unit.slug) or clean[0]["timestamp"]
+    rows = []
     for r in clean:
         tick = int((r["timestamp"] - t0) / timedelta(minutes=10))
         if tick < 0:
             errors.append(f"{r['timestamp'].isoformat()}: before this unit's first live reading")
             continue
-        Reading.objects.update_or_create(source=LIVE, unit=unit, tick=tick,
-                                         defaults=dict(minute=(tick + 1) * 10, temp_c=r["temp_c"],
-                                                       recorded_at=t0 + timedelta(minutes=10 * tick)))
-        stored += 1
+        rows.append((unit.slug, tick, t0 + timedelta(minutes=10 * tick), r["temp_c"]))
+    stored = store().write_readings(LIVE, rows) if rows else 0
     Device.objects.filter(unit=unit).update(last_seen=timezone.now())
-    return dict(stored=stored, errors=errors)
+    return dict(stored=stored, errors=errors, store=store().name)
